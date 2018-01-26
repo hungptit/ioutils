@@ -32,7 +32,7 @@ namespace test {
 
 const int number_of_samples = 10;
 const int number_of_iterator = 10;
-const std::string afile("data/prove_junit.xml");
+const std::string afile("read_data");
 
 char buf_20[1048576];
 
