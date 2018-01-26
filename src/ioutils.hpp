@@ -9,75 +9,70 @@
 #include <boost/iostreams/device/mapped_file.hpp>
 
 namespace ioutils {
-// Read a file content into a buffer using memory mapped.
-// Note: This function has a reasonable performance.
-template <typename Container> Container read_memmap(const std::string &afile) {
-  boost::iostreams::mapped_file mmap(afile,
-                                     boost::iostreams::mapped_file::readonly);
-  auto begin = mmap.const_data();
-  auto end = begin + mmap.size();
-  return Container(begin, end);
-}
+    // Read a file content into a buffer using memory mapped.
+    // Note: This function has a reasonable performance.
+    template <typename Container> Container read_memmap(const std::string &afile) {
+        boost::iostreams::mapped_file mmap(afile, boost::iostreams::mapped_file::readonly);
+        auto begin = mmap.const_data();
+        auto end = begin + mmap.size();
+        return Container(begin, end);
+    }
 
-// This function read the content of a file into a string with the
-// assumption that the file content can be loaded into memory.
-template <typename Container>
-void read(const char *afile, Container &buffer, char *buf,
-          const size_t buffer_size) {
-  int fd = ::open(afile, O_RDONLY);
+    // This function read the content of a file into a string with the
+    // assumption that the file content can be loaded into memory.
+    template <typename Container>
+    void read(const char *afile, Container &buffer, char *buf, const size_t buffer_size) {
+        int fd = ::open(afile, O_RDONLY);
 
-  // Check that we can open a given file.
-  if (fd < 0) {
-    fmt::MemoryWriter writer;
-    writer << "Cannot open file \"" << afile << "\"";
-    throw(std::runtime_error(writer.str()));
-  }
+        // Check that we can open a given file.
+        if (fd < 0) {
+            fmt::MemoryWriter writer;
+            writer << "Cannot open file \"" << afile << "\"";
+            throw(std::runtime_error(writer.str()));
+        }
 
-  // Reserve the size of a buffer using file size information.
-  struct stat file_stat;
-  if (fstat(fd, &file_stat) < 0)
-    return;
-  buffer.reserve(file_stat.st_size);
+        // Reserve the size of a buffer using file size information.
+        struct stat file_stat;
+        if (fstat(fd, &file_stat) < 0) return;
+        buffer.reserve(file_stat.st_size);
 
-  // Read data into a string
-  while (true) {
-    auto nbytes = ::read(fd, buf, buffer_size);
-    if (nbytes < 0) {
-      fmt::MemoryWriter writer;
-      writer << "Cannot read file \"" << afile << "\"";
-      throw(std::runtime_error(writer.str()));
-    };
+        // Read data into a string
+        while (true) {
+            auto nbytes = ::read(fd, buf, buffer_size);
+            if (nbytes < 0) {
+                fmt::MemoryWriter writer;
+                writer << "Cannot read file \"" << afile << "\"";
+                throw(std::runtime_error(writer.str()));
+            };
 
-    // TODO: Figure out why this function call take 50% of runtime in Linux (SSD
-    // drive)?
-    buffer.append(buf, nbytes);
+            // TODO: Figure out why this function call take 50% of runtime in Linux (SSD
+            // drive)?
+            buffer.append(buf, nbytes);
 
-    // Stop if we reach the end of file.
-    if (nbytes != buffer_size) {
-      break;
-    };
-  }
+            // Stop if we reach the end of file.
+            if (nbytes != buffer_size) {
+                break;
+            };
+        }
 
-  // Close our file.
-  ::close(fd);
-}
+        // Close our file.
+        ::close(fd);
+    }
 
-constexpr size_t READ_TRUNK_SIZE = 1 << 20;
-template <typename Container, size_t BUFFER_SIZE = READ_TRUNK_SIZE>
-void read(const char *afile, Container &buffer) {
-  static_assert(READ_TRUNK_SIZE > 128,
-                "READ_TRUNK_SIZE should be greater than 128!");
-  char buf[BUFFER_SIZE + 1];
-  read(afile, buffer, buf, BUFFER_SIZE);
-}
+    constexpr size_t READ_TRUNK_SIZE = 1 << 20;
+    template <typename Container, size_t BUFFER_SIZE = READ_TRUNK_SIZE>
+    void read(const char *afile, Container &buffer) {
+        static_assert(READ_TRUNK_SIZE > 128, "READ_TRUNK_SIZE should be greater than 128!");
+        char buf[BUFFER_SIZE + 1];
+        read(afile, buffer, buf, BUFFER_SIZE);
+    }
 
-template <typename Container, size_t BUFFER_SIZE = READ_TRUNK_SIZE>
-Container read(const char *afile) {
-  static_assert(READ_TRUNK_SIZE > 128,
-                "READ_TRUNK_SIZE should be greater than 128!");
-  char buf[BUFFER_SIZE + 1];
-  Container results;
-  read(afile, results, buf, BUFFER_SIZE);
-  return results;
-}
+    template <typename Container, size_t BUFFER_SIZE = READ_TRUNK_SIZE>
+    Container read(const char *afile) {
+        static_assert(READ_TRUNK_SIZE > 128, "READ_TRUNK_SIZE should be greater than 128!");
+        char buf[BUFFER_SIZE + 1];
+        Container results;
+        read(afile, results, buf, BUFFER_SIZE);
+        return results;
+    }
 } // namespace ioutils
