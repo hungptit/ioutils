@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <boost/iostreams/device/mapped_file.hpp>
+#include <string>
 
 namespace ioutils {
     // Read a file content into a buffer using memory mapped.
