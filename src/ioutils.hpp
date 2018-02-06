@@ -40,7 +40,7 @@ namespace ioutils {
             buffer.append(buf, nbytes);
 
             // Stop if we reach the end of file.
-            if (nbytes != buffer_size) {
+            if (nbytes != static_cast<decltype(nbytes)>(buffer_size)) {
                 break;
             };
         }
