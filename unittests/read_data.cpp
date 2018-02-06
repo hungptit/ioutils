@@ -13,6 +13,7 @@
 #include "celero/Celero.h"
 
 #include "ioutils.hpp"
+#include "boost_memmap.hpp"
 
 namespace test {
     template <typename Container> Container read_iostream(const std::string &afile) {
