@@ -49,7 +49,7 @@ namespace ioutils {
         ::close(fd);
     }
 
-    constexpr size_t READ_TRUNK_SIZE = 1 << 20;
+    constexpr size_t READ_TRUNK_SIZE = 1 << 16;
     template <typename Container, size_t BUFFER_SIZE = READ_TRUNK_SIZE>
     void read(const char *afile, Container &buffer) {
         static_assert(READ_TRUNK_SIZE > 128, "READ_TRUNK_SIZE should be greater than 128!");
