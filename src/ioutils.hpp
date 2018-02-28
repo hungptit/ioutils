@@ -6,18 +6,8 @@
 #include <unistd.h>
 
 #include "fmt/format.h"
-#include <boost/iostreams/device/mapped_file.hpp>
 
 namespace ioutils {
-    // Read a file content into a buffer using memory mapped.
-    // Note: This function has a reasonable performance.
-    template <typename Container> Container read_memmap(const std::string &afile) {
-        boost::iostreams::mapped_file mmap(afile, boost::iostreams::mapped_file::readonly);
-        auto begin = mmap.const_data();
-        auto end = begin + mmap.size();
-        return Container(begin, end);
-    }
-
     // This function read the content of a file into a string with the
     // assumption that the file content can be loaded into memory.
     template <typename Container>
@@ -50,7 +40,7 @@ namespace ioutils {
             buffer.append(buf, nbytes);
 
             // Stop if we reach the end of file.
-            if (nbytes != buffer_size) {
+            if (nbytes != static_cast<decltype(nbytes)>(buffer_size)) {
                 break;
             };
         }
@@ -59,7 +49,7 @@ namespace ioutils {
         ::close(fd);
     }
 
-    constexpr size_t READ_TRUNK_SIZE = 1 << 20;
+    constexpr size_t READ_TRUNK_SIZE = 1 << 16;
     template <typename Container, size_t BUFFER_SIZE = READ_TRUNK_SIZE>
     void read(const char *afile, Container &buffer) {
         static_assert(READ_TRUNK_SIZE > 128, "READ_TRUNK_SIZE should be greater than 128!");

@@ -13,6 +13,7 @@
 #include "celero/Celero.h"
 
 #include "ioutils.hpp"
+#include "boost_memmap.hpp"
 
 namespace test {
     template <typename Container> Container read_iostream(const std::string &afile) {
@@ -30,8 +31,8 @@ namespace test {
 
 } // namespace test
 
-const int number_of_samples = 10;
-const int number_of_iterator = 10;
+const int number_of_samples = 5;
+const int number_of_iterator = 5;
 const std::string afile("read_data");
 
 char buf_20[1048576];
