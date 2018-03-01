@@ -27,8 +27,8 @@ include(AddCXXCompilerFlag)
 include(CXXFeatureCheck)
 
 # Use libc++  provided by llvm
-set(CMAKE_CXX_COMPILER "clang++")
-add_cxx_compiler_flag(-stdlib=libc++)
+# set(CMAKE_CXX_COMPILER "clang++")
+# add_cxx_compiler_flag(-stdlib=libc++)
 
 # set(CMAKE_BUILD_TYPE Debug)
 
@@ -84,7 +84,7 @@ set(LIB_JEMALLOC "${EXTERNAL_DIR}/lib/libjemalloc.a")
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-set(Boost_NO_SYSTEM_PATHS FALSE)
+set(Boost_NO_SYSTEM_PATHS TRUE)
 if (Boost_NO_SYSTEM_PATHS)
   set(BOOST_ROOT "${EXTERNAL_DIR}")
   set(BOOST_INCLUDE_DIRS "${BOOST_ROOT}/include")
