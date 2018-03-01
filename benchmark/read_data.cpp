@@ -53,14 +53,39 @@ BENCHMARK(read, read_2_12, number_of_samples, number_of_iterator) {
     ioutils::read<std::string, 4096>(afile.c_str(), data);
 }
 
+BENCHMARK(read, read_2_13, number_of_samples, number_of_iterator) {
+    std::string data;
+    ioutils::read<std::string, 1<<13>(afile.c_str(), data);
+}
+
 BENCHMARK(read, read_2_14, number_of_samples, number_of_iterator) {
     std::string data;
-    ioutils::read<std::string, 16384>(afile.c_str(), data);
+    ioutils::read<std::string, 1<<14>(afile.c_str(), data);
+}
+
+BENCHMARK(read, read_2_15, number_of_samples, number_of_iterator) {
+    std::string data;
+    ioutils::read<std::string, 1<<15>(afile.c_str(), data);
 }
 
 BENCHMARK(read, read_2_16, number_of_samples, number_of_iterator) {
     std::string data;
-    ioutils::read<std::string, 65536>(afile.c_str(), data);
+    ioutils::read<std::string, 1<<16>(afile.c_str(), data);
+}
+
+BENCHMARK(read, read_2_17, number_of_samples, number_of_iterator) {
+    std::string data;
+    ioutils::read<std::string, 1<<17>(afile.c_str(), data);
+}
+
+BENCHMARK(read, read_2_18, number_of_samples, number_of_iterator) {
+    std::string data;
+    ioutils::read<std::string, 1<<18>(afile.c_str(), data);
+}
+
+BENCHMARK(read, read_2_19, number_of_samples, number_of_iterator) {
+    std::string data;
+    ioutils::read<std::string, 1<<19>(afile.c_str(), data);
 }
 
 BENCHMARK(read, read_2_20, number_of_samples, number_of_iterator) {
