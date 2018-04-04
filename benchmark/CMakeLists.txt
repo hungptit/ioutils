@@ -35,7 +35,6 @@ include(CXXFeatureCheck)
 set (CMAKE_BUILD_TYPE Release)
 add_cxx_compiler_flag(-O3)
 add_cxx_compiler_flag(-march=native)
-
 add_cxx_compiler_flag(-std=c++14)
 add_cxx_compiler_flag(-Wall)
 add_cxx_compiler_flag(-flto)
@@ -54,9 +53,9 @@ add_cxx_compiler_flag(-flto)
 # add_cxx_compiler_flag(-Wfloat-equal)
 # add_cxx_compiler_flag(-Wint-to-void-pointer-cast)
 
-add_cxx_compiler_flag(-Wshorten-64-to-32)
+# add_cxx_compiler_flag(-Wshorten-64-to-32)
 # add_cxx_compiler_flag(-Wfloat-equal)
-add_cxx_compiler_flag(-Wint-to-void-pointer-cast)
+# add_cxx_compiler_flag(-Wint-to-void-pointer-cast)
 
 add_cxx_compiler_flag(-fstrict-aliasing)
 if (HAVE_CXX_FLAG_FSTRICT_ALIASING)
@@ -77,7 +76,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Libraries used by rocksdb
 set(LIB_CELERO "${EXTERNAL_DIR}/lib/libcelero.a")
-set(LIB_JEMALLOC "${EXTERNAL_DIR}/lib/libjemalloc.a")
 
 # This option make sure that we use the local boost version. Note that if the
 # system boost is installed then CMake might use that boost version.
@@ -95,6 +93,8 @@ find_package(Boost REQUIRED system filesystem iostreams program_options)
 
 # Include folder
 include_directories ("${EXTERNAL_DIR}/include")
+
+# Compile again the latest version of ioutils.
 include_directories ("${ROOT_DIR}/src")
 
 set(COMMAND_SRC_FILES read_data)

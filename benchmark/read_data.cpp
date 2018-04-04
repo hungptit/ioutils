@@ -31,8 +31,6 @@ const int number_of_samples = 10;
 const int number_of_iterator = 100;
 const std::string afile("read_data");
 
-char buf_20[1048576];
-
 CELERO_MAIN
 
 BASELINE(read, iostream, number_of_samples, number_of_iterator) {
@@ -91,14 +89,4 @@ BENCHMARK(read, read_2_19, number_of_samples, number_of_iterator) {
 BENCHMARK(read, read_2_20, number_of_samples, number_of_iterator) {
     std::string data;
     ioutils::read<std::string, 1048576>(afile.c_str(), data);
-}
-
-BENCHMARK(read, read_2_20_provide_buff, number_of_samples, number_of_iterator) {
-    std::string data;
-    const size_t buffer_size = 1048576;
-    ioutils::read<std::string>(afile.c_str(), data, buf_20, buffer_size);
-}
-
-BENCHMARK(read, read_trunk, number_of_samples, number_of_iterator) {
-    celero::DoNotOptimizeAway(ioutils::read<std::string>(afile.c_str()));
 }
