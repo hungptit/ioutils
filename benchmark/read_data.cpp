@@ -5,10 +5,10 @@
 
 #include "boost_memmap.hpp"
 #include "celero/Celero.h"
-#include "cereal/archives/binary.hpp"
-#include "cereal/archives/json.hpp"
-#include "cereal/archives/portable_binary.hpp"
-#include "cereal/archives/xml.hpp"
+// #include "cereal/archives/binary.hpp"
+// #include "cereal/archives/json.hpp"
+// #include "cereal/archives/portable_binary.hpp"
+// #include "cereal/archives/xml.hpp"
 #include "ioutils.hpp"
 
 namespace test {
@@ -29,7 +29,7 @@ namespace test {
 
 const int number_of_samples = 10;
 const int number_of_iterator = 100;
-const std::string afile("read_data");
+const std::string afile("3200.txt");
 
 CELERO_MAIN
 
