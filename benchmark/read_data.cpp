@@ -10,6 +10,7 @@
 #include "cereal/archives/portable_binary.hpp"
 #include "cereal/archives/xml.hpp"
 #include "ioutils.hpp"
+#include <iostream>
 
 namespace test {
     constexpr char EOL = '\n';
@@ -24,10 +25,13 @@ namespace test {
         return str;
     }
 
-    size_t iostream_linstats(const std::string &afile) {
+    size_t iostream_linestats(const std::string &afile) {
         std::ifstream t(afile);
         size_t lines = 0;
-        // str.assign((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+        std::for_each(std::istreambuf_iterator<char>(t), std::istreambuf_iterator<char>(),
+                      [&lines](auto const item) {
+                          if (item == EOL) ++lines;
+                      });
         return lines;
     }
 
@@ -43,6 +47,7 @@ namespace test {
     }
 
     struct LineStats {
+        explicit LineStats() : lines(0) {}
         void operator()(const char *buffer, size_t len) {
             for (auto idx = 0; idx < len; ++idx) {
                 if (buffer[idx] == EOL) {
@@ -50,14 +55,15 @@ namespace test {
                 }
             }
         }
-        size_t lines = 0;
+        size_t lines;
     };
-
 } // namespace test
+
+test::LineStats policy;
 
 const int number_of_samples = 10;
 const int number_of_iterator = 100;
-const std::string afile("/Users/hdang/working/scribe_parser/data/workqueue-execution_current");
+const std::string afile("3200.txt");
 
 CELERO_MAIN
 
@@ -117,4 +123,50 @@ BENCHMARK(read, read_2_19, number_of_samples, number_of_iterator) {
 BENCHMARK(read, read_2_20, number_of_samples, number_of_iterator) {
     std::string data;
     ioutils::read<std::string, 1048576>(afile.c_str(), data);
+}
+
+// Read and process data benchmark
+BASELINE(linestats, iostream_linestats, number_of_samples, number_of_iterator) {
+    celero::DoNotOptimizeAway(test::iostream_linestats(afile));
+	// std::cout << test::iostream_linestats(afile) << "\n";
+}
+
+BENCHMARK(linestats, memmap_linestats, number_of_samples, number_of_iterator) {
+    celero::DoNotOptimizeAway(test::memmap_linestats(afile));
+	// std::cout << test::memmap_linestats(afile) << "\n";
+}
+
+BENCHMARK(linestats, linestats_2_14, number_of_samples, number_of_iterator) {
+    using FastLineStats = ioutils::FileReader<1 << 14, test::LineStats>;
+    FastLineStats linestats;
+    linestats(afile.c_str());
+    // std::cout << linestats.policy.lines << "\n";
+}
+
+BENCHMARK(linestats, linestats_2_15, number_of_samples, number_of_iterator) {
+    using FastLineStats = ioutils::FileReader<1 << 15, test::LineStats>;
+    FastLineStats linestats;
+    linestats(afile.c_str());
+    // std::cout << linestats.policy.lines << "\n";
+}
+
+BENCHMARK(linestats, linestats_2_16, number_of_samples, number_of_iterator) {
+    using FastLineStats = ioutils::FileReader<1 << 16, test::LineStats>;
+    FastLineStats linestats;
+    linestats(afile.c_str());
+    // std::cout << linestats.policy.lines << "\n";
+}
+
+BENCHMARK(linestats, linestats_2_17, number_of_samples, number_of_iterator) {
+    using FastLineStats = ioutils::FileReader<1 << 17, test::LineStats>;
+    FastLineStats linestats;
+    linestats(afile.c_str());
+    // std::cout << linestats.policy.lines << "\n";
+}
+
+BENCHMARK(linestats, linestats_2_18, number_of_samples, number_of_iterator) {
+    using FastLineStats = ioutils::FileReader<1 << 17, test::LineStats>;
+    FastLineStats linestats;
+    linestats(afile.c_str());
+    // std::cout << linestats.policy.lines << "\n";
 }

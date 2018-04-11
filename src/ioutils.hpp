@@ -102,7 +102,7 @@ namespace ioutils {
                 };
 
                 // Parse read_buffer to get some useful information.
-                policy(read_buffer, read_buffer + nbytes);
+                policy(read_buffer, nbytes);
 
                 // Stop if we reach the end of file.
                 if (nbytes != static_cast<decltype(nbytes)>(BUFFER_SIZE)) { break; };
