@@ -29,7 +29,7 @@ namespace test {
 
 const int number_of_samples = 10;
 const int number_of_iterator = 100;
-const std::string afile("read_data");
+const std::string afile("/Users/hdang/working/scribe_parser/data/workqueue-execution_current");
 
 CELERO_MAIN
 
