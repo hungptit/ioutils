@@ -12,6 +12,8 @@
 #include "ioutils.hpp"
 #include <iostream>
 
+#include "utils/memchr.hpp"
+
 namespace test {
     constexpr char EOL = '\n';
     template <typename Container> Container read_iostream(const std::string &afile) {
@@ -63,14 +65,9 @@ namespace test {
         void operator()(const char *buffer, size_t len) {
 			const char *end = buffer + len;
 			const char *ptr = buffer;
-            while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
+            while ((ptr = static_cast<const char *>(memchr_avx2(ptr, EOL, end - ptr)))) {
                 ++lines;
                 ++ptr;
-            }
-            for (size_t idx = 0; idx < len; ++idx) {
-                if (buffer[idx] == EOL) {
-                    ++lines;
-                }
             }
         }
         size_t lines;
@@ -79,9 +76,10 @@ namespace test {
 
 test::LineStats policy;
 
-const int number_of_samples = 10;
-const int number_of_iterator = 100;
-const std::string afile("3200.txt");
+const int number_of_samples = 5;
+const int number_of_iterator = 1;
+// const std::string afile("3200.txt");
+const std::string afile("../../fastgrep/data/workqueue-execution_current");
 
 CELERO_MAIN
 
@@ -191,16 +189,23 @@ BENCHMARK(linestats, linestats_2_17, number_of_samples, number_of_iterator) {
 }
 
 BENCHMARK(linestats, linestats_2_18, number_of_samples, number_of_iterator) {
-    using FastLineStats = ioutils::FileReader<1 << 17, test::LineStats>;
+    using FastLineStats = ioutils::FileReader<1 << 18, test::LineStats>;
     FastLineStats linestats;
     linestats(afile.c_str());
     // std::cout << linestats.policy.lines << "\n";
 }
 
-BENCHMARK(linestats, memchr, number_of_samples, number_of_iterator) {
+BENCHMARK(linestats, memchr1, number_of_samples, number_of_iterator) {
+    using FastLineStats = ioutils::FileReader<1 << 16, test::LineStats_memchr>;
+    FastLineStats linestats;
+    linestats(afile.c_str());
+    // std::cout << linestats.policy.lines << "\n";
+}
+
+BENCHMARK(linestats, memchr2, number_of_samples, number_of_iterator) {
 	using LineStats = test::LineStats_memchr;
 	LineStats stats;
     ioutils::FileReader2<1 << 16, LineStats> reader;
     reader(afile.c_str(), stats);
-    // std::cout << linestats.policy.lines << "\n";
+    // std::cout << stats.lines << "\n";
 }
