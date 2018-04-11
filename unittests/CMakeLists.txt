@@ -76,7 +76,6 @@ ENABLE_TESTING()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Libraries used by rocksdb
-set(LIB_CELERO "${EXTERNAL_DIR}/lib/libcelero.a")
 set(LIB_JEMALLOC "${EXTERNAL_DIR}/lib/libjemalloc.a")
 
 # This option make sure that we use the local boost version. Note that if the
@@ -97,12 +96,9 @@ find_package(Boost REQUIRED system filesystem iostreams)
 include_directories ("${EXTERNAL_DIR}/include")
 include_directories ("${ROOT_DIR}/src")
 
-set(COMMAND_SRC_FILES tempdir)
+set(COMMAND_SRC_FILES read_data tempdir)
 foreach (src_file ${COMMAND_SRC_FILES})
   ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
-<<<<<<< HEAD
   TARGET_LINK_LIBRARIES(${src_file} ${LIB_CELERO} ${Boost_LIBRARIES} -lpthread -lm -lc -ldl)
-=======
-  TARGET_LINK_LIBRARIES(${src_file} ${Boost_LIBRARIES} -lpthread -lm -lc)
->>>>>>> 70af982037a3ff31b5eb297b3ab390d040b437b1
+  ADD_TEST(${src_file} ./${src_file})
 endforeach (src_file)

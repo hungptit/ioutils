@@ -8,17 +8,23 @@
 #include "fmt/format.h"
 
 namespace ioutils {
-    // This function read the content of a file into a string with the
+	struct AppendPolicy {
+		void operator()(const char* buffer, const size_t len) {
+			data.append(buffer, len);
+		}
+		std::string data;
+	};
+
+// This function read the content of a file into a string with the
     // assumption that the file content can be loaded into memory.
-    template <typename Container>
-    void read(const char *afile, Container &buffer, char *buf, const size_t buffer_size) {
+    void read(const char *afile, std::string &buffer, char *buf, const size_t buffer_size) {
         int fd = ::open(afile, O_RDONLY);
 
         // Check that we can open a given file.
         if (fd < 0) {
-            std::string errmsg("Cannot open file \"");
-			errmsg.append(afile, "\"");
-            throw(std::runtime_error(errmsg));
+            std::stringstream writer;
+            writer << "Cannot open file \"" << afile << "\"";
+            throw(std::runtime_error(writer.str()));
         }
 
         // Reserve the size of a buffer using file size information.
@@ -30,13 +36,12 @@ namespace ioutils {
         while (true) {
             auto nbytes = ::read(fd, buf, buffer_size);
             if (nbytes < 0) {
-				std::string errmsg("Cannot read file \"");
-				errmsg.append(afile, "\"");
-				throw(std::runtime_error(errmsg));
+                std::stringstream writer;
+                writer << "Cannot read file \"" << afile << "\"";
+                throw(std::runtime_error(writer.str()));
             };
 
-            // TODO: Figure out why this function call take 50% of runtime in Linux (SSD
-            // drive)?
+            // Append read data into a buffer.
             buffer.append(buf, nbytes);
 
             // Stop if we reach the end of file.
@@ -49,24 +54,26 @@ namespace ioutils {
         ::close(fd);
     }
 
+    // The optimum trunk size for reading a file content.
     constexpr size_t READ_TRUNK_SIZE = 1 << 16;
-    template <typename Container, size_t BUFFER_SIZE = READ_TRUNK_SIZE>
-    void read(const char *afile, Container &buffer) {
+
+    template <size_t BUFFER_SIZE = READ_TRUNK_SIZE>
+    void read(const char *afile, std::string &buffer) {
         static_assert(READ_TRUNK_SIZE > 128, "READ_TRUNK_SIZE should be greater than 128!");
         char buf[BUFFER_SIZE + 1];
         read(afile, buffer, buf, BUFFER_SIZE);
     }
 
-    template <typename Container, size_t BUFFER_SIZE = READ_TRUNK_SIZE>
-    Container read(const char *afile) {
+    template <size_t BUFFER_SIZE = READ_TRUNK_SIZE>
+    std::string read(const char *afile) {
         static_assert(READ_TRUNK_SIZE > 128, "READ_TRUNK_SIZE should be greater than 128!");
         char buf[BUFFER_SIZE + 1];
-        Container results;
+		std::string results;
         read(afile, results, buf, BUFFER_SIZE);
         return results;
     }
 
-	// A struct that read file content in fixed size chunks and parse them to a parser.
+    // A struct that read file content in fixed size chunks and parse them to a parser.
     template <size_t BUFFER_SIZE, typename Policy> struct FileReader {
         void operator()(const char *datafile, const long offset = 0) {
             char read_buffer[BUFFER_SIZE + 1];
@@ -89,9 +96,9 @@ namespace ioutils {
                 }
             }
 
-			// Let the kernel know that we are going to read sequentially to the end of a file.
-			// posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
-			
+            // Let the kernel know that we are going to read sequentially to the end of a file.
+            // posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
+
             // Read data into a string
             while (true) {
                 auto nbytes = ::read(fd, read_buffer, BUFFER_SIZE);
@@ -101,22 +108,24 @@ namespace ioutils {
                     throw(std::runtime_error(writer.str()));
                 };
 
-                // Parse read_buffer to get some useful information.
+                // Apply a given policy to read_buffer.
                 policy(read_buffer, nbytes);
 
                 // Stop if we reach the end of file.
-                if (nbytes != static_cast<decltype(nbytes)>(BUFFER_SIZE)) { break; };
+                if (nbytes != static_cast<decltype(nbytes)>(BUFFER_SIZE)) {
+                    break;
+                };
             }
 
             // Close our file.
             ::close(fd);
         }
 
-		// Member data
-		Policy policy;
+        // Member data
+        Policy policy;
     };
 
-	    // A struct that read file content in fixed size chunks and parse them to a parser.
+    // A struct that read file content in fixed size chunks and process them using a given policy.
     template <size_t BUFFER_SIZE, typename Parser> class FileReader2 {
       public:
         void operator()(const char *datafile, Parser &parser, const long offset = 0) {
@@ -140,9 +149,9 @@ namespace ioutils {
                 }
             }
 
-			// Let the kernel know that we are going to read sequentially to the end of a file.
-			// posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
-			
+            // Let the kernel know that we are going to read sequentially to the end of a file.
+            // posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
+
             // Read data into a string
             while (true) {
                 auto nbytes = ::read(fd, read_buffer, BUFFER_SIZE);
@@ -156,7 +165,9 @@ namespace ioutils {
                 parser(read_buffer, nbytes);
 
                 // Stop if we reach the end of file.
-                if (nbytes != static_cast<decltype(nbytes)>(BUFFER_SIZE)) { break; };
+                if (nbytes != static_cast<decltype(nbytes)>(BUFFER_SIZE)) {
+                    break;
+                };
             }
 
             // Close our file.
