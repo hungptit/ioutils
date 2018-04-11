@@ -12,11 +12,10 @@
 #include "ioutils.hpp"
 
 namespace test {
+    constexpr char EOL = '\n';
     template <typename Container> Container read_iostream(const std::string &afile) {
         std::ifstream t(afile);
         Container str;
-
-        // Note: This is pretty bad.
         t.seekg(0, std::ios::end);
         str.reserve(t.tellg());
         t.seekg(0, std::ios::beg);
@@ -24,6 +23,35 @@ namespace test {
         str.assign((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
         return str;
     }
+
+    size_t iostream_linstats(const std::string &afile) {
+        std::ifstream t(afile);
+        size_t lines = 0;
+        // str.assign((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+        return lines;
+    }
+
+    size_t memmap_linestats(const std::string &afile) {
+        boost::iostreams::mapped_file mmap(afile, boost::iostreams::mapped_file::readonly);
+        auto begin = mmap.const_data();
+        auto end = begin + mmap.size();
+        size_t lines;
+        std::for_each(begin, end, [&lines](auto const item) {
+            if (item == EOL) ++lines;
+        });
+        return lines;
+    }
+
+    struct LineStats {
+        void operator()(const char *buffer, size_t len) {
+            for (auto idx = 0; idx < len; ++idx) {
+                if (buffer[idx] == EOL) {
+                    ++lines;
+                }
+            }
+        }
+        size_t lines = 0;
+    };
 
 } // namespace test
 
@@ -53,37 +81,37 @@ BENCHMARK(read, read_2_12, number_of_samples, number_of_iterator) {
 
 BENCHMARK(read, read_2_13, number_of_samples, number_of_iterator) {
     std::string data;
-    ioutils::read<std::string, 1<<13>(afile.c_str(), data);
+    ioutils::read<std::string, 1 << 13>(afile.c_str(), data);
 }
 
 BENCHMARK(read, read_2_14, number_of_samples, number_of_iterator) {
     std::string data;
-    ioutils::read<std::string, 1<<14>(afile.c_str(), data);
+    ioutils::read<std::string, 1 << 14>(afile.c_str(), data);
 }
 
 BENCHMARK(read, read_2_15, number_of_samples, number_of_iterator) {
     std::string data;
-    ioutils::read<std::string, 1<<15>(afile.c_str(), data);
+    ioutils::read<std::string, 1 << 15>(afile.c_str(), data);
 }
 
 BENCHMARK(read, read_2_16, number_of_samples, number_of_iterator) {
     std::string data;
-    ioutils::read<std::string, 1<<16>(afile.c_str(), data);
+    ioutils::read<std::string, 1 << 16>(afile.c_str(), data);
 }
 
 BENCHMARK(read, read_2_17, number_of_samples, number_of_iterator) {
     std::string data;
-    ioutils::read<std::string, 1<<17>(afile.c_str(), data);
+    ioutils::read<std::string, 1 << 17>(afile.c_str(), data);
 }
 
 BENCHMARK(read, read_2_18, number_of_samples, number_of_iterator) {
     std::string data;
-    ioutils::read<std::string, 1<<18>(afile.c_str(), data);
+    ioutils::read<std::string, 1 << 18>(afile.c_str(), data);
 }
 
 BENCHMARK(read, read_2_19, number_of_samples, number_of_iterator) {
     std::string data;
-    ioutils::read<std::string, 1<<19>(afile.c_str(), data);
+    ioutils::read<std::string, 1 << 19>(afile.c_str(), data);
 }
 
 BENCHMARK(read, read_2_20, number_of_samples, number_of_iterator) {
