@@ -23,7 +23,7 @@ TEST_CASE("Simple reader", "basic") {
 	fmt::print("{}\n", results);
 	CHECK(results.find("xml.hpp") != std::string::npos);
 
-	ioutils::FileReader<1<<16, ioutils::AppendPolicy> reader;
+	ioutils::FileReader<ioutils::AppendPolicy, 1<<16> reader;
 	reader(datafile.c_str());
 	CHECK_THAT(results, Equals(reader.policy.data));
 }
