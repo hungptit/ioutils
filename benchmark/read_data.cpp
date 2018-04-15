@@ -14,6 +14,59 @@
 
 #include "utils/memchr.hpp"
 
+namespace ioutils {
+    // A struct that read file content in fixed size chunks and process them using a given
+    // policy.
+    template <size_t BUFFER_SIZE, typename Parser> class FileReader2 {
+      public:
+        void operator()(const char *datafile, Parser &parser, const long offset = 0) {
+            char read_buffer[BUFFER_SIZE + 1];
+            int fd = ::open(datafile, O_RDONLY);
+
+            // Check that we can open a given file.
+            if (fd < 0) {
+                std::stringstream writer;
+                writer << "Cannot open file \"" << datafile << "\"";
+                throw(std::runtime_error(writer.str()));
+            }
+
+            // Shift to desired location if it is not zero.
+            if (offset) {
+                auto retval = lseek(fd, offset, SEEK_SET);
+                if (retval != offset) {
+                    std::stringstream writer;
+                    writer << "Cannot seek for the location " << offset << " in " << datafile;
+                    throw(std::runtime_error(writer.str()));
+                }
+            }
+
+            // Let the kernel know that we are going to read sequentially to the end of a file.
+            // posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
+
+            // Read data into a string
+            while (true) {
+                auto nbytes = ::read(fd, read_buffer, BUFFER_SIZE);
+                if (nbytes < 0) {
+                    std::stringstream writer;
+                    writer << "Cannot read file \"" << datafile << "\"";
+                    throw(std::runtime_error(writer.str()));
+                };
+
+                // Parse read_buffer to get some useful information.
+                parser(read_buffer, nbytes);
+
+                // Stop if we reach the end of file.
+                if (nbytes != static_cast<decltype(nbytes)>(BUFFER_SIZE)) {
+                    break;
+                };
+            }
+
+            // Close our file.
+            ::close(fd);
+        }
+    };
+}
+
 namespace test {
     constexpr char EOL = '\n';
     template <typename Container> Container read_iostream(const std::string &afile) {
@@ -60,11 +113,11 @@ namespace test {
         size_t lines;
     };
 
-	struct LineStats_memchr {
+    struct LineStats_memchr {
         explicit LineStats_memchr() : lines(0) {}
         void operator()(const char *buffer, size_t len) {
-			const char *end = buffer + len;
-			const char *ptr = buffer;
+            const char *end = buffer + len;
+            const char *ptr = buffer;
             while ((ptr = static_cast<const char *>(memchr_avx2(ptr, EOL, end - ptr)))) {
                 ++lines;
                 ++ptr;
@@ -143,12 +196,12 @@ BENCHMARK(read, read_2_20, number_of_samples, number_of_operations) {
 // Read and process data benchmark
 BASELINE(linestats, iostream_linestats, number_of_samples, number_of_operations) {
     celero::DoNotOptimizeAway(test::iostream_linestats(afile));
-	// std::cout << test::iostream_linestats(afile) << "\n";
+    // std::cout << test::iostream_linestats(afile) << "\n";
 }
 
 BENCHMARK(linestats, memmap_linestats, number_of_samples, number_of_operations) {
     celero::DoNotOptimizeAway(test::memmap_linestats(afile));
-	// std::cout << test::memmap_linestats(afile) << "\n";
+    // std::cout << test::memmap_linestats(afile) << "\n";
 }
 
 BENCHMARK(linestats, linestats_2_14, number_of_samples, number_of_operations) {
@@ -173,12 +226,11 @@ BENCHMARK(linestats, linestats_2_16, number_of_samples, number_of_operations) {
 }
 
 BENCHMARK(linestats, linestats2_2_16, number_of_samples, number_of_operations) {
-	test::LineStats linestats;
+    test::LineStats linestats;
     ioutils::FileReader2<1 << 16, test::LineStats> reader;
     reader(afile.c_str(), linestats);
     // std::cout << linestats.policy.lines << "\n";
 }
-
 
 BENCHMARK(linestats, linestats_2_17, number_of_samples, number_of_operations) {
     using FastLineStats = ioutils::FileReader<1 << 17, test::LineStats>;
@@ -202,8 +254,8 @@ BENCHMARK(linestats, memchr1, number_of_samples, number_of_operations) {
 }
 
 BENCHMARK(linestats, memchr2, number_of_samples, number_of_operations) {
-	using LineStats = test::LineStats_memchr;
-	LineStats stats;
+    using LineStats = test::LineStats_memchr;
+    LineStats stats;
     ioutils::FileReader2<1 << 16, LineStats> reader;
     reader(afile.c_str(), stats);
     // std::cout << stats.lines << "\n";

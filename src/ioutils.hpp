@@ -8,14 +8,12 @@
 #include "fmt/format.h"
 
 namespace ioutils {
-	struct AppendPolicy {
-		void operator()(const char* buffer, const size_t len) {
-			data.append(buffer, len);
-		}
-		std::string data;
-	};
+    struct AppendPolicy {
+        void operator()(const char *buffer, const size_t len) { data.append(buffer, len); }
+        std::string data;
+    };
 
-// This function read the content of a file into a string with the
+    // This function read the content of a file into a string with the
     // assumption that the file content can be loaded into memory.
     void read(const char *afile, std::string &buffer, char *buf, const size_t buffer_size) {
         int fd = ::open(afile, O_RDONLY);
@@ -64,11 +62,10 @@ namespace ioutils {
         read(afile, buffer, buf, BUFFER_SIZE);
     }
 
-    template <size_t BUFFER_SIZE = READ_TRUNK_SIZE>
-    std::string read(const char *afile) {
+    template <size_t BUFFER_SIZE = READ_TRUNK_SIZE> std::string read(const char *afile) {
         static_assert(READ_TRUNK_SIZE > 128, "READ_TRUNK_SIZE should be greater than 128!");
         char buf[BUFFER_SIZE + 1];
-		std::string results;
+        std::string results;
         read(afile, results, buf, BUFFER_SIZE);
         return results;
     }
@@ -124,54 +121,5 @@ namespace ioutils {
         // Member data
         Policy policy;
     };
-
-    // A struct that read file content in fixed size chunks and process them using a given policy.
-    template <size_t BUFFER_SIZE, typename Parser> class FileReader2 {
-      public:
-        void operator()(const char *datafile, Parser &parser, const long offset = 0) {
-            char read_buffer[BUFFER_SIZE + 1];
-            int fd = ::open(datafile, O_RDONLY);
-
-            // Check that we can open a given file.
-            if (fd < 0) {
-                std::stringstream writer;
-                writer << "Cannot open file \"" << datafile << "\"";
-                throw(std::runtime_error(writer.str()));
-            }
-
-            // Shift to desired location if it is not zero.
-            if (offset) {
-                auto retval = lseek(fd, offset, SEEK_SET);
-                if (retval != offset) {
-                    std::stringstream writer;
-                    writer << "Cannot seek for the location " << offset << " in " << datafile;
-                    throw(std::runtime_error(writer.str()));
-                }
-            }
-
-            // Let the kernel know that we are going to read sequentially to the end of a file.
-            // posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
-
-            // Read data into a string
-            while (true) {
-                auto nbytes = ::read(fd, read_buffer, BUFFER_SIZE);
-                if (nbytes < 0) {
-                    std::stringstream writer;
-                    writer << "Cannot read file \"" << datafile << "\"";
-                    throw(std::runtime_error(writer.str()));
-                };
-
-                // Parse read_buffer to get some useful information.
-                parser(read_buffer, nbytes);
-
-                // Stop if we reach the end of file.
-                if (nbytes != static_cast<decltype(nbytes)>(BUFFER_SIZE)) {
-                    break;
-                };
-            }
-
-            // Close our file.
-            ::close(fd);
-        }
-    };
+};
 } // namespace ioutils
