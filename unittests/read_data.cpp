@@ -8,6 +8,8 @@
 #include "cereal/archives/portable_binary.hpp"
 #include "cereal/archives/xml.hpp"
 
+#include "folly/FBString.h"
+
 #include <boost/iostreams/device/mapped_file.hpp>
 
 #include "celero/Celero.h"
@@ -31,8 +33,8 @@ namespace test {
 
 } // namespace test
 
-const int number_of_samples = 5;
-const int number_of_iterator = 5;
+const int number_of_samples = 10;
+const int number_of_iterator = 10;
 const std::string afile("read_data");
 
 char buf_20[1048576];
@@ -70,6 +72,11 @@ BENCHMARK(read, read_2_16, number_of_samples, number_of_iterator) {
 BENCHMARK(read, read_2_20, number_of_samples, number_of_iterator) {
     std::string data;
     ioutils::read<std::string, 1048576>(afile.c_str(), data);
+}
+
+BENCHMARK(read, read_2_20_fbstring, number_of_samples, number_of_iterator) {
+    folly::fbstring data;
+    ioutils::read<folly::fbstring, 1048576>(afile.c_str(), data);
 }
 
 BENCHMARK(read, read_2_20_provide_buff, number_of_samples, number_of_iterator) {

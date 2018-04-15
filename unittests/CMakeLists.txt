@@ -97,8 +97,12 @@ find_package(Boost REQUIRED system filesystem iostreams)
 include_directories ("${EXTERNAL_DIR}/include")
 include_directories ("${ROOT_DIR}/src")
 
-set(COMMAND_SRC_FILES read_data)
+set(COMMAND_SRC_FILES tempdir)
 foreach (src_file ${COMMAND_SRC_FILES})
   ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
-  TARGET_LINK_LIBRARIES(${src_file} ${LIB_CELERO} ${Boost_LIBRARIES} -lpthread -lm -lc)
+<<<<<<< HEAD
+  TARGET_LINK_LIBRARIES(${src_file} ${LIB_CELERO} ${Boost_LIBRARIES} -lpthread -lm -lc -ldl)
+=======
+  TARGET_LINK_LIBRARIES(${src_file} ${Boost_LIBRARIES} -lpthread -lm -lc)
+>>>>>>> 70af982037a3ff31b5eb297b3ab390d040b437b1
 endforeach (src_file)
