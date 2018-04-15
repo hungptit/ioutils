@@ -71,8 +71,8 @@ namespace ioutils {
         return results;
     }
 
-    // A struct that read file content in fixed size chunks and parse them to a parser.
-    template <typename Policy, size_t BUFFER_SIZE = 1 << 16 > struct FileReader {
+    // A reader class which stores the policy as a member data.
+    template <typename Policy, size_t BUFFER_SIZE = 1 << 16> struct FileReader {
         void operator()(const char *datafile, const long offset = 0) {
             char read_buffer[BUFFER_SIZE + 1];
             int fd = ::open(datafile, O_RDONLY);
@@ -97,7 +97,7 @@ namespace ioutils {
             // Let the kernel know that we are going to read sequentially to the end of a file.
             // posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
 
-            // Read data into a string
+            // Read data into a read buffer
             while (true) {
                 auto nbytes = ::read(fd, read_buffer, BUFFER_SIZE);
                 if (nbytes < 0) {
@@ -123,10 +123,10 @@ namespace ioutils {
         Policy policy;
     };
 
-    // A struct that read file content in fixed size chunks and parse them to a parser.
+    // A reader class which parse data using a given policy.
     template <typename Policy, size_t BUFFER_SIZE = 1 << 16> class FileReader2 {
       public:
-        void operator()(const char *datafile, Policy &parser, const long offset = 0) {
+        void operator()(const char *datafile, Policy &policy, const long offset = 0) {
             char read_buffer[BUFFER_SIZE + 1];
             int fd = ::open(datafile, O_RDONLY);
 
@@ -160,7 +160,7 @@ namespace ioutils {
                 };
 
                 // Parse read_buffer to get some useful information.
-                parser(read_buffer, nbytes);
+                policy(read_buffer, nbytes);
 
                 // Stop if we reach the end of file.
                 if (nbytes != static_cast<decltype(nbytes)>(BUFFER_SIZE)) {

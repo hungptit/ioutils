@@ -18,12 +18,12 @@
 using Catch::Matchers::Equals;
 
 TEST_CASE("Simple reader", "basic") {
-	const std::string datafile("data.log");
-	auto results = ioutils::read(datafile.c_str());
-	fmt::print("{}\n", results);
-	CHECK(results.find("xml.hpp") != std::string::npos);
+    const std::string datafile("data.log");
+    auto results = ioutils::read(datafile.c_str());
+    fmt::print("{}\n", results);
+    CHECK(results.find("xml.hpp") != std::string::npos);
 
-	ioutils::FileReader<ioutils::AppendPolicy, 1<<16> reader;
-	reader(datafile.c_str());
-	CHECK_THAT(results, Equals(reader.policy.data));
+    ioutils::FileReader<ioutils::AppendPolicy, 1 << 16> reader;
+    reader(datafile.c_str());
+    CHECK_THAT(results, Equals(reader.policy.data));
 }

@@ -88,8 +88,9 @@ BENCHMARK(read, boost_memmap, number_of_samples, number_of_operations) {
 }
 
 BENCHMARK(read, read_2_10, number_of_samples, number_of_operations) {
-    std::string data;
-    ioutils::read<1 << 10>(afile.c_str(), data);
+	using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 10>;
+    Reader reader;
+    reader(afile.c_str());	
 }
 
 BENCHMARK(read, read_2_12, number_of_samples, number_of_operations) {
@@ -148,47 +149,59 @@ BENCHMARK(linestats, memmap_linestats, number_of_samples, number_of_operations) 
     // std::cout << test::memmap_linestats(afile) << "\n";
 }
 
-// BENCHMARK(linestats, linestats_2_14, number_of_samples, number_of_iterator) {
-//     using FastLineStats = ioutils::FileReader<1 << 14, test::LineStats>;
-//     FastLineStats linestats;
-//     linestats(afile.c_str());
-//     // std::cout << linestats.policy.lines << "\n";
-// }
+BENCHMARK(linestats, linestats_2_12, number_of_samples, number_of_operations) {
+    using FastLineStats = ioutils::FileReader<test::LineStats, 1 << 12>;
+    FastLineStats linestats;
+    linestats(afile.c_str());
+}
 
-// BENCHMARK(linestats, linestats_2_15, number_of_samples, number_of_iterator) {
-//     using FastLineStats = ioutils::FileReader<1 << 15, test::LineStats>;
-//     FastLineStats linestats;
-//     linestats(afile.c_str());
-//     // std::cout << linestats.policy.lines << "\n";
-// }
+BENCHMARK(linestats, linestats_2_13, number_of_samples, number_of_operations) {
+    using FastLineStats = ioutils::FileReader<test::LineStats, 1 << 13>;
+    FastLineStats linestats;
+    linestats(afile.c_str());
+}
 
-// BENCHMARK(linestats, linestats_2_16, number_of_samples, number_of_iterator) {
-//     using FastLineStats = ioutils::FileReader<1 << 16, test::LineStats>;
-//     FastLineStats linestats;
-//     linestats(afile.c_str());
-//     // std::cout << linestats.policy.lines << "\n";
-// }
+BENCHMARK(linestats, linestats_2_14, number_of_samples, number_of_operations) {
+    using FastLineStats = ioutils::FileReader<test::LineStats, 1 << 14>;
+    FastLineStats linestats;
+    linestats(afile.c_str());
+}
 
-// BENCHMARK(linestats, linestats2_2_16, number_of_samples, number_of_iterator) {
-//     test::LineStats linestats;
-//     ioutils::FileReader2<1 << 16, test::LineStats> reader;
-//     reader(afile.c_str(), linestats);
-//     // std::cout << linestats.policy.lines << "\n";
-// }
+BENCHMARK(linestats, linestats_2_15, number_of_samples, number_of_operations) {
+    using FastLineStats = ioutils::FileReader<test::LineStats, 1 << 15>;
+    FastLineStats linestats;
+    linestats(afile.c_str());
+}
 
-// BENCHMARK(linestats, linestats_2_17, number_of_samples, number_of_iterator) {
-//     using FastLineStats = ioutils::FileReader<1 << 17, test::LineStats>;
-//     FastLineStats linestats;
-//     linestats(afile.c_str());
-//     // std::cout << linestats.policy.lines << "\n";
-// }
+BENCHMARK(linestats, linestats_2_16, number_of_samples, number_of_operations) {
+    using FastLineStats = ioutils::FileReader<test::LineStats, 1 << 16>;
+    FastLineStats linestats;
+    linestats(afile.c_str());
+}
 
-// BENCHMARK(linestats, linestats_2_18, number_of_samples, number_of_iterator) {
-//     using FastLineStats = ioutils::FileReader<1 << 18, test::LineStats>;
-//     FastLineStats linestats;
-//     linestats(afile.c_str());
-//     // std::cout << linestats.policy.lines << "\n";
-// }
+BENCHMARK(linestats, linestats_2_17, number_of_samples, number_of_operations) {
+    using FastLineStats = ioutils::FileReader<test::LineStats, 1 << 17>;
+    FastLineStats linestats;
+    linestats(afile.c_str());
+}
+
+BENCHMARK(linestats, linestats_2_18, number_of_samples, number_of_operations) {
+    using FastLineStats = ioutils::FileReader<test::LineStats, 1 << 18>;
+    FastLineStats linestats;
+    linestats(afile.c_str());
+}
+
+BENCHMARK(linestats, linestats_2_19, number_of_samples, number_of_operations) {
+    using FastLineStats = ioutils::FileReader<test::LineStats, 1 << 19>;
+    FastLineStats linestats;
+    linestats(afile.c_str());
+}
+
+BENCHMARK(linestats, linestats_2_20, number_of_samples, number_of_operations) {
+    using FastLineStats = ioutils::FileReader<test::LineStats, 1 << 20>;
+    FastLineStats linestats;
+    linestats(afile.c_str());
+}
 
 BENCHMARK(linestats, memchr1, number_of_samples, number_of_operations) {
     using Reader = ioutils::FileReader<test::LineStats_memchr, 1 << 16>;
