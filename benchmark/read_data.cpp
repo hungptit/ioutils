@@ -61,7 +61,7 @@ namespace test {
         void operator()(const char *buffer, size_t len) {
             const char *end = buffer + len;
             const char *ptr = buffer;
-            while ((ptr = static_cast<const char *>(memchr_avx2(ptr, EOL, end - ptr)))) {
+            while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
                 ++lines;
                 ++ptr;
             }
@@ -219,15 +219,15 @@ BENCHMARK(linestats, linestats_2_20, number_of_samples, number_of_operations) {
     linestats(afile.c_str());
 }
 
-// BENCHMARK(linestats, memchr1, number_of_samples, number_of_operations) {
-//     using Reader = ioutils::FileReader<test::LineStats_memchr, 1 << 16>;
-//     Reader linestats;
-//     linestats(afile.c_str());
-// }
+BENCHMARK(linestats, memchr1, number_of_samples, number_of_operations) {
+    using Reader = ioutils::FileReader<test::LineStats_memchr, 1 << 16>;
+    Reader linestats;
+    linestats(afile.c_str());
+}
 
-// BENCHMARK(linestats, memchr2, number_of_samples, number_of_operations) {
-//     using LineStats = test::LineStats_memchr;
-//     LineStats stats;
-//     ioutils::FileReader2<LineStats, 1 << 16> reader;
-//     reader(afile.c_str(), stats);
-// }
+BENCHMARK(linestats, memchr2, number_of_samples, number_of_operations) {
+    using LineStats = test::LineStats_memchr;
+    LineStats stats;
+    ioutils::FileReader2<LineStats, 1 << 16> reader;
+    reader(afile.c_str(), stats);
+}

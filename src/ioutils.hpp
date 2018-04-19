@@ -9,9 +9,12 @@
 #include "fmt/format.h"
 
 namespace ioutils {
-    struct AppendPolicy {
+    class AppendPolicy {
+	public:
         void operator()(const char *buffer, const size_t len) { _data.append(buffer, len); }
 		std::string data() {return std::move(_data);}
+
+      private:
         std::string _data;
     };
 
