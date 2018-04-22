@@ -46,7 +46,7 @@ namespace test {
 
     struct LineStats {
         explicit LineStats() : lines(0) {}
-        void operator()(const char *buffer, size_t len) {
+        void process(const char *buffer, size_t len) {
             for (size_t idx = 0; idx < len; ++idx) {
                 if (buffer[idx] == EOL) {
                     ++lines;
@@ -58,7 +58,7 @@ namespace test {
 
     struct LineStats_memchr {
         explicit LineStats_memchr() : lines(0) {}
-        void operator()(const char *buffer, size_t len) {
+        void process(const char *buffer, size_t len) {
             const char *end = buffer + len;
             const char *ptr = buffer;
             while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
@@ -73,8 +73,8 @@ namespace test {
 
 test::LineStats policy;
 
-const int number_of_samples = 5;
-const int number_of_operations = 1;
+const int number_of_samples = 10;
+const int number_of_operations = 2;
 const std::string afile("3200.txt");
 
 CELERO_MAIN

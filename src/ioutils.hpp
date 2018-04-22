@@ -11,7 +11,7 @@
 namespace ioutils {
     class AppendPolicy {
 	public:
-        void operator()(const char *buffer, const size_t len) { _data.append(buffer, len); }
+        void process(const char *buffer, const size_t len) { _data.append(buffer, len); }
 		std::string data() {return std::move(_data);}
 
       private:
@@ -21,7 +21,7 @@ namespace ioutils {
 	constexpr size_t READ_TRUNK_SIZE = 1 << 16;
 	
     // A reader class which stores the policy as a member data.
-    template <typename Policy, size_t BUFFER_SIZE = READ_TRUNK_SIZE> struct FileReader {
+    template <typename Policy, size_t BUFFER_SIZE = READ_TRUNK_SIZE> struct FileReader : private Policy {
         void operator()(const char *datafile, const long offset = 0) {
             char read_buffer[BUFFER_SIZE + 1];
             int fd = ::open(datafile, O_RDONLY);
@@ -56,7 +56,7 @@ namespace ioutils {
                 };
 
                 // Apply a given policy to read_buffer.
-                policy(read_buffer, nbytes);
+				Policy::process(read_buffer, nbytes);
 
                 // Stop if we reach the end of file.
                 if (nbytes != static_cast<decltype(nbytes)>(BUFFER_SIZE)) {
@@ -67,13 +67,10 @@ namespace ioutils {
             // Close our file.
             ::close(fd);
         }
-
-        // Member data
-        Policy policy;
     };
 
     // A reader class which parse data using a given policy.
-    template <typename Policy, size_t BUFFER_SIZE = READ_TRUNK_SIZE> class FileReader2 {
+    template <typename Policy, size_t BUFFER_SIZE = READ_TRUNK_SIZE> class FileReader2 : private Policy {
       public:
         void operator()(const char *datafile, Policy &policy, const long offset = 0) {
             char read_buffer[BUFFER_SIZE + 1];
@@ -109,7 +106,7 @@ namespace ioutils {
                 };
 
                 // Parse read_buffer to get some useful information.
-                policy(read_buffer, nbytes);
+				Policy::process(read_buffer, nbytes);
 
                 // Stop if we reach the end of file.
                 if (nbytes != static_cast<decltype(nbytes)>(BUFFER_SIZE)) {
