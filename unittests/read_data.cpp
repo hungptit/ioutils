@@ -25,5 +25,5 @@ TEST_CASE("Simple reader", "basic") {
 
     ioutils::FileReader<ioutils::AppendPolicy, 1 << 16> reader;
     reader(datafile.c_str());
-    CHECK_THAT(results, Equals(reader.policy.data));
+    CHECK_THAT(results, Equals(reader.data()));
 }
