@@ -39,7 +39,7 @@ namespace ioutils {
       public:
         void process(const char *begin, const size_t len) {
             // Count the number of lines
-			const char *ptr = begin;
+            const char *ptr = begin;
             const char *end = ptr + len;
             while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
                 // Update the line counter
