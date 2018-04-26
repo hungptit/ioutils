@@ -21,7 +21,7 @@ namespace ioutils {
 	constexpr size_t READ_TRUNK_SIZE = 1 << 16;
 	
     // A reader class which stores the policy as a member data.
-    template <typename Policy, size_t BUFFER_SIZE = READ_TRUNK_SIZE> struct FileReader : private Policy {
+    template <typename Policy, size_t BUFFER_SIZE = READ_TRUNK_SIZE> struct FileReader : public Policy {
         void operator()(const char *datafile, const long offset = 0) {
             char read_buffer[BUFFER_SIZE + 1];
             int fd = ::open(datafile, O_RDONLY);
@@ -76,7 +76,6 @@ namespace ioutils {
 		Reader reader;
 		reader(afile);
 		return reader.data();
-		// return reader.policy.data();
     }
 
 } // namespace ioutils
