@@ -73,7 +73,7 @@ namespace test {
 
 test::LineStats policy;
 
-const int number_of_samples = 5;
+const int number_of_samples = 10;
 const int number_of_operations = 1;
 const std::string afile("3200.txt");
 
