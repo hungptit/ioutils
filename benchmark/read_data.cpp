@@ -219,15 +219,8 @@ BENCHMARK(linestats, linestats_2_20, number_of_samples, number_of_operations) {
     linestats(afile.c_str());
 }
 
-BENCHMARK(linestats, memchr1, number_of_samples, number_of_operations) {
+BENCHMARK(linestats, memchr, number_of_samples, number_of_operations) {
     using Reader = ioutils::FileReader<test::LineStats_memchr, 1 << 16>;
     Reader linestats;
     linestats(afile.c_str());
-}
-
-BENCHMARK(linestats, memchr2, number_of_samples, number_of_operations) {
-    using LineStats = test::LineStats_memchr;
-    LineStats stats;
-    ioutils::FileReader2<LineStats, 1 << 16> reader;
-    reader(afile.c_str(), stats);
 }
