@@ -71,7 +71,7 @@ namespace ioutils {
 
 	// Return a string which has the content of a file.
 	template <size_t BUFFER_SIZE = READ_TRUNK_SIZE> std::string read(const char *afile) {
-        static_assert(READ_TRUNK_SIZE > 128, "READ_TRUNK_SIZE should be greater than 128!");
+        static_assert(READ_TRUNK_SIZE > (1 << 10), "READ_TRUNK_SIZE should be greater than 1K!");
 		using Reader = FileReader<AppendPolicy, BUFFER_SIZE>;
 		Reader reader;
 		reader(afile);
