@@ -8,7 +8,7 @@
 #include "ioutils.hpp"
 #include <iostream>
 
-#include "utils/memchr.hpp"
+// #include "utils/memchr.hpp"
 #include "linestats.hpp"
 
 namespace test {
@@ -40,8 +40,8 @@ namespace test {
         auto end = begin + mmap.size();
         size_t lines;
         std::for_each(begin, end, [&lines](auto const item) {
-            if (item == EOL) ++lines;
-        });
+                                      if (item == EOL) ++lines;
+                                  });
         return lines;
     }
 } // namespace test
@@ -62,69 +62,69 @@ BENCHMARK(read, boost_memmap, number_of_samples, number_of_operations) {
 }
 
 BENCHMARK(read, read_2_10, number_of_samples, number_of_operations) {
-	using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 10>;
+    using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 10>;
     Reader reader;
-    reader(afile.c_str());	
+    reader(afile.c_str());
 }
 
 BENCHMARK(read, read_2_11, number_of_samples, number_of_operations) {
-	using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 11>;
+    using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 11>;
     Reader reader;
-    reader(afile.c_str());	
+    reader(afile.c_str());
 }
 
 BENCHMARK(read, read_2_12, number_of_samples, number_of_operations) {
-	using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 12>;
+    using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 12>;
     Reader reader;
-    reader(afile.c_str());	
+    reader(afile.c_str());
 }
 
 BENCHMARK(read, read_2_13, number_of_samples, number_of_operations) {
-	using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 13>;
+    using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 13>;
     Reader reader;
-    reader(afile.c_str());	
+    reader(afile.c_str());
 }
 
 BENCHMARK(read, read_2_14, number_of_samples, number_of_operations) {
-	using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 14>;
+    using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 14>;
     Reader reader;
-    reader(afile.c_str());	
+    reader(afile.c_str());
 }
 
 BENCHMARK(read, read_2_15, number_of_samples, number_of_operations) {
-	using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 15>;
+    using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 15>;
     Reader reader;
-    reader(afile.c_str());	
+    reader(afile.c_str());
 }
 
 BENCHMARK(read, read_2_16, number_of_samples, number_of_operations) {
-	using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 16>;
+    using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 16>;
     Reader reader;
-    reader(afile.c_str());	
+    reader(afile.c_str());
 }
 
 BENCHMARK(read, read_2_17, number_of_samples, number_of_operations) {
-	using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 17>;
+    using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 17>;
     Reader reader;
-    reader(afile.c_str());	
+    reader(afile.c_str());
 }
 
 BENCHMARK(read, read_2_18, number_of_samples, number_of_operations) {
-	using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 18>;
+    using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 18>;
     Reader reader;
-    reader(afile.c_str());	
+    reader(afile.c_str());
 }
 
 BENCHMARK(read, read_2_19, number_of_samples, number_of_operations) {
-	using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 19>;
+    using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 19>;
     Reader reader;
-    reader(afile.c_str());	
+    reader(afile.c_str());
 }
 
 BENCHMARK(read, read_2_20, number_of_samples, number_of_operations) {
-	using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 20>;
+    using Reader = ioutils::FileReader<ioutils::AppendPolicy, 1 << 20>;
     Reader reader;
-    reader(afile.c_str());	
+    reader(afile.c_str());
 }
 
 
