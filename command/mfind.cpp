@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
 		if (dirp != nullptr) {
 			struct dirent *info;
 			while ((info = readdir(dirp)) != NULL) {
-				fmt::print("len: {0}, name: {1}\n", info->d_namlen, info->d_name);
+				fmt::print("len: {0}, name: {1}\n", info->d_reclen, info->d_name);
 			}
 			(void)closedir(dirp);
 		}
