@@ -9,6 +9,8 @@
 #include <unordered_set>
 #include <fcntl.h>
 #include <ctime>
+#include <dirent.h>
+#include <stdlib.h>
 
 // cereal
 #include "cereal/archives/binary.hpp"
@@ -25,6 +27,46 @@ namespace ioutils {
     using DefaultIArchive = cereal::BinaryInputArchive;
     using DefaultOArchive = cereal::BinaryOutputArchive;
 
+	namespace filesystem {
+		enum Error : int8_t {
+			SUCCESS = 0,
+			FAILED = -1,
+		};
+		
+		bool is_regular_file(const mode_t st_mode) {
+            return (st_mode & S_IFMT) == S_IFREG;
+        }
+
+        bool is_directory(const mode_t st_mode) {
+            return (st_mode & S_IFMT) == S_IFDIR;
+        }
+
+        bool is_symlink(const mode_t st_mode) {
+            return (st_mode & S_IFMT) == S_IFLNK;
+        }
+
+		struct Utils {
+			const char *get_absolute_path(const char *p, Error &errcode) {
+				const char *results = realpath(p, fullpath);
+				errcode = (results != nullptr) ? SUCCESS : FAILED;
+				return results;
+			}
+
+			const char* get_current_directory(Error &errcode) {
+				const char* p = getcwd(fullpath, PATH_MAX);
+				errcode = (p != nullptr) ? SUCCESS : FAILED;
+				return p;
+			}
+			
+			char fullpath[PATH_MAX]; 
+		};
+
+		struct Path {
+			int fd;
+			char fullpath[1024] ;
+		};
+	}
+	
     // A struct which stores all information about a file.
     struct FileStat {
         mode_t st_mode;  /* protection */
@@ -34,18 +76,6 @@ namespace ioutils {
         // time_t st_ctime; /* time of last status change */
         std::string extension;
         std::string path;
-
-        bool is_regular_file() const {
-            return (st_mode & S_IFMT) == S_IFREG;
-        }
-
-        bool is_directory() const {
-            return (st_mode & S_IFMT) == S_IFDIR;
-        }
-
-        bool is_symbolic_link() const {
-            return (st_mode & S_IFMT) == S_IFLNK;
-        }
     };
 
     // A struct which holds required directory information.
