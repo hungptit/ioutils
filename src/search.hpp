@@ -95,7 +95,7 @@ namespace ioutils {
             // Preprocess input arguments
             for (auto item : p) {
                 folders.emplace_back(item);
-				fmt::print("{}\n", item.path);
+                fmt::print("{}\n", item.path);
             }
 
             // Search for files and folders using DFS traversal.
@@ -111,7 +111,6 @@ namespace ioutils {
             struct stat props;
             const int fd = dir.fd;
             int retval = fstat(fd, &props);
-            // fmt::print("Enter {}\n", dir.path);
             if (ioutils::filesystem::is_directory(props.st_mode)) {
                 DIR *dirp = fdopendir(fd);
                 if (dirp != nullptr) {
@@ -119,19 +118,12 @@ namespace ioutils {
                     while ((info = readdir(dirp)) != NULL) {
                         switch (info->d_type) {
                         case DT_DIR:
-                            if ((strcmp(info->d_name, ".") != 0) &&
-                                (strcmp(info->d_name, "..") != 0) &&
-                                (strcmp(info->d_name, ".git") != 0)) {
-                                Path current_dir = dir;
-                                current_dir.path.push_back('/');
-                                current_dir.path.append(info->d_name);
-                                current_dir.fd = ::open(current_dir.path.data(), O_RDONLY);
-                                fmt::print("{0}\n", current_dir.path);
-                                folders.emplace_back(current_dir);
+                            if (is_valid_dir(info->d_name)) {
+                                process_dir(dir, info);
                             }
                             break;
                         case DT_REG:
-                            fmt::print("{0}/{1}\n", dir.path, info->d_name);
+                            process_file(dir, info);
                             break;
                         default:
                             break;
@@ -139,21 +131,35 @@ namespace ioutils {
                     }
                     (void)closedir(dirp);
                 }
-            } else {
+            } else if (ioutils::filesystem::is_regular_file(props.st_mode)) {
+				// Process the current file.
+            }
+
+            else {
                 fmt::print("How can we get here?\n");
             }
             ::close(fd);
         }
 
-		void process_file(const Path &dir, const struct dirent* info ) {
-			
-		}
-		
-        std::unordered_set<std::string> status;
-        std::vector<Stats> files;
+        void process_file(const Path &dir, const struct dirent *info) const {
+            fmt::print("{0}/{1}\n", dir.path, info->d_name);
+        }
+
+        void process_dir(const Path &dir, const struct dirent *info) {
+            Path current_dir = dir;
+            current_dir.path.push_back('/');
+            current_dir.path.append(info->d_name);
+            current_dir.fd = ::open(current_dir.path.data(), O_RDONLY);
+            fmt::print("{0}\n", current_dir.path);
+            folders.emplace_back(current_dir);
+        }
+
+        bool is_valid_dir(const char *dname) const {
+            return (strcmp(dname, ".") != 0) && (strcmp(dname, "..") != 0) &&
+                   (strcmp(dname, ".git") != 0);
+        }
+
         std::vector<Path> folders;
+        std::vector<Stats> files;
     };
-
-    struct BFS {};
-
 } // namespace ioutils
