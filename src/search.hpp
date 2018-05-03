@@ -12,6 +12,9 @@
 #include <dirent.h>
 #include <stdlib.h>
 
+#include "utils/timeutils.hpp"
+#include "fmt/format.h"
+
 // cereal
 #include "cereal/archives/binary.hpp"
 #include "cereal/archives/json.hpp"
@@ -68,7 +71,7 @@ namespace ioutils {
 	}
 	
     // A struct which stores all information about a file.
-    struct FileStat {
+    struct Stats {
         mode_t st_mode;  /* protection */
         // off_t st_size;   /* total size, in bytes */
         // time_t st_atime; /* time of last access */
@@ -86,11 +89,20 @@ namespace ioutils {
         std::string path;
     };
 
-    struct DFS {
-        template <typename T> DFS(T &&paths) : folders(std::forward<T>(paths)) {}
-        const std::vector<FileStat> &search(const std::vector<DirStat> &p) {
-            std::copy(p.cbegin(), p.cend(), folders.end());
+	struct Path {
+		int fd;
+		std::string path;
+	};
+	
+    struct FileSearch {
+        // template <typename T> DFS(T &&paths) : folders(std::forward<T>(paths)) {}
+        const std::vector<Stats> &dfs(const std::vector<Path> &p) {
+			// Preprocess input arguments
+			for (auto item : p) {
+				folders.emplace_back(item);
+			}
 
+			// Search for files and folders using DFS traversal.
             while (!folders.empty()) {
                 auto parent = folders.back();
                 folders.pop_back();
@@ -99,11 +111,51 @@ namespace ioutils {
             return files;
         }
 
-        void visit(DirStat &dir) {}
+        void visit(Path &dir) {
+			struct stat props;
+			const int fd = dir.fd;
+			int retval = fstat(fd, &props);
+
+			if (ioutils::filesystem::is_directory(props.st_mode)) {
+				DIR* dirp = fdopendir(fd);
+				if (dirp != nullptr) {
+					struct dirent *info;
+					while ((info = readdir(dirp)) != NULL) {
+						// How to get a
+						switch (info->d_type) {
+						case DT_DIR:
+							if ((strncmp(info->d_name, ".", info->d_namlen) != 0) && (strncmp(info->d_name, "..", info->d_namlen) != 0)) {
+								Path current_dir = dir;
+								current_dir.path.push_back('/');
+								current_dir.path.append(info->d_name, info->d_namlen);
+								current_dir.fd = ::open(current_dir.path.data(), O_RDONLY);
+								fmt::print("{0}\n", current_dir.path);
+								folders.emplace_back(current_dir);
+							}
+							break;
+						case DT_REG:
+							fmt::print("{0}/{1}\n", dir.path, info->d_name);
+							break;
+						default:
+							break;
+						}
+
+					}
+					(void)closedir(dirp);
+				}
+			} else if (ioutils::filesystem::is_regular_file(props.st_mode)) {
+				fmt::print("File : {0}\n", props.st_size);
+			} else if (ioutils::filesystem::is_symlink(props.st_mode)) {
+				fmt::print("Got a symlink\n");
+			} else {
+				fmt::print("How can we get here?\n");
+			}
+			::close(fd);		
+		}
 
         std::unordered_set<std::string> status;
-        std::vector<FileStat> files;
-        std::vector<DirStat> folders;
+        std::vector<Stats> files;
+        std::vector<Path> folders;
     };
 
     struct BFS {};
