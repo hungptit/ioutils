@@ -68,10 +68,10 @@ namespace ioutils {
     // A struct which stores all information about a file.
     struct Stats {
         mode_t st_mode; /* protection */
-        // off_t st_size;   /* total size, in bytes */
-        // time_t st_atime; /* time of last access */
-        // time_t st_mtime; /* time of last modification */
-        // time_t st_ctime; /* time of last status change */
+        size_t st_size; /* total size, in bytes */
+        std::time_t last_access_time;
+        std::time_t modification_time;
+        std::time_t status_change_time;
         std::string extension;
         std::string path;
     };
@@ -85,6 +85,7 @@ namespace ioutils {
     };
 
     struct Path {
+        template <typename T> explicit Path(int val, T &&p) : fd(val), path(p) {}
         int fd;
         std::string path;
     };
@@ -95,7 +96,7 @@ namespace ioutils {
             // Preprocess input arguments
             for (auto item : p) {
                 folders.emplace_back(item);
-                fmt::print("{}\n", item.path);
+                // fmt::print("{}\n", item.path);
             }
 
             // Search for files and folders using DFS traversal.
@@ -119,37 +120,38 @@ namespace ioutils {
                         switch (info->d_type) {
                         case DT_DIR:
                             if (is_valid_dir(info->d_name)) {
-                                process_dir(dir, info);
+								std::string p(dir.path + "/" + info->d_name);
+								int current_dir_fd = ::open(p.data(), O_RDONLY);
+								if (current_dir_fd >= 0) {
+									fmt::print("{}\n", p);
+								}
                             }
                             break;
                         case DT_REG:
-                            process_file(dir, info);
+                            fmt::print("{0}{1}{2}\n", dir.path, "/", info->d_name);
                             break;
                         default:
                             break;
                         }
                     }
-                    (void)closedir(dirp);
                 }
+                (void)closedir(dirp);
             } else if (ioutils::filesystem::is_regular_file(props.st_mode)) {
-				// Process the current file.
-            }
-
-            else {
+                fmt::print("{}\n", dir.path);
+            } else {
                 fmt::print("How can we get here?\n");
             }
+
             ::close(fd);
         }
 
-        void process_file(const Path &dir, const struct dirent *info) const {
-            fmt::print("{0}/{1}\n", dir.path, info->d_name);
+        void process_file(std::string &&path, struct stat *props) const {
+            fmt::print("{0}/{1}\n", path);
         }
 
         void process_dir(const Path &dir, const struct dirent *info) {
-            Path current_dir = dir;
-            current_dir.path.push_back('/');
-            current_dir.path.append(info->d_name);
-            current_dir.fd = ::open(current_dir.path.data(), O_RDONLY);
+            Path current_dir(,
+                             dir.path + "/" + info->d_name);
             fmt::print("{0}\n", current_dir.path);
             folders.emplace_back(current_dir);
         }
