@@ -43,6 +43,11 @@ namespace ioutils {
 
         bool is_symlink(const mode_t st_mode) { return (st_mode & S_IFMT) == S_IFLNK; }
 
+        bool exists(const char *p) {
+            struct stat buf;
+            return stat(p, &buf) == 0;
+        }
+
         bool is_valid_path(const char *p) {
             int fd = ::open(p, O_RDONLY);
             if (fd > -1) {

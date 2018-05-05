@@ -17,6 +17,7 @@ struct stat buf;
 // Use stat function
 void use_stat(benchmark::State &state) {
     for (auto _ : state) {
+        struct stat buf;
         benchmark::DoNotOptimize(stat(fname.data(), &buf));
     }
 }
