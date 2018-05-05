@@ -1,0 +1,13 @@
+* mfind
+** Expected behaviours
+   1. If an argument is not a valid path then
+      - If the parent is a valid path then we will search for all files and folder at the top level that match given a regular expression in the parent folder.
+      - If the parent isn't a valid path then we will search for all files in the parent folder and keep those match the given regular expression.
+   2. If an argument is a valid path then we will add this folder to the search list. The search algorithm will search given folder recursively.
+   3. We skip below folder by default:
+      - .git
+      - .
+      - ..
+   4. We do not search for a folder twice.
+   5. We search folders using the input parameters order i.e left to right
+   6. Cannot guarantee the order of the output in multi-threaded search. The order of files for each folder is guaranteed.

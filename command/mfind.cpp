@@ -8,11 +8,11 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    std::vector<ioutils::Path> p;
-    for (auto idx = 1; idx < argc; ++idx) {
+    std::vector<std::string> p;
+    for (auto idx = argc - 1; idx > 0; --idx) {
         int fd = ::open(argv[idx], O_RDONLY);
         if (fd >= 0) {
-            p.emplace_back(ioutils::Path(fd, std::string(argv[idx])));
+            p.emplace_back(argv[idx]);
         }
         ioutils::FileSearch search;
         search.dfs(p);

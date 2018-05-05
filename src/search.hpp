@@ -43,7 +43,18 @@ namespace ioutils {
 
         bool is_symlink(const mode_t st_mode) { return (st_mode & S_IFMT) == S_IFLNK; }
 
-        struct Utils {
+        bool is_valid_path(const char *p) {
+            int fd = ::open(p, O_RDONLY);
+            if (fd > -1) {
+                ::close(fd);
+                return true;
+            }
+            return false;
+        }
+
+        // Utility class for path.
+        class Utils {
+          public:
             const char *get_absolute_path(const char *p, Error &errcode) {
                 const char *results = realpath(p, fullpath);
                 errcode = (results != nullptr) ? SUCCESS : FAILED;
@@ -56,12 +67,8 @@ namespace ioutils {
                 return p;
             }
 
+          private:
             char fullpath[PATH_MAX];
-        };
-
-        struct Path {
-            int fd;
-            char fullpath[1024];
         };
     } // namespace filesystem
 
@@ -76,27 +83,24 @@ namespace ioutils {
         std::string path;
     };
 
-    // A struct which holds required directory information.
-    struct DirStat {
-        // DirStat(const std::string &p) : path(p) {}
-        // DirStat(std::string &&p) : path(std::move(p)) {}
-        // template <typename T> DirStat(T &&p) : path(std::forward<T>(p.path)) {}
-        std::string path;
-    };
-
+    // A struct that hold folder information during the traversal.
     struct Path {
-        template <typename T> explicit Path(int val, T &&p) : fd(val), path(p) {}
-        int fd;
+        template <typename T>
+        explicit Path(int val, T &&p) : fd(val), path(std::forward<T>(p)) {}
+
+        template <typename T>
+        explicit Path(T &&p) : fd(p.fd), path(std::forward<std::string>(p.path)) {}
+
+        int fd; // The current path file descriptor
         std::string path;
     };
 
-    struct FileSearch {
-        // template <typename T> DFS(T &&paths) : folders(std::forward<T>(paths)) {}
-        const std::vector<Stats> &dfs(const std::vector<Path> &p) {
-            // Preprocess input arguments
+    class FileSearch {
+      public:
+        void dfs(const std::vector<std::string> &p) {
             for (auto item : p) {
-                folders.emplace_back(item);
-                // fmt::print("{}\n", item.path);
+                int fd = ::open(item.data(), O_RDONLY);
+                if (fd > -1) folders.emplace_back(Path{fd, item});
             }
 
             // Search for files and folders using DFS traversal.
@@ -104,14 +108,19 @@ namespace ioutils {
                 auto parent = folders.back();
                 folders.pop_back();
                 visit(parent);
+                // if (parent.fd > -1) ::close(parent.fd); // Cleanup the parent file
+                // descriptor.
             }
-            return files;
         }
 
-        void visit(Path &dir) {
+      protected:
+        void visit(const Path &dir) {
             struct stat props;
             const int fd = dir.fd;
+
             int retval = fstat(fd, &props);
+            if (retval < 0) return;
+
             if (ioutils::filesystem::is_directory(props.st_mode)) {
                 DIR *dirp = fdopendir(fd);
                 if (dirp != nullptr) {
@@ -120,15 +129,16 @@ namespace ioutils {
                         switch (info->d_type) {
                         case DT_DIR:
                             if (is_valid_dir(info->d_name)) {
-								std::string p(dir.path + "/" + info->d_name);
-								int current_dir_fd = ::open(p.data(), O_RDONLY);
-								if (current_dir_fd >= 0) {
-									fmt::print("{}\n", p);
-								}
+                                std::string p(dir.path + "/" + info->d_name);
+                                int current_dir_fd = ::open(p.data(), O_RDONLY);
+                                if (current_dir_fd >= 0) {
+                                    fmt::print("{}\n", p);
+                                    folders.emplace_back(Path{current_dir_fd, std::move(p)});
+                                }
                             }
                             break;
                         case DT_REG:
-                            fmt::print("{0}{1}{2}\n", dir.path, "/", info->d_name);
+                            process_file(dir.path + "/" + info->d_name);
                             break;
                         default:
                             break;
@@ -137,31 +147,22 @@ namespace ioutils {
                 }
                 (void)closedir(dirp);
             } else if (ioutils::filesystem::is_regular_file(props.st_mode)) {
-                fmt::print("{}\n", dir.path);
+                process_file(dir.path);
+                ::close(fd);
             } else {
                 fmt::print("How can we get here?\n");
             }
-
-            ::close(fd);
         }
 
-        void process_file(std::string &&path, struct stat *props) const {
-            fmt::print("{0}/{1}\n", path);
-        }
-
-        void process_dir(const Path &dir, const struct dirent *info) {
-            Path current_dir(,
-                             dir.path + "/" + info->d_name);
-            fmt::print("{0}\n", current_dir.path);
-            folders.emplace_back(current_dir);
-        }
+        template <typename T> void process_file(T &&p) const { fmt::print("{}\n", p); }
 
         bool is_valid_dir(const char *dname) const {
             return (strcmp(dname, ".") != 0) && (strcmp(dname, "..") != 0) &&
                    (strcmp(dname, ".git") != 0);
         }
 
+        bool is_valid_file(const char *fname) const { return true; }
+
         std::vector<Path> folders;
-        std::vector<Stats> files;
     };
 } // namespace ioutils
