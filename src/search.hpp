@@ -43,20 +43,21 @@ namespace ioutils {
 
         bool is_symlink(const mode_t st_mode) { return (st_mode & S_IFMT) == S_IFLNK; }
 
+		const char * get_extension(const char *p, const size_t len) {
+			const char *pos = p + len - 1;
+			while (pos != p) {
+				if (*pos == '.') return pos;
+				--pos;
+			}
+			return nullptr;
+		}
+		
+		// Check that if a path is exist.
         bool exists(const char *p) {
             struct stat buf;
             return stat(p, &buf) == 0;
         }
-
-        bool is_valid_path(const char *p) {
-            int fd = ::open(p, O_RDONLY);
-            if (fd > -1) {
-                ::close(fd);
-                return true;
-            }
-            return false;
-        }
-
+		
         // Utility class for path.
         class Utils {
           public:
@@ -113,8 +114,6 @@ namespace ioutils {
                 auto parent = folders.back();
                 folders.pop_back();
                 visit(parent);
-                // if (parent.fd > -1) ::close(parent.fd); // Cleanup the parent file
-                // descriptor.
             }
         }
 

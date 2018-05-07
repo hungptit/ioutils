@@ -27,6 +27,5 @@ TEST_CASE("Utility function", "basic") {
     CHECK(ioutils::filesystem::is_directory(props.st_mode));
     CHECK(!ioutils::filesystem::is_regular_file(props.st_mode));
     CHECK(!ioutils::filesystem::is_symlink(props.st_mode));
-
-
+	
 }
