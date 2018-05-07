@@ -15,8 +15,17 @@ using Catch::Matchers::Equals;
 
 using namespace boost;
 
+TEST_CASE("Valid dir", "basic") {
+    CHECK(!ioutils::filesystem::is_valid_dir(".git"));
+    CHECK(!ioutils::filesystem::is_valid_dir("."));
+    CHECK(!ioutils::filesystem::is_valid_dir(".."));
+    CHECK(ioutils::filesystem::is_valid_dir("foo"));
+    CHECK(ioutils::filesystem::is_valid_dir(".foo"));
+    CHECK(ioutils::filesystem::is_valid_dir(".gitboo"));
+}
+
 TEST_CASE("Utility function", "basic") {
-    TestData test(true);
+    TestData test(false);
     filesystem::path tmpdir = test.get_path();
     std::string p = tmpdir.string();
     struct stat props;

@@ -3,17 +3,11 @@
 #include "utils/timeutils.hpp"
 
 int main(int argc, char *argv[]) {
-
-    if (argc < 2) {
-        return EXIT_FAILURE;
-    }
-
     std::vector<std::string> p;
     for (auto idx = argc - 1; idx > 0; --idx) {
         p.emplace_back(argv[idx]);
         ioutils::FileSearch search;
         search.dfs(p);
     }
-
     return EXIT_SUCCESS;
 }

@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <deque>
 #include <dirent.h>
 #include <fcntl.h>
 #include <set>
@@ -12,6 +13,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <unordered_set>
+#include <vector>
 
 #include "fmt/format.h"
 #include "utils/timeutils.hpp"
@@ -32,6 +34,28 @@ namespace ioutils {
     using DefaultOArchive = cereal::BinaryOutputArchive;
 
     namespace filesystem {
+        namespace {
+            constexpr int NumberOfStems = 3;
+            const std::array<std::string, NumberOfStems> lookup_table{".", "..", ".git"};
+
+            template <int N> bool is_valid_dir(const char *p) {
+                return (strcmp(p, lookup_table[N].data()) != 0) && is_valid_dir<N - 1>(p);
+            }
+
+            template <> bool is_valid_dir<0>(const char *p) {
+                return strcmp(p, lookup_table[0].data()) != 0;
+            }
+        }
+
+        bool is_valid_dir(const char *p) {
+            return is_valid_dir<NumberOfStems>(p);
+        }
+
+        bool is_valid_dir_slow(const char *dname) {
+            return (strcmp(dname, ".") != 0) && (strcmp(dname, "..") != 0) &&
+                (strcmp(dname, ".git") != 0);
+        }
+
         enum Error : int8_t {
             SUCCESS = 0,
             FAILED = -1,
@@ -113,8 +137,20 @@ namespace ioutils {
                 auto parent = folders.back();
                 folders.pop_back();
                 visit(parent);
-                // if (parent.fd > -1) ::close(parent.fd); // Cleanup the parent file
-                // descriptor.
+            }
+        }
+
+        void bfs(const std::vector<std::string> &p) {
+            for (auto item : p) {
+                int fd = ::open(item.data(), O_RDONLY);
+                if (fd > -1) folders.emplace_back(Path{fd, item});
+            }
+
+            // Search for files and folders using DFS traversal.
+            while (!folders.empty()) {
+                auto parent = folders.back();
+                folders.pop_back();
+                visit(parent);
             }
         }
 
@@ -168,6 +204,6 @@ namespace ioutils {
 
         bool is_valid_file(const char *fname) const { return true; }
 
-        std::vector<Path> folders;
+        std::deque<Path> folders;
     };
 } // namespace ioutils
