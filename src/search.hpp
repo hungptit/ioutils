@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <deque>
 #include <dirent.h>
 #include <fcntl.h>
 #include <set>
@@ -12,6 +13,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <unordered_set>
+#include <vector>
 
 #include "fmt/format.h"
 #include "utils/timeutils.hpp"
@@ -32,6 +34,26 @@ namespace ioutils {
     using DefaultOArchive = cereal::BinaryOutputArchive;
 
     namespace filesystem {
+        namespace {
+            constexpr int NumberOfStems = 2;
+            const std::array<std::string, NumberOfStems + 1> lookup_table{{".", "..", ".git"}};
+
+            template <int N> bool is_valid_dir(const char *p) {
+                return (strcmp(p, lookup_table[N].data()) != 0) && is_valid_dir<N - 1>(p);
+            }
+
+            template <> bool is_valid_dir<0>(const char *p) {
+                return strcmp(p, lookup_table[0].data()) != 0;
+            }
+        } // namespace
+
+        bool is_valid_dir(const char *p) { return is_valid_dir<NumberOfStems>(p); }
+
+        bool is_valid_dir_slow(const char *dname) {
+            return (strcmp(dname, ".") != 0) && (strcmp(dname, "..") != 0) &&
+                   (strcmp(dname, ".git") != 0);
+        }
+
         enum Error : int8_t {
             SUCCESS = 0,
             FAILED = -1,
@@ -43,21 +65,21 @@ namespace ioutils {
 
         bool is_symlink(const mode_t st_mode) { return (st_mode & S_IFMT) == S_IFLNK; }
 
-		const char * get_extension(const char *p, const size_t len) {
-			const char *pos = p + len - 1;
-			while (pos != p) {
-				if (*pos == '.') return pos;
-				--pos;
-			}
-			return nullptr;
-		}
-		
-		// Check that if a path is exist.
+        const char *get_extension(const char *p, const size_t len) {
+            const char *pos = p + len - 1;
+            while (pos != p) {
+                if (*pos == '.') return pos;
+                --pos;
+            }
+            return nullptr;
+        }
+
+        // Check that if a path is exist.
         bool exists(const char *p) {
             struct stat buf;
             return stat(p, &buf) == 0;
         }
-		
+
         // Utility class for path.
         class Utils {
           public:
@@ -117,6 +139,20 @@ namespace ioutils {
             }
         }
 
+        void bfs(const std::vector<std::string> &p) {
+            for (auto item : p) {
+                int fd = ::open(item.data(), O_RDONLY);
+                if (fd > -1) folders.emplace_back(Path{fd, item});
+            }
+
+            // Search for files and folders using DFS traversal.
+            while (!folders.empty()) {
+                auto parent = folders.front();
+                folders.pop_front();
+                visit(parent);
+            }
+        }
+
       protected:
         void visit(const Path &dir) {
             struct stat props;
@@ -161,12 +197,11 @@ namespace ioutils {
         template <typename T> void process_file(T &&p) const { fmt::print("{}\n", p); }
 
         bool is_valid_dir(const char *dname) const {
-            return (strcmp(dname, ".") != 0) && (strcmp(dname, "..") != 0) &&
-                   (strcmp(dname, ".git") != 0);
+			return filesystem::is_valid_dir(dname);
         }
 
         bool is_valid_file(const char *fname) const { return true; }
 
-        std::vector<Path> folders;
+        std::deque<Path> folders;
     };
 } // namespace ioutils

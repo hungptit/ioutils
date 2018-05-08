@@ -7,8 +7,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "boost/filesystem.hpp"
+#include "search.hpp"
 
+#include "boost/filesystem.hpp"
 #include <benchmark/benchmark.h>
 
 const std::string fname("filesystem.cpp");
@@ -48,5 +49,23 @@ void use_boost(benchmark::State &state) {
     }
 }
 BENCHMARK(use_boost);
+
+const std::string stem("This");
+
+// Simple if
+void use_simple_if(benchmark::State &state) {
+    for (auto _ : state) {
+        benchmark::DoNotOptimize(ioutils::filesystem::is_valid_dir_slow(stem.data()));
+    }
+}
+BENCHMARK(use_simple_if);
+
+void use_recursive(benchmark::State &state) {
+    for (auto _ : state) {
+        benchmark::DoNotOptimize(ioutils::filesystem::is_valid_dir(stem.data()));
+    }
+}
+BENCHMARK(use_recursive);
+
 
 BENCHMARK_MAIN();
