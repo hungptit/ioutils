@@ -55,7 +55,7 @@ const std::string stem("This");
 // Simple if
 void use_simple_if(benchmark::State &state) {
     for (auto _ : state) {
-        benchmark::DoNotOptimize(is_valid_dir_slow(stem.data()));
+        benchmark::DoNotOptimize(ioutils::filesystem::is_valid_dir_slow(stem.data()));
     }
 }
 BENCHMARK(use_simple_if);

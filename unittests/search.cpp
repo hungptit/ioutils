@@ -48,11 +48,13 @@ TEST_CASE("Utility function", "basic") {
 
     SECTION("Search for files in a given folder") {
         ioutils::FileSearch search;
+		fmt::print("DFS:\n");
         search.dfs({p});
     }
 
     SECTION("Search for files in a given folder and return a list of files") {
         ioutils::FileSearch search;
-        search.dfs({p});
+		fmt::print("BFS:\n");
+        search.bfs({p});
     }
 }

@@ -35,8 +35,8 @@ namespace ioutils {
 
     namespace filesystem {
         namespace {
-            constexpr int NumberOfStems = 3;
-            const std::array<std::string, NumberOfStems> lookup_table{".", "..", ".git"};
+            constexpr int NumberOfStems = 2;
+            const std::array<std::string, NumberOfStems + 1> lookup_table{{".", "..", ".git"}};
 
             template <int N> bool is_valid_dir(const char *p) {
                 return (strcmp(p, lookup_table[N].data()) != 0) && is_valid_dir<N - 1>(p);
@@ -45,15 +45,15 @@ namespace ioutils {
             template <> bool is_valid_dir<0>(const char *p) {
                 return strcmp(p, lookup_table[0].data()) != 0;
             }
-        }
+        } // namespace
 
         bool is_valid_dir(const char *p) {
-            return is_valid_dir<NumberOfStems - 1>(p);
+            return is_valid_dir<NumberOfStems>(p);
         }
 
         bool is_valid_dir_slow(const char *dname) {
             return (strcmp(dname, ".") != 0) && (strcmp(dname, "..") != 0) &&
-                (strcmp(dname, ".git") != 0);
+                   (strcmp(dname, ".git") != 0);
         }
 
         enum Error : int8_t {
@@ -67,18 +67,19 @@ namespace ioutils {
 
         bool is_symlink(const mode_t st_mode) { return (st_mode & S_IFMT) == S_IFLNK; }
 
+        const char *get_extension(const char *p, const size_t len) {
+            const char *pos = p + len - 1;
+            while (pos != p) {
+                if (*pos == '.') return pos;
+                --pos;
+            }
+            return nullptr;
+        }
+
+        // Check that if a path is exist.
         bool exists(const char *p) {
             struct stat buf;
             return stat(p, &buf) == 0;
-        }
-
-        bool is_valid_path(const char *p) {
-            int fd = ::open(p, O_RDONLY);
-            if (fd > -1) {
-                ::close(fd);
-                return true;
-            }
-            return false;
         }
 
         // Utility class for path.
@@ -124,7 +125,7 @@ namespace ioutils {
         std::string path;
     };
 
-    class FileSearch {
+    template <typename Policy> class FileSearch : public Policy {
       public:
         void dfs(const std::vector<std::string> &p) {
             for (auto item : p) {
@@ -148,14 +149,14 @@ namespace ioutils {
 
             // Search for files and folders using DFS traversal.
             while (!folders.empty()) {
-                auto parent = folders.back();
-                folders.pop_back();
+                auto parent = folders.front();
+                folders.pop_front();
                 visit(parent);
             }
         }
 
-      protected:
-        void visit(const Path &dir) {
+      private:
+        void visit(Path &dir) {
             struct stat props;
             const int fd = dir.fd;
 
@@ -169,17 +170,17 @@ namespace ioutils {
                     while ((info = readdir(dirp)) != NULL) {
                         switch (info->d_type) {
                         case DT_DIR:
-                            if (is_valid_dir(info->d_name)) {
+                            if (Policy::is_valid_dir(info->d_name)) {
                                 std::string p(dir.path + "/" + info->d_name);
                                 int current_dir_fd = ::open(p.data(), O_RDONLY);
                                 if (current_dir_fd >= 0) {
-                                    fmt::print("{}\n", p);
+									Policy::process_dir(p);
                                     folders.emplace_back(Path{current_dir_fd, std::move(p)});
                                 }
                             }
                             break;
                         case DT_REG:
-                            process_file(dir.path + "/" + info->d_name);
+                            Policy::process_file(dir.path + "/" + info->d_name);
                             break;
                         default:
                             break;
@@ -188,22 +189,34 @@ namespace ioutils {
                 }
                 (void)closedir(dirp);
             } else if (ioutils::filesystem::is_regular_file(props.st_mode)) {
-                process_file(dir.path);
+                Policy::process_file(std::move(dir.path));
                 ::close(fd);
             } else {
                 fmt::print("How can we get here?\n");
             }
         }
 
-        template <typename T> void process_file(T &&p) const { fmt::print("{}\n", p); }
-
-        bool is_valid_dir(const char *dname) const {
-            return (strcmp(dname, ".") != 0) && (strcmp(dname, "..") != 0) &&
-                   (strcmp(dname, ".git") != 0);
-        }
-
-        bool is_valid_file(const char *fname) const { return true; }
-
         std::deque<Path> folders;
+    };
+
+    // A policy class that display folder and file paths to console.
+    class ConsolePolicy {
+      protected:
+		bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
+        void process_file(std::string &&p) const { fmt::print("{}\n", p); }
+        void process_dir(const std::string &p) const { fmt::print("{}\n", p); }
+    };
+
+	// A policy class that stores all file paths.
+    class StorePolicy {
+      public:
+        using container_type = std::vector<std::string>;
+        const container_type &get_files() const { return files; }
+
+      protected:
+        bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
+        void process_file(std::string &&p) { files.emplace_back(p); }
+		void process_dir(const std::string) const {}
+        container_type files;
     };
 } // namespace ioutils
