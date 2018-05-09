@@ -123,7 +123,7 @@ namespace ioutils {
         std::string path;
     };
 
-    class FileSearch {
+    template <typename Policy> class FileSearch : public Policy {
       public:
         void dfs(const std::vector<std::string> &p) {
             for (auto item : p) {
@@ -153,8 +153,8 @@ namespace ioutils {
             }
         }
 
-      protected:
-        void visit(const Path &dir) {
+      private:
+        void visit(Path &dir) {
             struct stat props;
             const int fd = dir.fd;
 
@@ -168,17 +168,17 @@ namespace ioutils {
                     while ((info = readdir(dirp)) != NULL) {
                         switch (info->d_type) {
                         case DT_DIR:
-                            if (is_valid_dir(info->d_name)) {
+                            if (Policy::is_valid_dir(info->d_name)) {
                                 std::string p(dir.path + "/" + info->d_name);
                                 int current_dir_fd = ::open(p.data(), O_RDONLY);
                                 if (current_dir_fd >= 0) {
-                                    fmt::print("{}\n", p);
+									Policy::process_dir(p);
                                     folders.emplace_back(Path{current_dir_fd, std::move(p)});
                                 }
                             }
                             break;
                         case DT_REG:
-                            process_file(dir.path + "/" + info->d_name);
+                            Policy::process_file(dir.path + "/" + info->d_name);
                             break;
                         default:
                             break;
@@ -187,21 +187,34 @@ namespace ioutils {
                 }
                 (void)closedir(dirp);
             } else if (ioutils::filesystem::is_regular_file(props.st_mode)) {
-                process_file(dir.path);
+                Policy::process_file(std::move(dir.path));
                 ::close(fd);
             } else {
                 fmt::print("How can we get here?\n");
             }
         }
 
-        template <typename T> void process_file(T &&p) const { fmt::print("{}\n", p); }
-
-        bool is_valid_dir(const char *dname) const {
-			return filesystem::is_valid_dir(dname);
-        }
-
-        bool is_valid_file(const char *fname) const { return true; }
-
         std::deque<Path> folders;
+    };
+
+    // A policy class that display folder and file paths to console.
+    class ConsolePolicy {
+      protected:
+		bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
+        void process_file(std::string &&p) const { fmt::print("{}\n", p); }
+        void process_dir(const std::string &p) const { fmt::print("{}\n", p); }
+    };
+
+	// A policy class that stores all file paths. 
+    class StorePolicy {
+      public:
+        using container_type = std::vector<std::string>;
+        const container_type &get_files() const { return files; }
+
+      protected:
+        bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
+        void process_file(std::string &&p) { files.emplace_back(p); }
+		void process_dir(const std::string) const {}
+        container_type files;
     };
 } // namespace ioutils
