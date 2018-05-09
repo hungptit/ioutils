@@ -13,13 +13,14 @@ namespace ioutils {
     class TemporaryDirectory {
       public:
         explicit TemporaryDirectory() {
-            current_dir = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%");
+            current_dir = boost::filesystem::temp_directory_path() /
+                          boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%");
             boost::filesystem::create_directories(current_dir);
         }
 
         explicit TemporaryDirectory(const std::string &parentDir) {
-            current_dir =
-                boost::filesystem::path(parentDir) / boost::filesystem::path(get_unique_string());
+            current_dir = boost::filesystem::path(parentDir) /
+                          boost::filesystem::path(get_unique_string());
             boost::filesystem::create_directories(current_dir);
         }
 
@@ -39,4 +40,4 @@ namespace ioutils {
       private:
         boost::filesystem::path current_dir;
     };
-}
+} // namespace ioutils

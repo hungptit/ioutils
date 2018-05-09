@@ -1,6 +1,5 @@
 #include "fmt/format.h"
 #include "search.hpp"
-#include "utils/timeutils.hpp"
 
 int main(int argc, char *argv[]) {
     std::vector<std::string> p;

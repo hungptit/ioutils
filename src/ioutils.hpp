@@ -10,18 +10,19 @@
 
 namespace ioutils {
     class AppendPolicy {
-	public:
+      public:
         void process(const char *buffer, const size_t len) { _data.append(buffer, len); }
-		std::string data() {return std::move(_data);}
+        std::string data() { return std::move(data); }
 
       private:
-        std::string _data;
+        std::string data;
     };
 
-	constexpr size_t READ_TRUNK_SIZE = 1 << 16;
-	
+    constexpr size_t READ_TRUNK_SIZE = 1 << 16;
+
     // A reader class which stores the policy as a member data.
-    template <typename Policy, size_t BUFFER_SIZE = READ_TRUNK_SIZE> struct FileReader : public Policy {
+    template <typename Policy, size_t BUFFER_SIZE = READ_TRUNK_SIZE>
+    struct FileReader : public Policy {
         void operator()(const char *datafile, const long offset = 0) {
             char read_buffer[BUFFER_SIZE + 1];
             int fd = ::open(datafile, O_RDONLY);
@@ -56,7 +57,7 @@ namespace ioutils {
                 };
 
                 // Apply a given policy to read_buffer.
-				Policy::process(read_buffer, nbytes);
+                Policy::process(read_buffer, nbytes);
 
                 // Stop if we reach the end of file.
                 if (nbytes != static_cast<decltype(nbytes)>(BUFFER_SIZE)) {
@@ -69,13 +70,14 @@ namespace ioutils {
         }
     };
 
-	// Return a string which has the content of a file.
-	template <size_t BUFFER_SIZE = READ_TRUNK_SIZE> std::string read(const char *afile) {
-        static_assert(READ_TRUNK_SIZE > (1 << 10), "READ_TRUNK_SIZE should be greater than 1K!");
-		using Reader = FileReader<AppendPolicy, BUFFER_SIZE>;
-		Reader reader;
-		reader(afile);
-		return reader.data();
+    // Return a string which has the content of a file.
+    template <size_t BUFFER_SIZE = READ_TRUNK_SIZE> std::string read(const char *afile) {
+        static_assert(READ_TRUNK_SIZE > (1 << 10),
+                      "READ_TRUNK_SIZE should be greater than 1K!");
+        using Reader = FileReader<AppendPolicy, BUFFER_SIZE>;
+        Reader reader;
+        reader(afile);
+        return reader.data();
     }
 
 } // namespace ioutils
