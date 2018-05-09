@@ -47,9 +47,7 @@ namespace ioutils {
             }
         } // namespace
 
-        bool is_valid_dir(const char *p) {
-            return is_valid_dir<NumberOfStems>(p);
-        }
+        bool is_valid_dir(const char *p) { return is_valid_dir<NumberOfStems>(p); }
 
         bool is_valid_dir_slow(const char *dname) {
             return (strcmp(dname, ".") != 0) && (strcmp(dname, "..") != 0) &&
@@ -174,7 +172,7 @@ namespace ioutils {
                                 std::string p(dir.path + "/" + info->d_name);
                                 int current_dir_fd = ::open(p.data(), O_RDONLY);
                                 if (current_dir_fd >= 0) {
-									Policy::process_dir(p);
+                                    Policy::process_dir(p);
                                     folders.emplace_back(Path{current_dir_fd, std::move(p)});
                                 }
                             }
@@ -192,7 +190,7 @@ namespace ioutils {
                 Policy::process_file(std::move(dir.path));
                 ::close(fd);
             } else {
-                fmt::print("How can we get here?\n");
+                throw "We should not be here!";
             }
         }
 
@@ -202,12 +200,12 @@ namespace ioutils {
     // A policy class that display folder and file paths to console.
     class ConsolePolicy {
       protected:
-		bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
+        bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
         void process_file(std::string &&p) const { fmt::print("{}\n", p); }
         void process_dir(const std::string &p) const { fmt::print("{}\n", p); }
     };
 
-	// A policy class that stores all file paths.
+    // A policy class that stores all file paths.
     class StorePolicy {
       public:
         using container_type = std::vector<std::string>;
@@ -216,7 +214,7 @@ namespace ioutils {
       protected:
         bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
         void process_file(std::string &&p) { files.emplace_back(p); }
-		void process_dir(const std::string) const {}
+        void process_dir(const std::string) const {}
         container_type files;
     };
 } // namespace ioutils
