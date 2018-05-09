@@ -2,11 +2,11 @@
 
 ## Why?
 
-I need reusable and fast file search algorithms that can be used in my projects and none of the existing C/C++ can full fill my need.
+I need reusable and fast file search algorithms that can be used in my projects and none of existing C/C++ libraries can fit for my need.
 
 # How?
 
-All algorithms are written in modern C++ and some core functions are either tuned or optimized using SSE2 and AVX2. For example **mfind** command is faster than **GNU find** because it requires less system calls and can skip .git folder by default. The policy based design pattern has been used extensively to make all algorithms reusable and extensible without sacrificing the performance.
+All algorithms are written in modern C++ and some core functions are optimized using SSE2 and AVX2. For example **mfind** command is faster than **GNU find** because it requires less system calls and can skip .git folder by default. The policy based design pattern has been used extensively to make all algorithms reusable and extensible without sacrificing the performance.
 
 # Benchmark results
 
