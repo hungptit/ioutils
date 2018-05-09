@@ -48,7 +48,7 @@ namespace ioutils {
         }
 
         bool is_valid_dir(const char *p) {
-            return is_valid_dir<NumberOfStems>(p);
+            return is_valid_dir<NumberOfStems - 1>(p);
         }
 
         bool is_valid_dir_slow(const char *dname) {
