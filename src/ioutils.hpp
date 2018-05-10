@@ -11,11 +11,11 @@
 namespace ioutils {
     class AppendPolicy {
       public:
-        void process(const char *buffer, const size_t len) { _data.append(buffer, len); }
-        std::string data() { return std::move(data); }
+        void process(const char *buf, const size_t len) { buffer.append(buf, len); }
+        std::string data() { return std::move(buffer); }
 
       private:
-        std::string data;
+        std::string buffer;
     };
 
     constexpr size_t READ_TRUNK_SIZE = 1 << 16;

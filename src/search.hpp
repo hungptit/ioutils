@@ -16,7 +16,7 @@
 #include <vector>
 
 #include "fmt/format.h"
-#include "utils/timeutils.hpp"
+#include "utils/regex_matchers.hpp"
 
 // cereal
 #include "cereal/archives/binary.hpp"
@@ -216,5 +216,18 @@ namespace ioutils {
         void process_file(std::string &&p) { files.emplace_back(p); }
         void process_dir(const std::string) const {}
         container_type files;
+    };
+
+    // A policy which stores files that match given regex.
+    class RegexPolicy {
+        RegexPolicy(const std::string &regex) : matcher(regex) {}
+        bool is_valid_dir(const char *dname) const {
+            if (!filesystem::is_valid_dir(dname)) return false;
+            return !matcher()
+        }
+        void process_file(std::string &&p) { files.emplace_back(p); }
+        void process_dir(const std::string) const {}
+        container_type files;
+        utils::RegexMatcher matcher;
     };
 } // namespace ioutils
