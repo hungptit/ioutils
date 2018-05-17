@@ -1,0 +1,31 @@
+
+* Abstract
+* Introduction 
+* Method
+** What is the policy based designed pattern?
+** How to write a fast file search algorithm in NIX environments?
+	+ Support filtering for example skip .git folder by default.
+	+ Support search pattern, file extensions.
+** How to write a fast cached file locator
+	+ Support search folder.
+	+ Support search pattern, file extensions etc.
+* Results
+
+Benchmark results collected in Mac OS
+``` text
+hdang@015249 ~/w/i/benchmark> ./mfind
+Celero
+Timer resolution: 0.001000 us
+-----------------------------------------------------------------------------------------------------------------------------------------------
+     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
+-----------------------------------------------------------------------------------------------------------------------------------------------
+find            | gnu_find        |               0 |              10 |               1 |         1.00000 |    431944.00000 |            2.32 |
+find            | mfind_to_consol |               0 |              10 |               1 |         0.37290 |    161072.00000 |            6.21 |
+find            | mfind_dfs_store |               0 |              10 |               1 |         0.34578 |    149359.00000 |            6.70 |
+find            | mfind_bfs_store |               0 |              10 |               1 |         0.35773 |    154519.00000 |            6.47 |
+Complete.
+```
+* Conclusions
+  + C++ string library's pattern matching algorithms are not optimized using SIMD instructions and it creates a misunderstanding that C++ is slowe than C.
+  + Our study has shown that our mfind and mlocate commands are faster than that of similar GNU commands that we written in C. 
+    Moreover, mfind and mlocate core algorithms are reusable.

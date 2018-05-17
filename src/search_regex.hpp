@@ -95,7 +95,8 @@ namespace ioutils {
 
     // A policy class which filter files and folder using given regular expression.
     template <typename T> RegexConsolePolicy {
-        RegexPolicy(const std::string &patt) : matcher(patt) {}
+        explicit RegexPolicy(const std::string &patt) : matcher(patt) {}
+        explicit RegexPolicy(const std::string &patt) : matcher(patt) {}
 
         bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
 

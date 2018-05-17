@@ -1,131 +1,34 @@
 #pragma once
 
-#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
 #include <deque>
 #include <dirent.h>
 #include <fcntl.h>
-#include <set>
 #include <string>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <unordered_set>
 #include <vector>
 
 #include "fmt/format.h"
-#include "utils/timeutils.hpp"
-
-// cereal
-#include "cereal/archives/binary.hpp"
-#include "cereal/archives/json.hpp"
-#include "cereal/archives/portable_binary.hpp"
-#include "cereal/archives/xml.hpp"
-#include "cereal/types/array.hpp"
-#include "cereal/types/chrono.hpp"
-#include "cereal/types/deque.hpp"
-#include "cereal/types/string.hpp"
-#include "cereal/types/vector.hpp"
+#include "filesystem.hpp"
 
 namespace ioutils {
-    using DefaultIArchive = cereal::BinaryInputArchive;
-    using DefaultOArchive = cereal::BinaryOutputArchive;
-
-    namespace filesystem {
-        namespace {
-            constexpr int NumberOfStems = 2;
-            const std::array<std::string, NumberOfStems + 1> lookup_table{{".", "..", ".git"}};
-
-            template <int N> bool is_valid_dir(const char *p) {
-                return (strcmp(p, lookup_table[N].data()) != 0) && is_valid_dir<N - 1>(p);
-            }
-
-            template <> bool is_valid_dir<0>(const char *p) {
-                return strcmp(p, lookup_table[0].data()) != 0;
-            }
-        } // namespace
-
-        bool is_valid_dir(const char *p) { return is_valid_dir<NumberOfStems>(p); }
-
-        bool is_valid_dir_slow(const char *dname) {
-            return (strcmp(dname, ".") != 0) && (strcmp(dname, "..") != 0) &&
-                   (strcmp(dname, ".git") != 0);
-        }
-
-        enum Error : int8_t {
-            SUCCESS = 0,
-            FAILED = -1,
-        };
-
-        bool is_regular_file(const mode_t st_mode) { return (st_mode & S_IFMT) == S_IFREG; }
-
-        bool is_directory(const mode_t st_mode) { return (st_mode & S_IFMT) == S_IFDIR; }
-
-        bool is_symlink(const mode_t st_mode) { return (st_mode & S_IFMT) == S_IFLNK; }
-
-        const char *get_extension(const char *p, const size_t len) {
-            const char *pos = p + len - 1;
-            while (pos != p) {
-                if (*pos == '.') return pos;
-                --pos;
-            }
-            return nullptr;
-        }
-
-        // Check that if a path is exist.
-        bool exists(const char *p) {
-            struct stat buf;
-            return stat(p, &buf) == 0;
-        }
-
-        // Utility class for path.
-        class Utils {
-          public:
-            const char *get_absolute_path(const char *p, Error &errcode) {
-                const char *results = realpath(p, fullpath);
-                errcode = (results != nullptr) ? SUCCESS : FAILED;
-                return results;
-            }
-
-            const char *get_current_directory(Error &errcode) {
-                const char *p = getcwd(fullpath, PATH_MAX);
-                errcode = (p != nullptr) ? SUCCESS : FAILED;
-                return p;
-            }
-
-          private:
-            char fullpath[PATH_MAX];
-        };
-    } // namespace filesystem
-
-    // A struct which stores all information about a file.
-    struct Stats {
-        mode_t st_mode; /* protection */
-        size_t st_size; /* total size, in bytes */
-        std::time_t last_access_time;
-        std::time_t modification_time;
-        std::time_t status_change_time;
-        std::string extension;
-        std::string path;
-    };
-
-    // A struct that hold folder information during the traversal.
-    struct Path {
-        template <typename T>
-        explicit Path(int val, T &&p) : fd(val), path(std::forward<T>(p)) {}
-
-        template <typename T>
-        explicit Path(T &&p) : fd(p.fd), path(std::forward<std::string>(p.path)) {}
-
-        int fd; // The current path file descriptor
-        std::string path;
-    };
-
+	// A class which has DFS and BFS file traversal algorithms.
     template <typename Policy> class FileSearch : public Policy {
       public:
-        void dfs(const std::vector<std::string> &p) {
+		// Basic search functionality.
+		explicit FileSearch() : folders() {}
+
+		// Filtering files using given patterns.
+		explicit FileSearch(const std::string &pattern) : Policy(pattern), folders() {}
+		
+		// Filtering files using given extensions.
+		explicit FileSearch(const std::vector<std::string> &extensions) : Policy(extensions), folders() {}
+		
+		void dfs(const std::vector<std::string> &p) {
             for (auto item : p) {
                 int fd = ::open(item.data(), O_RDONLY);
                 if (fd > -1) folders.emplace_back(Path{fd, item});
@@ -195,26 +98,5 @@ namespace ioutils {
         }
 
         std::deque<Path> folders;
-    };
-
-    // A policy class that display folder and file paths to console.
-    class ConsolePolicy {
-      protected:
-        bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
-        void process_file(std::string &&p) const { fmt::print("{}\n", p); }
-        void process_dir(const std::string &p) const { fmt::print("{}\n", p); }
-    };
-
-    // A policy class that stores all file paths.
-    class StorePolicy {
-      public:
-        using container_type = std::vector<std::string>;
-        const container_type &get_files() const { return files; }
-
-      protected:
-        bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
-        void process_file(std::string &&p) { files.emplace_back(p); }
-        void process_dir(const std::string) const {}
-        container_type files;
     };
 } // namespace ioutils

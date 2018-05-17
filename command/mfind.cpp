@@ -1,5 +1,6 @@
 #include "fmt/format.h"
 #include "search.hpp"
+#include "search_policies.hpp"
 #include "utils/timeutils.hpp"
 
 int main(int argc, char *argv[]) {
