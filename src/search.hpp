@@ -82,8 +82,19 @@ namespace ioutils {
                             }
                             break;
                         case DT_REG:
-                            Policy::process_file(dir.path + "/" + info->d_name);
+                            Policy::process_file(dir.path + sep + info->d_name);
                             break;
+                        case DT_LNK: {
+                            // TODO: What should we do with symlink?
+                            // 1. Just store the path of symlinks
+                            // 2. Push the real paths into stack? We do need to make sure that there is not any duplicated path.
+                            std::string path = dir.path + sep + info->d_name;
+                            auto len = readlink(path.data(), buffer, buflen);
+                            fmt::print("Symlink: {0} -> {1}\n", path, std::string(buffer, len));
+                            // throw "How should we handle symlinks";
+                            break;
+                        }
+
                         default:
                             // We only care about directories and regular files.
                             break;
@@ -100,5 +111,8 @@ namespace ioutils {
         }
 
         std::deque<Path> folders;
+        static constexpr char sep = '/';
+        static constexpr size_t buflen = 1024;
+        char buffer[buflen];
     };
 } // namespace ioutils
