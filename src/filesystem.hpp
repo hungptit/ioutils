@@ -11,14 +11,13 @@
 #include <unistd.h>
 #include <vector>
 #include <array>
-
 #include "fmt/format.h"
 
 namespace ioutils {
     namespace filesystem {
         namespace {
             constexpr int NumberOfStems = 2;
-            const std::array<std::string, NumberOfStems + 1> lookup_table{{".", "..", ".git"}};
+            const ::array<std::string, NumberOfStems + 1> lookup_table{{".", "..", ".git"}};
 
             template <int N> bool is_valid_dir(const char *p) {
                 return (strcmp(p, lookup_table[N].data()) != 0) && is_valid_dir<N - 1>(p);

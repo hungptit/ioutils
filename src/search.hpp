@@ -12,23 +12,24 @@
 #include <unistd.h>
 #include <vector>
 
-#include "fmt/format.h"
 #include "filesystem.hpp"
+#include "fmt/format.h"
 
 namespace ioutils {
-	// A class which has DFS and BFS file traversal algorithms.
+    // A class which has DFS and BFS file traversal algorithms.
     template <typename Policy> class FileSearch : public Policy {
       public:
-		// Basic search functionality.
-		explicit FileSearch() : folders() {}
+        // Basic search functionality.
+        explicit FileSearch() : folders() {}
 
-		// Filtering files using given patterns.
-		explicit FileSearch(const std::string &pattern) : Policy(pattern), folders() {}
-		
-		// Filtering files using given extensions.
-		explicit FileSearch(const std::vector<std::string> &extensions) : Policy(extensions), folders() {}
-		
-		void dfs(const std::vector<std::string> &p) {
+        // Filtering files using given patterns.
+        explicit FileSearch(const std::string &pattern) : Policy(pattern), folders() {}
+
+        // Filtering files using given extensions.
+        explicit FileSearch(const std::vector<std::string> &extensions)
+            : Policy(extensions), folders() {}
+
+        void dfs(const std::vector<std::string> &p) {
             for (auto item : p) {
                 int fd = ::open(item.data(), O_RDONLY);
                 if (fd > -1) folders.emplace_back(Path{fd, item});
@@ -84,6 +85,7 @@ namespace ioutils {
                             Policy::process_file(dir.path + "/" + info->d_name);
                             break;
                         default:
+                            // We only care about directories and regular files.
                             break;
                         }
                     }
