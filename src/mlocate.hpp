@@ -2,24 +2,55 @@
 
 #include "filesystem.hpp"
 #include "search.hpp"
-#include <string>
-#include <unordered_set>
 #include <set>
+#include <string>
+#include <ostream>
+#include <unordered_set>
 
 namespace ioutils {
-    struct MlocatePolicy {
-      protected:
-        bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
-        void process_file(std::string &&p) {}
-        void process_dir(const std::string) const {}
+    namespace mlocate {
+        struct MlocatePolicy {
+        public:
+            void print() const {
+                for (auto const &item : data) {
+                    fmt::print("{0:b} {1:>10} {2}\n", item.st_mode &0xfff, item.st_size, item.path);
+                }
+            }
+          protected:
+            bool is_valid_dir(const char *dname) const {
+                return filesystem::is_valid_dir(dname);
+            }
+            void process_file(std::string &&p) {
+                ioutils::Stats info;
+                info.path = p;
 
-        std::set<std::string> paths;
-    };
+                // Skip if we cannot get information of a given file
+                if (stat(info.path.data(), &statbuf)) return;
 
-    // Write search data to database.
-    struct MlocateDBWriter {};
+                // Update information
+                info.st_mode = statbuf.st_mode;
+                info.st_size = statbuf.st_size;
+                info.last_access_time = statbuf.st_atime;
+                info.modification_time = statbuf.st_mtime;
+                info.status_change_time = statbuf.st_ctime;
 
-    // Read mlocate database
-    struct MlocateDBReader {};
+                // Update data
+                data.emplace_back(info);
+            }
 
-} // namespace utils
+            void process_dir(const std::string) const {}
+
+
+            std::vector<ioutils::Stats> data;
+            struct stat statbuf;
+        };
+
+        // Write search data to database.
+        struct MlocateDBWriter {};
+
+        // Read mlocate database
+        struct MlocateDBReader {};
+
+    } // namespace mlocate
+
+} // namespace ioutils

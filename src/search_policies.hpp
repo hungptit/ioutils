@@ -1,7 +1,5 @@
 #pragma once
-
 #include "filesystem.hpp"
-#include "utils/regex_matchers.hpp"
 
 namespace ioutils {
     class AllPassFilter {
@@ -16,15 +14,6 @@ namespace ioutils {
       protected:
         bool is_valid_file(const std::string &path) { return true; }
         std::vector<std::string> extensions;
-    };
-
-    // Filter files using given pattern.
-    struct RegexFilter {
-        explicit RegexFilter(const std::string &patt) : pattern(patt){};
-        bool is_valid_file(const std::string &fname) { return true; }
-
-      protected:
-        std::string pattern;
     };
 
     // Filter file using group
@@ -55,5 +44,15 @@ namespace ioutils {
         void process_file(std::string &&p) { files.emplace_back(p); }
         void process_dir(const std::string) const {}
         container_type files;
+    };
+
+    // Filter files using given pattern.
+    // TODO: Need to think carefully about the use cases.
+    struct RegexFilter {
+        explicit RegexFilter(const std::string &patt) : pattern(patt){};
+        bool is_valid_file(const std::string &fname) { return true; }
+
+      protected:
+        std::string pattern;
     };
 } // namespace ioutils
