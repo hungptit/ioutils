@@ -9,10 +9,10 @@ int main(int argc, char *argv[]) {
         p.emplace_back(argv[idx]);
     }
 
-    using Search = typename ioutils::FileSearch<ioutils::MlocatePolicy>;
+    using Search = typename ioutils::FileSearch<ioutils::mlocate::MlocatePolicy>;
     Search search;
     search.dfs(p);
-    // fmt::print("Number of files: {}\n", search.get_files().size());
+    search.print();
 
     return EXIT_SUCCESS;
 }
