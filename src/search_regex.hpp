@@ -12,23 +12,15 @@
 #include <unistd.h>
 #include <vector>
 
-#include "filesystem.hpp"
 #include "fmt/format.h"
+
+#include "filesystem.hpp"
 
 namespace ioutils {
     // A class which has DFS and BFS file traversal algorithms.
-    template <typename Policy> class FileSearch : public Policy {
+    template <typename Policy> class FileSearchRegex : public Policy {
       public:
-        // Basic search functionality.
-        explicit FileSearch() : folders() {}
-
-        // Filtering files using given patterns.
-        explicit FileSearch(const std::string &pattern) : Policy(pattern), folders() {}
-
-        // Filtering files using given extensions.
-        explicit FileSearch(const std::vector<std::string> &extensions)
-            : Policy(extensions), folders() {}
-
+        FileSearchRegex(const std::string &pattern) : Policy(pattern) {}
         void dfs(const std::vector<std::string> &p) {
             for (auto item : p) {
                 int fd = ::open(item.data(), O_RDONLY);
@@ -82,21 +74,9 @@ namespace ioutils {
                             }
                             break;
                         case DT_REG:
-                            Policy::process_file(dir.path + sep + info->d_name);
+                            Policy::process_file(dir.path + "/" + info->d_name);
                             break;
-                        case DT_LNK: {
-                            // TODO: What should we do with symlink?
-                            // 1. Just store the path of symlinks
-                            // 2. Push the real paths into stack? We do need to make sure that there is not any duplicated path.
-                            std::string path = dir.path + sep + info->d_name;
-                            auto len = readlink(path.data(), buffer, buflen);
-                            fmt::print("Symlink: {0} -> {1}\n", path, std::string(buffer, len));
-                            // throw "How should we handle symlinks";
-                            break;
-                        }
-
                         default:
-                            // We only care about directories and regular files.
                             break;
                         }
                     }
@@ -111,8 +91,22 @@ namespace ioutils {
         }
 
         std::deque<Path> folders;
-        static constexpr char sep = '/';
-        static constexpr size_t buflen = 1024;
-        char buffer[buflen];
     };
+
+    // A policy class which filter files and folder using given regular expression.
+    template <typename T> RegexConsolePolicy {
+        explicit RegexPolicy(const std::string &patt) : matcher(patt) {}
+        explicit RegexPolicy(const std::string &patt) : matcher(patt) {}
+
+        bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
+
+        void process_file(std::string && p) const {
+            if (matcher(p.data(), p.size())) fmt::print("{}\n", p);
+        }
+        void process_dir(const std::string &p) const {
+            matcher(p.data(), p.size()) fmt::print("{}\n", p);
+        }
+
+        utils::RegexMatcher matcher;
+    }
 } // namespace ioutils

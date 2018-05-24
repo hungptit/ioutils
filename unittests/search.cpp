@@ -4,6 +4,7 @@
 
 #include "fmt/format.h"
 #include "search.hpp"
+#include "search_policies.hpp"
 #include "temporary_dir.hpp"
 #include "test_data.hpp"
 
@@ -46,15 +47,33 @@ TEST_CASE("Utility function", "basic") {
         CHECK(!ioutils::filesystem::is_symlink(props.st_mode));
     }
 
-    SECTION("Search for files in a given folder") {
-        ioutils::FileSearch search;
-		fmt::print("DFS:\n");
+    SECTION("Search for files using DFS algorithm and print results") {
+        ioutils::FileSearch<ioutils::ConsolePolicy> search;
+		fmt::print("DFS - ConsolePolicy:\n");
         search.dfs({p});
     }
 
+    SECTION("Search for files in a given folder using DFS algorithm and store results") {
+        ioutils::FileSearch<ioutils::StorePolicy> search;
+		fmt::print("DFS - StorePolicy:\n");
+        search.dfs({p});
+		CHECK(search.get_files().size() == 12);
+		for (auto item : search.get_files()) {
+			fmt::print("{}\n", item);
+		}
+    }
+
     SECTION("Search for files in a given folder and return a list of files") {
-        ioutils::FileSearch search;
-		fmt::print("BFS:\n");
+        ioutils::FileSearch<ioutils::ConsolePolicy> search;
+		fmt::print("BFS - ConsolePolicy:\n");
         search.bfs({p});
     }
+
+	SECTION("Search for files in a given folder using BFS algorithm and store results") {
+        ioutils::FileSearch<ioutils::StorePolicy> search;
+		fmt::print("BFS - StorePolicy:\n");
+        search.bfs({p});
+		CHECK(search.get_files().size() == 12);
+    }
+
 }
