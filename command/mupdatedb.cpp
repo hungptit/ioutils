@@ -8,7 +8,6 @@ int main(int argc, char *argv[]) {
     for (auto idx = argc - 1; idx > 0; --idx) {
         p.emplace_back(argv[idx]);
     }
-
     using Search = typename ioutils::FileSearch<ioutils::mlocate::MlocatePolicy>;
     Search search;
     search.dfs(p);
