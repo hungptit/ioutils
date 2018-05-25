@@ -13,7 +13,7 @@ namespace ioutils {
         public:
             void print() const {
                 for (auto const &item : data) {
-                    fmt::print("{0:b} {1:>10} {2}\n", item.st_mode &0xfff, item.st_size, item.path);
+                    fmt::print("{0:b} {1:>10} {2}\n", item.st_mode & MODE_MASK, item.st_size, item.path);
                 }
             }
           protected:
@@ -43,6 +43,7 @@ namespace ioutils {
 
             std::vector<ioutils::Stats> data;
             struct stat statbuf;
+			static constexpr int MODE_MASK = 0xfff;
         };
 
         // Write search data to database.
