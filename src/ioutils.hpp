@@ -23,6 +23,9 @@ namespace ioutils {
     // A reader class which stores the policy as a member data.
     template <typename Policy, size_t BUFFER_SIZE = READ_TRUNK_SIZE>
     struct FileReader : public Policy {
+        FileReader() : Policy() {}
+        FileReader(const std::string &pattern) : Policy(pattern) {}
+
         void operator()(const char *datafile, const long offset = 0) {
             char read_buffer[BUFFER_SIZE + 1];
             int fd = ::open(datafile, O_RDONLY);
