@@ -28,7 +28,7 @@ namespace ioutils {
 
         void operator()(const char *datafile, const long offset = 0) {
             char read_buffer[BUFFER_SIZE + 1];
-            int fd = ::open(datafile, O_RDONLY);
+            int fd = ::open(datafile, O_RDONLY | O_NOCTTY);
 
             // Check that we can open a given file.
             if (fd < 0) {
