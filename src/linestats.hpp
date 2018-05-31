@@ -9,9 +9,7 @@ namespace ioutils {
         explicit LineStats_std() : lines(0) {}
         void process(const char *buffer, size_t len) {
             for (size_t idx = 0; idx < len; ++idx) {
-                if (buffer[idx] == EOL) {
-                    ++lines;
-                }
+                lines += buffer[idx] == EOL;
             }
         }
         size_t lines = 0;

@@ -51,15 +51,14 @@ namespace ioutils {
             // posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
 
             // Read data into a read buffer
-            while (true) {
-                auto nbytes = ::read(fd, read_buffer, BUFFER_SIZE);
+            while (long nbytes = ::read(fd, read_buffer, BUFFER_SIZE) ) {
                 if (nbytes < 0) {
                     std::stringstream writer;
-                    writer << "Cannot read file \"" << datafile << "\"";
+                    writer << "Cannot read file \"" << datafile << "\" " << "nbytes = " << nbytes;
                     throw(std::runtime_error(writer.str()));
                 };
 
-                // Apply a given policy to read_buffer.
+              // Apply a given policy to read_buffer.
                 Policy::process(read_buffer, nbytes);
 
                 // Stop if we reach the end of file.

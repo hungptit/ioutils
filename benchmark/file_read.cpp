@@ -92,19 +92,19 @@ namespace {
             size_t counter = 0;
             const char *end = buffer + nbytes;
             const char *ptr = buffer;
-            while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
-                ++counter;
-                ++ptr;
-            }
-            // for (auto idx = 0; idx < nbytes; ++idx) {
-            //     counter += buffer[idx] == EOL;
+            // while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
+            //     ++counter;
+            //     ++ptr;
             // }
+            for (auto idx = 0; idx < nbytes; ++idx) {
+                counter += buffer[idx] == EOL;
+            }
             return counter;
         }
     };
 } // namespace
 
-const int number_of_samples = 10;
+const int number_of_samples = 40;
 const int number_of_operations = 2;
 const std::string fname("3200.txt");
 
