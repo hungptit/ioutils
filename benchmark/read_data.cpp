@@ -2,7 +2,6 @@
 #include <iostream>
 
 #include "fmt/format.h"
-
 #include "boost_memmap.hpp"
 #include "celero/Celero.h"
 #include "ioutils.hpp"
@@ -10,6 +9,8 @@
 
 // #include "utils/memchr.hpp"
 #include "linestats.hpp"
+
+#include "tbb_reader.hpp"
 
 namespace test {
     constexpr char EOL = '\n';
@@ -40,12 +41,11 @@ namespace test {
         auto end = begin + mmap.size();
         size_t lines;
         std::for_each(begin, end, [&lines](auto const item) {
-                                      if (item == EOL) ++lines;
-                                  });
+            if (item == EOL) ++lines;
+        });
         return lines;
     }
 } // namespace test
-
 
 const int number_of_samples = 10;
 const int number_of_operations = 2;
@@ -126,7 +126,6 @@ BENCHMARK(read, read_2_20, number_of_samples, number_of_operations) {
     Reader reader;
     reader(afile.c_str());
 }
-
 
 // Read and process data benchmark
 BASELINE(linestats, iostream_linestats, number_of_samples, number_of_operations) {

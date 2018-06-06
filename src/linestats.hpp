@@ -4,34 +4,41 @@
 #include <cstring>
 #include <limits>
 
+#include "utils/memchr.hpp"
+
 namespace ioutils {
-    struct LineStats_std {
-        explicit LineStats_std() : lines(0) {}
-        void process(const char *buffer, size_t len) {
-            for (size_t idx = 0; idx < len; ++idx) {
-                if (buffer[idx] == EOL) {
-                    ++lines;
+    static constexpr char EOL = '\n';
+    namespace experiments {
+        struct LineStatsBase {
+            LineStatsBase() : lines(0) {}
+            void print() const { fmt::print("Number of lines: {}\n", lines); }
+            size_t lines = 0;
+        };
+
+        template <typename Policy> struct LineStats_std : public Policy {
+            explicit LineStats_std() : Policy() {}
+            void process(const char *buffer, size_t len) {
+                for (size_t idx = 0; idx < len; ++idx) {
+                    if (buffer[idx] == EOL) {
+                        ++Policy::lines;
+                    }
                 }
             }
-        }
-        size_t lines = 0;
-        static constexpr char EOL = '\n';
-    };
+        };
 
-    struct LineStats {
-        explicit LineStats() : lines(0) {}
-        void process(const char *buffer, size_t len) {
-            const char *end = buffer + len;
-            const char *ptr = buffer;
-            while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
-                ++lines;
-                ++ptr;
+        template <typename Policy>
+        struct LineStats : public Policy {
+            explicit LineStats() : Policy() {}
+            void process(const char *buffer, size_t len) {
+                const char *end = buffer + len;
+                const char *ptr = buffer;
+                while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
+                    ++Policy::lines;
+                    ++ptr;
+                }
             }
-        }
-        // Store the number of lines.
-        size_t lines = 0;
-        static constexpr char EOL = '\n';
-    };
+        };
+    } // namespace experiments
 
     // A simple parser which computes the file size, the number of lines, and
     // the maximum/minimum length of lines.
@@ -60,7 +67,7 @@ namespace ioutils {
             file_size += end - begin;
         }
 
-        void print(const std::string &title) const {
+        void print() const {
             fmt::print("Number of bytes: {}\n", file_size);
             fmt::print("Number of lines: {}\n", lines);
             fmt::print("Max line length: {}\n", max_len);
