@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
     // linestats.print();
     
     for (auto idx = 1; idx < argc; ++idx) {
-        // fmt::print("Number of lines: {}\n", iostream_linestats(argv[idx]));
-        fmt::print("Number of lines: {}\n", memmap_linestats(argv[idx]));
+        fmt::print("Number of lines: {}\n", iostream_linestats(argv[idx]));
+        // fmt::print("Number of lines: {}\n", memmap_linestats(argv[idx]));
     }
 }
