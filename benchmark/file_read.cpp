@@ -15,10 +15,9 @@
 #include <thread>
 
 #include "ioutils.hpp"
-#include "threaded_reader.hpp"
+#include "linestats.hpp"
 #include "read_policies.hpp"
 #include "reader.hpp"
-#include "linestats.hpp"
 #include <deque>
 
 #include "celero/Celero.h"
@@ -50,11 +49,11 @@ namespace {
         std::deque<std::string> data;
     };
 
-    constexpr size_t READ_TRUNK_SIZE = 1 << 16;
+    constexpr size_t READ_TRUNK_SIZE = 1 << 17;
 
     // A reader class which stores the policy as a member data.
     std::atomic<bool> is_stop(false);
-    template <int BUFFER_SIZE> struct FileReader {
+    template <int BUFFER_SIZE = READ_TRUNK_SIZE> struct FileReader {
         char process_buffer[BUFFER_SIZE];
 
         size_t operator()(const char *datafile) { return read(datafile); }
@@ -79,7 +78,8 @@ namespace {
             for (size_t blk = 0; blk < block_count; ++blk) {
                 long nbytes = ::read(fd, read_buffer, BUFFER_SIZE);
                 if (nbytes < 0) {
-                    const std::string msg = std::string("Cannot read from file \"") + std::string(datafile) + "\" ";
+                    const std::string msg =
+                        std::string("Cannot read from file \"") + std::string(datafile) + "\" ";
                     throw(std::runtime_error(msg));
                 };
 

@@ -139,7 +139,6 @@ BENCHMARK(read, read_2_17_vector, number_of_samples, number_of_operations) {
     reader(afile.c_str());
 }
 
-
 // Read and process data benchmark
 BASELINE(linestats, iostream_linestats, number_of_samples, number_of_operations) {
     celero::DoNotOptimizeAway(test::iostream_linestats(afile));

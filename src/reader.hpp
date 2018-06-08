@@ -7,7 +7,7 @@
 #include <unistd.h>
 
 namespace ioutils {
-    constexpr size_t READ_TRUNK_SIZE = 1 << 16;
+    constexpr size_t READ_TRUNK_SIZE = 1 << 17;
     // A reader class which stores the policy as a member data.
     template <typename Policy, size_t BUFFER_SIZE = READ_TRUNK_SIZE>
     struct FileReader : public Policy {
