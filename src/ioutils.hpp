@@ -4,9 +4,12 @@
 #include <string>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/uio.h>
 #include <unistd.h>
-
 #include "fmt/format.h"
+#include <thread>
+#include <mutex>
+#include <deque>
 
 namespace ioutils {
     class AppendPolicy {
@@ -26,39 +29,26 @@ namespace ioutils {
         FileReader() : Policy() {}
         FileReader(const std::string &pattern) : Policy(pattern) {}
 
-        void operator()(const char *datafile, const long offset = 0) {
-            char read_buffer[BUFFER_SIZE + 1];
+        void operator()(const char *datafile) {
+            char read_buffer[BUFFER_SIZE];
             int fd = ::open(datafile, O_RDONLY | O_NOCTTY);
 
             // Check that we can open a given file.
             if (fd < 0) {
-                std::stringstream writer;
-                writer << "Cannot open file \"" << datafile << "\"";
-                throw(std::runtime_error(writer.str()));
+                const std::string msg = std::string("Cannot open file \"") + datafile + "\"";
+                throw(std::runtime_error(msg));
             }
-
-            // Shift to desired location if it is not zero.
-            if (offset) {
-                auto retval = lseek(fd, offset, SEEK_SET);
-                if (retval != offset) {
-                    std::stringstream writer;
-                    writer << "Cannot seek for the location " << offset << " in " << datafile;
-                    throw(std::runtime_error(writer.str()));
-                }
-            }
-
-            // Let the kernel know that we are going to read sequentially to the end of a file.
-            // posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
 
             // Read data into a read buffer
-            while (long nbytes = ::read(fd, read_buffer, BUFFER_SIZE) ) {
+            while (long nbytes = ::read(fd, read_buffer, BUFFER_SIZE)) {
                 if (nbytes < 0) {
                     std::stringstream writer;
-                    writer << "Cannot read file \"" << datafile << "\" " << "nbytes = " << nbytes;
+                    writer << "Cannot read file \"" << datafile << "\" "
+                           << "nbytes = " << nbytes;
                     throw(std::runtime_error(writer.str()));
                 };
 
-              // Apply a given policy to read_buffer.
+                // Apply a given policy to read_buffer.
                 Policy::process(read_buffer, nbytes);
 
                 // Stop if we reach the end of file.
@@ -70,6 +60,103 @@ namespace ioutils {
             // Close our file.
             ::close(fd);
         }
+    };
+
+    // Read data using readv
+    template <typename Policy, size_t BUFFER_SIZE = READ_TRUNK_SIZE>
+    struct FileReaderNew : public Policy {
+        FileReaderNew() : Policy() {}
+        FileReaderNew(const std::string &pattern) : Policy(pattern) {}
+
+        void operator()(const char *datafile) {
+            char read_buffer[BUFFER_SIZE];
+            struct iovec iov;
+            iov.iov_base = read_buffer;
+            iov.iov_len = BUFFER_SIZE;
+
+            // Open an input file in read only mode.
+            int fd = ::open(datafile, O_RDONLY | O_NOCTTY);
+            if (fd < 0) {
+                const std::string msg = std::string("Cannot open file \"") + datafile + "\"";
+                throw(std::runtime_error(msg));
+            }
+
+            // Read data into a read buffer
+            while (ssize_t nbytes = ::readv(fd, &iov, 1)) {
+                Policy::process(read_buffer, nbytes);
+                if (nbytes != static_cast<decltype(nbytes)>(BUFFER_SIZE)) {
+                    break;
+                };
+            }
+
+            // Close our file.
+            ::close(fd);
+        }
+    };
+
+    // Read data using readv
+    template <typename Policy, size_t BUFFER_SIZE = READ_TRUNK_SIZE>
+    struct ProducerConsumer : public Policy {
+        ProducerConsumer() : Policy() {}
+        ProducerConsumer(const std::string &pattern) : Policy(pattern) {}
+
+        void operator()(const char *datafile) {
+            producer(datafile);
+            // consumer();
+        }
+
+        void producer(const char *datafile) {
+            char read_buffer[BUFFER_SIZE];
+
+            // Open an input file in read only mode.
+            int fd = ::open(datafile, O_RDONLY | O_NOCTTY);
+            if (fd < 0) {
+                const std::string msg = std::string("Cannot open file \"") + datafile + "\"";
+                throw(std::runtime_error(msg));
+            }
+
+            while (long nbytes = ::read(fd, read_buffer, BUFFER_SIZE)) {
+                if (nbytes < 0) {
+                    std::stringstream writer;
+                    writer << "Cannot read file \"" << datafile << "\" "
+                           << "nbytes = " << nbytes;
+                    throw(std::runtime_error(writer.str()));
+                };
+
+                // Apply a given policy to read_buffer.
+                if (nbytes) {
+                    std::string read_data(read_buffer, nbytes);
+                    queue.emplace_back(read_data);
+                }
+
+                // Stop if we reach the end of file.
+                if (nbytes != static_cast<decltype(nbytes)>(BUFFER_SIZE)) {
+                    break;
+                };
+            }
+
+            // Close our file.
+            ::close(fd);
+        }
+
+        void consumer() {
+            while (true) {
+                if (!queue.empty()) {
+                    auto data = queue.front();
+                    Policy::process(data.data(), data.size());
+                    queue.pop_front();
+                } else {
+                    if (!isok) {
+                        break;
+                    }
+                }
+            }
+        }
+
+      protected:
+        std::mutex lock;
+        bool isok = true;
+        std::deque<std::string> queue;
     };
 
     // Return a string which has the content of a file.

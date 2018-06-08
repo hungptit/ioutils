@@ -15,7 +15,9 @@
 #include <thread>
 
 #include "ioutils.hpp"
+#include "threaded_reader.hpp"
 #include "linestats.hpp"
+#include <deque>
 
 #include "celero/Celero.h"
 
@@ -34,13 +36,16 @@ namespace {
     }
 
     // Read from file in chunks
-    class AppendPolicy {
-      public:
-        void process(const char *buffer, const size_t len) { _data.append(buffer, len); }
-        std::string data() { return std::move(_data); }
+    struct AppendPolicy {
+        void process(const char *buffer, const size_t len) { data.append(buffer, len); }
+        std::string data;
+    };
 
-      private:
-        std::string _data;
+    struct ProducerPolicy {
+        void process(const char *buffer, const size_t len) {
+            data.emplace_back(std::string(buffer, len));
+        }
+        std::deque<std::string> data;
     };
 
     constexpr size_t READ_TRUNK_SIZE = 1 << 16;
@@ -48,18 +53,17 @@ namespace {
     // A reader class which stores the policy as a member data.
     std::atomic<bool> is_stop(false);
     template <int BUFFER_SIZE> struct FileReader {
-        char process_buffer[BUFFER_SIZE + 1];
+        char process_buffer[BUFFER_SIZE];
 
         size_t operator()(const char *datafile) { return read(datafile); }
         size_t read(const char *datafile) {
-            char read_buffer[BUFFER_SIZE + 1];
+            char read_buffer[BUFFER_SIZE];
             int fd = ::open(datafile, O_RDONLY | O_NOCTTY);
 
             // Check that we can open a given file.
             if (fd < 0) {
-                std::stringstream writer;
-                writer << "Cannot open file \"" << datafile << "\"";
-                throw(std::runtime_error(writer.str()));
+                const std::string msg = std::string("Cannot open file \"") + datafile + "\"";
+                throw(std::runtime_error(msg));
             }
 
             // Get file size.
@@ -69,17 +73,17 @@ namespace {
             // Read data into a read buffer
             size_t block_count = (buf.st_size / BUFFER_SIZE) + (buf.st_size % BUFFER_SIZE != 0);
             size_t counter = 0;
+            std::string linebuf;
             for (size_t blk = 0; blk < block_count; ++blk) {
                 long nbytes = ::read(fd, read_buffer, BUFFER_SIZE);
                 if (nbytes < 0) {
-                    std::stringstream writer;
-                    writer << "Cannot read file \"" << datafile << "\" "
-                           << "nbytes = " << nbytes;
-                    throw(std::runtime_error(writer.str()));
+                    const std::string msg = std::string("Cannot read from file \"") + std::string(datafile) + "\" ";
+                    throw(std::runtime_error(msg));
                 };
 
-                memcpy(process_buffer, read_buffer, nbytes);
-                counter += process(read_buffer, nbytes);
+                linebuf.clear();
+                linebuf.append(read_buffer, nbytes);
+                // counter += process(read_buffer, nbytes);
             }
 
             // Close our file.
@@ -90,8 +94,8 @@ namespace {
 
         size_t process(const char *buffer, long nbytes) {
             size_t counter = 0;
-            const char *end = buffer + nbytes;
-            const char *ptr = buffer;
+            // const char *end = buffer + nbytes;
+            // const char *ptr = buffer;
             // while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
             //     ++counter;
             //     ++ptr;
@@ -149,7 +153,17 @@ BENCHMARK(read, read_chunk, number_of_samples, number_of_operations) {
     reader(fname.c_str());
 }
 
-BENCHMARK(read, ioutils, number_of_samples, number_of_operations) {
+BENCHMARK(read, append, number_of_samples, number_of_operations) {
+    ioutils::FileReader<AppendPolicy, 1 << 16> reader;
+    reader(fname.c_str());
+}
+
+BENCHMARK(read, producer, number_of_samples, number_of_operations) {
+    ioutils::FileReader<ProducerPolicy, 1 << 16> reader;
+    reader(fname.c_str());
+}
+
+BENCHMARK(read, ioutils_std, number_of_samples, number_of_operations) {
     using FastLineStats = ioutils::FileReader<ioutils::LineStats_std, 1 << 16>;
     FastLineStats linestats;
     linestats(fname.c_str());
@@ -157,6 +171,18 @@ BENCHMARK(read, ioutils, number_of_samples, number_of_operations) {
 
 BENCHMARK(read, ioutils_memchr, number_of_samples, number_of_operations) {
     using FastLineStats = ioutils::FileReader<ioutils::LineStats, 1 << 16>;
+    FastLineStats linestats;
+    linestats(fname.c_str());
+}
+
+BENCHMARK(read, ioutils_memchr_new, number_of_samples, number_of_operations) {
+    using FastLineStats = ioutils::FileReaderNew<ioutils::LineStats, 1 << 16>;
+    FastLineStats linestats;
+    linestats(fname.c_str());
+}
+
+BENCHMARK(read, reader1, number_of_samples, number_of_operations) {
+    using FastLineStats = ioutils::FileReader1<ioutils::LineStats>;
     FastLineStats linestats;
     linestats(fname.c_str());
 }

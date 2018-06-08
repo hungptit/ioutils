@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "filesystem.hpp"
+#include "fdwriter.hpp"
 #include "fmt/format.h"
 
 namespace ioutils {
