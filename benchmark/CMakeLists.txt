@@ -107,7 +107,7 @@ SET(LIB_BENCHMARK "${EXTERNAL_DIR}/lib/libbenchmark.a")
 set(COMMAND_SRC_FILES filesystem)
 foreach (src_file ${COMMAND_SRC_FILES})
   ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
-  TARGET_LINK_LIBRARIES(${src_file} -lpthread -lm ${LIB_BENCHMARK}  ${Boost_LIBRARIES})
+  TARGET_LINK_LIBRARIES(${src_file} -lpthread -lm ${LIB_BENCHMARK} ${Boost_LIBRARIES})
 endforeach (src_file)
 
 set(COMMAND_SRC_FILES file_read)

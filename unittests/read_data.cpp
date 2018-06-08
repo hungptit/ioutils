@@ -12,6 +12,8 @@
 
 #include "boost_memmap.hpp"
 #include "ioutils.hpp"
+#include "reader.hpp"
+#include "read_policies.hpp"
 
 #define CATCH_CONFIG_MAIN
 #include "catch/catch.hpp"
@@ -23,7 +25,8 @@ TEST_CASE("Simple reader", "basic") {
     fmt::print("{}\n", results);
     CHECK(results.find("xml.hpp") != std::string::npos);
 
-    ioutils::FileReader<ioutils::AppendPolicy, 1 << 16> reader;
+    using Policy = ioutils::AppendPolicy<std::string>;
+    ioutils::FileReader<Policy, 1 << 16> reader;
     reader(datafile.c_str());
     CHECK_THAT(results, Equals(reader.data()));
 }

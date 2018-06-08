@@ -16,6 +16,8 @@
 
 #include "ioutils.hpp"
 #include "threaded_reader.hpp"
+#include "read_policies.hpp"
+#include "reader.hpp"
 #include "linestats.hpp"
 #include <deque>
 
@@ -164,26 +166,16 @@ BENCHMARK(read, producer, number_of_samples, number_of_operations) {
 }
 
 BENCHMARK(read, ioutils_std, number_of_samples, number_of_operations) {
-    using FastLineStats = ioutils::FileReader<ioutils::LineStats_std, 1 << 16>;
-    FastLineStats linestats;
+    using Policy = ioutils::experiments::LineStats_std<ioutils::experiments::LineStatsBase>;
+    using LineStats = ioutils::FileReader<Policy, 1 << 16>;
+    LineStats linestats;
     linestats(fname.c_str());
 }
 
 BENCHMARK(read, ioutils_memchr, number_of_samples, number_of_operations) {
-    using FastLineStats = ioutils::FileReader<ioutils::LineStats, 1 << 16>;
-    FastLineStats linestats;
-    linestats(fname.c_str());
-}
-
-BENCHMARK(read, ioutils_memchr_new, number_of_samples, number_of_operations) {
-    using FastLineStats = ioutils::FileReaderNew<ioutils::LineStats, 1 << 16>;
-    FastLineStats linestats;
-    linestats(fname.c_str());
-}
-
-BENCHMARK(read, reader1, number_of_samples, number_of_operations) {
-    using FastLineStats = ioutils::FileReader1<ioutils::LineStats>;
-    FastLineStats linestats;
+    using Policy = ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>;
+    using LineStats = ioutils::FileReader<Policy, 1 << 16>;
+    LineStats linestats;
     linestats(fname.c_str());
 }
 
