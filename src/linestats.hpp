@@ -4,8 +4,6 @@
 #include <cstring>
 #include <limits>
 
-#include "utils/memchr.hpp"
-
 namespace ioutils {
     static constexpr char EOL = '\n';
     namespace experiments {

@@ -1,15 +1,15 @@
 #include "linestats.hpp"
+#include "boost_memmap.hpp"
 #include "fmt/format.h"
 #include "ioutils.hpp"
+#include <fstream>
+#include <iostream>
 #include <string>
 #include <time.h>
-#include "boost_memmap.hpp"
-#include <iostream>
-#include <fstream>
 
 namespace {
     constexpr char EOL = '\n';
-    
+
     size_t iostream_linestats(const std::string &afile) {
         std::ifstream t(afile);
         size_t lines = 0;
@@ -33,22 +33,24 @@ namespace {
 } // namespace
 
 int main(int argc, char *argv[]) {
+    constexpr int BUFFER_SIZE = 1 << 17;
     using Reader1 = ioutils::FileReader<
-        ioutils::experiments::LineStats_std<ioutils::experiments::LineStatsBase>, 1 << 16>;
+        ioutils::experiments::LineStats_std<ioutils::experiments::LineStatsBase>, BUFFER_SIZE>;
 
     using Reader2 = ioutils::FileReader<
-        ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>, 1 << 16>;
+        ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>, BUFFER_SIZE>;
 
-    using Reader3 = ioutils::FileReader<ioutils::FileStats, 1 << 16>;
+    using Reader3 = ioutils::FileReader<ioutils::FileStats, BUFFER_SIZE>;
+    using Reader4 = ioutils::MMapReader<ioutils::FileStats>;
 
-    // Reader2 linestats;
-    // for (auto idx = 1; idx < argc; ++idx) {
-    //     linestats(argv[idx]);
-    // }
-    // linestats.print();
-    
+    Reader4 linestats;
     for (auto idx = 1; idx < argc; ++idx) {
-        fmt::print("Number of lines: {}\n", iostream_linestats(argv[idx]));
-        // fmt::print("Number of lines: {}\n", memmap_linestats(argv[idx]));
+        linestats(argv[idx]);
     }
+    linestats.print();
+
+    // for (auto idx = 1; idx < argc; ++idx) {
+    //     fmt::print("Number of lines: {}\n", iostream_linestats(argv[idx]));
+    //     // fmt::print("Number of lines: {}\n", memmap_linestats(argv[idx]));
+    // }
 }
