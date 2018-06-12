@@ -54,7 +54,6 @@ namespace ioutils {
         MMapReader() : Policy() {}
         MMapReader(const std::string &pattern) : Policy(pattern) {}
         void operator()(const char *datafile) {
-
             // Error handling object.
             auto handle_error = [datafile](const std::string &errmsg) {
                 const std::string msg = std::string("Cannot open ") + datafile;
@@ -84,7 +83,8 @@ namespace ioutils {
 
             // Tell the kernel that we will access file content sequentially.
             if (madvise(begin, length, MADV_SEQUENTIAL | MADV_WILLNEED) != 0) {
-                write(1, "Cannot set hint for kernel!", 27);
+                const std::string msg("Cannot set hint for kernel!");
+                auto nbytes = write(1, msg.data(), msg.size());
             }
 
             // Process mapped buffer
