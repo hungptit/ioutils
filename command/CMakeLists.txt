@@ -60,9 +60,36 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include_directories ("${EXTERNAL_DIR}/include")
 include_directories ("${ROOT_DIR}/src")
 
+# This option make sure that we use the local boost version. Note that if the
+# system boost is installed then CMake might use that boost version.
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
+set(Boost_NO_SYSTEM_PATHS TRUE)
+if (Boost_NO_SYSTEM_PATHS)
+  set(BOOST_ROOT "${EXTERNAL_DIR}")
+  set(BOOST_INCLUDE_DIRS "${BOOST_ROOT}/include")
+  set(BOOST_LIBRARY_DIRS "${BOOST_ROOT}/lib")
+endif (Boost_NO_SYSTEM_PATHS)
+find_package(Boost REQUIRED system filesystem iostreams program_options)
+
 # Build all
 set(CMAKE_INSTALL_PREFIX "$ENV{HOME}")
-set(COMMAND_SRC_FILES linestats mfind)
+set(COMMAND_SRC_FILES mfind)
+foreach (src_file ${COMMAND_SRC_FILES})
+  ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
+  TARGET_LINK_LIBRARIES(${src_file})
+endforeach (src_file)
+INSTALL_PROGRAMS("/bin/" FILES ${COMMAND_SRC_FILES})
+
+set(COMMAND_SRC_FILES linestats)
+foreach (src_file ${COMMAND_SRC_FILES})
+  ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
+  TARGET_LINK_LIBRARIES(${src_file} ${Boost_LIBRARIES})
+endforeach (src_file)
+INSTALL_PROGRAMS("/bin/" FILES ${COMMAND_SRC_FILES})
+
+set(COMMAND_SRC_FILES mupdatedb mlocate)
 foreach (src_file ${COMMAND_SRC_FILES})
   ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
   TARGET_LINK_LIBRARIES(${src_file})

@@ -12,36 +12,15 @@
 #include <unistd.h>
 #include <vector>
 
-#include "filesystem.hpp"
-#include "fdwriter.hpp"
 #include "fmt/format.h"
-#include "utils/regex_matchers.hpp"
 
-// cereal
-#include "cereal/archives/binary.hpp"
-#include "cereal/archives/json.hpp"
-#include "cereal/archives/portable_binary.hpp"
-#include "cereal/archives/xml.hpp"
-#include "cereal/types/array.hpp"
-#include "cereal/types/chrono.hpp"
-#include "cereal/types/deque.hpp"
-#include "cereal/types/string.hpp"
-#include "cereal/types/vector.hpp"
+#include "filesystem.hpp"
 
 namespace ioutils {
     // A class which has DFS and BFS file traversal algorithms.
-    template <typename Policy> class FileSearch : public Policy {
+    template <typename Policy> class FileSearchRegex : public Policy {
       public:
-        // Basic search functionality.
-        explicit FileSearch() : folders() {}
-
-        // Filtering files using given patterns.
-        explicit FileSearch(const std::string &pattern) : Policy(pattern), folders() {}
-
-        // Filtering files using given extensions.
-        explicit FileSearch(const std::vector<std::string> &extensions)
-            : Policy(extensions), folders() {}
-
+        FileSearchRegex(const std::string &pattern) : Policy(pattern) {}
         void dfs(const std::vector<std::string> &p) {
             for (auto item : p) {
                 int fd = ::open(item.data(), O_RDONLY);
@@ -95,16 +74,9 @@ namespace ioutils {
                             }
                             break;
                         case DT_REG:
-                            Policy::process_file(dir.path + SEP + info->d_name);
+                            Policy::process_file(dir.path + "/" + info->d_name);
                             break;
-                        case DT_LNK: {
-                            // We only store symlink path.
-                            Policy::process_file(dir.path + SEP + info->d_name);
-                            break;
-                        }
-
                         default:
-                            // We only care about directories and regular files.
                             break;
                         }
                     }
@@ -119,6 +91,22 @@ namespace ioutils {
         }
 
         std::deque<Path> folders;
-        static constexpr char SEP = '/';
     };
+
+    // A policy class which filter files and folder using given regular expression.
+    template <typename T> RegexConsolePolicy {
+        explicit RegexPolicy(const std::string &patt) : matcher(patt) {}
+        explicit RegexPolicy(const std::string &patt) : matcher(patt) {}
+
+        bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
+
+        void process_file(std::string && p) const {
+            if (matcher(p.data(), p.size())) fmt::print("{}\n", p);
+        }
+        void process_dir(const std::string &p) const {
+            matcher(p.data(), p.size()) fmt::print("{}\n", p);
+        }
+
+        utils::RegexMatcher matcher;
+    }
 } // namespace ioutils
