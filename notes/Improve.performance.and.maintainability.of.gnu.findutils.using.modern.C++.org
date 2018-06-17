@@ -3,11 +3,11 @@
 * Method
 ** What is the policy based designed pattern?
 ** How to write a fast file search algorithm in NIX environments?
-	+ Support filtering for example skip .git folder by default.
-	+ Support search pattern, file extensions.
+   + Support filtering for example skip .git folder by default.
+   + Support search pattern, file extensions.
 ** How to write a fast cached file locator
-	+ Support search folder.
-	+ Support search pattern, file extensions etc.
+   + Support search folder.
+   + Support search pattern, file extensions etc.
 * Results
 
 Benchmark results collected in Mac OS
