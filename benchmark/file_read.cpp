@@ -165,65 +165,65 @@ const int number_of_samples = 40;
 const int number_of_operations = 2;
 const std::string fname("3200.txt");
 
-CELERO_MAIN
+// CELERO_MAIN
 
-BASELINE(read, boost_memmap, number_of_samples, number_of_operations) {
-    celero::DoNotOptimizeAway(read_memmap(fname.c_str()));
-}
-
-BENCHMARK(read, mmap_reader_memchr, number_of_samples, number_of_operations) {
-    using Policy = ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>;
-    using LineStats = ioutils::MMapReader<Policy>;
-    LineStats linestats;
-    linestats(fname.c_str());
-}
-
-BENCHMARK(read, memmap, number_of_samples, number_of_operations) {
-    celero::DoNotOptimizeAway(read_mmap(fname.c_str()));
-}
-
-BENCHMARK(read, read_chunk, number_of_samples, number_of_operations) {
-    FileReader<READ_BUFFER_SIZE> reader;
-    reader(fname.c_str());
-}
-
-BENCHMARK(read, ioutils_std, number_of_samples, number_of_operations) {
-    using Policy = ioutils::experiments::LineStats_std<ioutils::experiments::LineStatsBase>;
-    using LineStats = ioutils::FileReader<Policy, READ_BUFFER_SIZE>;
-    LineStats linestats;
-    linestats(fname.c_str());
-}
-
-BENCHMARK(read, ioutils_memchr, number_of_samples, number_of_operations) {
-    using Policy = ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>;
-    using LineStats = ioutils::FileReader<Policy, READ_BUFFER_SIZE>;
-    LineStats linestats;
-    linestats(fname.c_str());
-}
-
-// int main(const int argc, char *argv[]) {
-//     if (argc < 3) {
-//         fmt::print("Need to provide an option and a file name\n");
-//     }
-
-//     std::string option(argv[1]);
-//     if (option == "boost") {
-//         fmt::print("Number of lines: {}\n", read_memmap(argv[2]));
-//     } else if (option == "mmap") {
-//         using Policy = ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>;
-//         using LineStats = ioutils::MMapReader<Policy>;
-//         LineStats linestats;
-//         linestats(argv[2]);
-//         linestats.print();
-//     } else if (option == "chunk") {
-//         using Reader = FileReader<1 << 16>;
-//         Reader reader;
-//         fmt::print("Number of lines: {}\n", reader(argv[2]));
-//     } else {
-//         using Policy = ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>;
-//         using LineStats = ioutils::FileReader<Policy, READ_BUFFER_SIZE>;
-//         LineStats linestats;
-//         linestats(argv[2]);
-//         linestats.print();
-//     }
+// BASELINE(read, boost_memmap, number_of_samples, number_of_operations) {
+//     celero::DoNotOptimizeAway(read_memmap(fname.c_str()));
 // }
+
+// BENCHMARK(read, mmap_reader_memchr, number_of_samples, number_of_operations) {
+//     using Policy = ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>;
+//     using LineStats = ioutils::MMapReader<Policy>;
+//     LineStats linestats;
+//     linestats(fname.c_str());
+// }
+
+// BENCHMARK(read, memmap, number_of_samples, number_of_operations) {
+//     celero::DoNotOptimizeAway(read_mmap(fname.c_str()));
+// }
+
+// BENCHMARK(read, read_chunk, number_of_samples, number_of_operations) {
+//     FileReader<READ_BUFFER_SIZE> reader;
+//     reader(fname.c_str());
+// }
+
+// BENCHMARK(read, ioutils_std, number_of_samples, number_of_operations) {
+//     using Policy = ioutils::experiments::LineStats_std<ioutils::experiments::LineStatsBase>;
+//     using LineStats = ioutils::FileReader<Policy, READ_BUFFER_SIZE>;
+//     LineStats linestats;
+//     linestats(fname.c_str());
+// }
+
+// BENCHMARK(read, ioutils_memchr, number_of_samples, number_of_operations) {
+//     using Policy = ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>;
+//     using LineStats = ioutils::FileReader<Policy, READ_BUFFER_SIZE>;
+//     LineStats linestats;
+//     linestats(fname.c_str());
+// }
+
+int main(const int argc, char *argv[]) {
+    if (argc < 3) {
+        fmt::print("Need to provide an option and a file name\n");
+    }
+
+    std::string option(argv[1]);
+    if (option == "boost") {
+        fmt::print("Number of lines: {}\n", read_memmap(argv[2]));
+    } else if (option == "mmap") {
+        using Policy = ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>;
+        using LineStats = ioutils::MMapReader<Policy>;
+        LineStats linestats;
+        linestats(argv[2]);
+        linestats.print();
+    } else if (option == "chunk") {
+        using Reader = FileReader<1 << 16>;
+        Reader reader;
+        fmt::print("Number of lines: {}\n", reader(argv[2]));
+    } else {
+        using Policy = ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>;
+        using LineStats = ioutils::FileReader<Policy, READ_BUFFER_SIZE>;
+        LineStats linestats;
+        linestats(argv[2]);
+        linestats.print();
+    }
+}
