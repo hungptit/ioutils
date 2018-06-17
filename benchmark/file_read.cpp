@@ -21,6 +21,7 @@
 #include <deque>
 
 #include "celero/Celero.h"
+#include "experiments.hpp"
 
 namespace {
     constexpr char EOL('\n');

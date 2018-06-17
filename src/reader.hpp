@@ -6,11 +6,12 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <iostream>
 
 namespace ioutils {
 
     // A reader class which reads data in blocks.
-    constexpr size_t READ_TRUNK_SIZE = 1 << 17;
+    constexpr size_t READ_TRUNK_SIZE = 1 << 17; // This is an optimum trunk size.
     template <typename Policy, size_t BUFFER_SIZE = READ_TRUNK_SIZE>
     struct FileReader : public Policy {
         FileReader() : Policy() {}
@@ -85,8 +86,7 @@ namespace ioutils {
 
             // Tell the kernel that we will access file content sequentially.
             if (madvise(begin, length, MADV_SEQUENTIAL | MADV_WILLNEED) != 0) {
-                const std::string msg("Cannot set hint for kernel!");
-                auto nbytes = write(1, msg.data(), msg.size());
+                std::cerr<< "Cannot set hint for kernel!";
             }
 
             // Process mapped buffer
