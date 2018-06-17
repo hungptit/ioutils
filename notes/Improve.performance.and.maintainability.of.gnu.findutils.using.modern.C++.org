@@ -1,14 +1,13 @@
-
 * Abstract
-* Introduction 
+* Introduction
 * Method
 ** What is the policy based designed pattern?
 ** How to write a fast file search algorithm in NIX environments?
-	+ Support filtering for example skip .git folder by default.
-	+ Support search pattern, file extensions.
+   + Support filtering for example skip .git folder by default.
+   + Support search pattern, file extensions.
 ** How to write a fast cached file locator
-	+ Support search folder.
-	+ Support search pattern, file extensions etc.
+   + Support search folder.
+   + Support search pattern, file extensions etc.
 * Results
 
 Benchmark results collected in Mac OS
@@ -26,6 +25,6 @@ find            | mfind_bfs_store |               0 |              10 |         
 Complete.
 ```
 * Conclusions
-  + C++ string library's pattern matching algorithms are not optimized using SIMD instructions and it creates a misunderstanding that C++ is slowe than C.
-  + Our study has shown that our mfind and mlocate commands are faster than that of similar GNU commands that we written in C. 
-    Moreover, mfind and mlocate core algorithms are reusable.
+  + Our ioutls library is reusable and performant. Thanks to the powerfullness of the C++ template and Policy Based Design..
+  + The combination of the modern C++ design and low level system call allow us to improve both reusablity and performance of our library.
+  + Our performance analysis shows that our mfind and mlocate commands are faster than that of similar GNU commands i.e find and locate.

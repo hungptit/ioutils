@@ -14,8 +14,7 @@ namespace ioutils {
         Container _data;
     };
 
-    template<>
-    class AppendPolicy<std::string> {
+    template <> class AppendPolicy<std::string> {
       public:
         void process(const char *buffer, const size_t len) { _data.append(buffer, len); }
         std::string data() { return std::move(_data); }
