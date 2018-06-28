@@ -125,7 +125,7 @@ Complete.
 
 ### Search for file using a given pattern ###
 
-Regular expression benchmark results are depended of given search patterns since all test commands use different regular expression engine. In the benchmark below we will find source code files that match this pattern **'/\w+options.c(p)*$'** in the boost library source code. Note that the benchmark results below might be biased since I have not found any a good way to test both **find** and **fd** commands.
+Regular expression benchmark results are depended of given search patterns since all test commands use different regular expression engine. In the benchmark below we will find source code files that match this pattern **'/\w+options.c(p)*$'** in the boost library source code. Note that the benchmark results below might be biased since I have not found any good way to test both **find** and **fd** commands.
 
 ``` shell
 hungptit@hungptit ~/working/ioutils/benchmark $ ./mfind -g boost_regex
