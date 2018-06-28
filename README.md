@@ -8,7 +8,42 @@ I need reusable and fast file search algorithms that can be used in my projects 
 
 All algorithms are written in modern C++ and some core functions are optimized using SSE2 and AVX2. For example **mfind** command is faster than **GNU find** because it requires less system calls and can skip .git folder by default. The policy based design pattern has been used extensively to make all algorithms reusable and extensible without sacrificing the performance.
 
+# Usage #
+
+## Search for all files in given folders ##
+
+``` shell
+hungptit@hungptit ~/working/ioutils/command $ ./mfind ../src/
+../src/fdwriter.hpp
+../src/reader.hpp
+../src/mlocate.hpp
+../src/utilities.hpp
+../src/read_policies.hpp
+../src/search.hpp
+../src/linestats.hpp
+../src/search_policies.hpp
+../src/filedb.hpp
+../src/filesystem.hpp
+../src/tbb_reader.hpp
+../src/threaded_reader.hpp
+../src/boost_memmap.hpp
+../src/ioutils.hpp
+../src/search_regex.hpp
+../src/temporary_dir.hpp
+../src/regex_policies.hpp
+
+```
+
+## Search for files that match specified pattern ##
+
+``` shell
+hungptit@hungptit ~/working/ioutils/command $ ./mfind ../src/ -r "search\wre.*"
+../src/search_regex.hpp
+```
+
 # Benchmark results
+
+## Search for files only ##
 
 Below are benchmark results that I have collected in my Linux box using a fast SSD hard drive. All benchmark results are collected using a Boost library.
 
@@ -50,3 +85,5 @@ hungptit@hungptit ~/w/i/command> perf stat -r 5 find ../../3p/src/boost/ > /dev/
        0.151353213 seconds time elapsed                                          ( +-  2.30% )
 
 ```
+
+## Search for files using given pattern ##
