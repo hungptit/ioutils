@@ -10,11 +10,11 @@ ioutils is written as a library and mfind is its command line utility. This libr
 
 Below are key factors that make mfind fast:
 
-1. mfind uses a very fast file traversal algorithms. It is consistently 2x faster than grep in all of my tests.
+1. [mfind](https://github.com/hungptit/ioutils/blob/master/command/mfind.cpp) uses a very fast file traversal algorithms. It is consistently 2x faster than grep in all of my tests.
 
-2. mfind uses [hyperscan](https://github.com/intel/hyperscan "hyperscan") as the main expression engine. According to [previous performance studies](https://rust-leipzig.github.io/regex/2017/03/28/comparison-of-regex-engines/) hyperscan is the fastest C/C++ regular expression engine.
+2. [mfind](https://github.com/hungptit/ioutils/blob/master/command/mfind.cpp) uses [hyperscan](https://github.com/intel/hyperscan "hyperscan") as the main expression engine. According to [previous performance studies](https://rust-leipzig.github.io/regex/2017/03/28/comparison-of-regex-engines/) hyperscan is the fastest C/C++ regular expression engine.
 
-3. Core algorithms are written in modern C++. Classes and functions generated at compile time that allow mfind to fully take advantage of the modern C++ architecture.
+3. Core algorithms are written in modern C++. Classes and functions are generated at compile time that allow [mfind](https://github.com/hungptit/ioutils/blob/master/command/mfind.cpp) to fully take advantage of the modern C++ architecture.
 
 # Usage #
 
