@@ -14,7 +14,7 @@ Below are key factors that make mfind fast:
 
 2. [mfind](https://github.com/hungptit/ioutils/blob/master/command/mfind.cpp) uses [hyperscan](https://github.com/intel/hyperscan "hyperscan") as the main expression engine. According to [previous performance studies](https://rust-leipzig.github.io/regex/2017/03/28/comparison-of-regex-engines/) hyperscan is the fastest C/C++ regular expression engine.
 
-3. Core algorithms are written in modern C++. Classes and functions are generated at compile time that allow [mfind](https://github.com/hungptit/ioutils/blob/master/command/mfind.cpp) to fully take advantage of the modern C++ architecture.
+3. Core algorithms are written in modern C++. Final algorithms code are generated at compile time using specified algorithms and policies and this helps [mfind](https://github.com/hungptit/ioutils/blob/master/command/mfind.cpp) to fully take advantage of the modern C++ compiler and architecture.
 
 # Usage #
 
