@@ -64,14 +64,14 @@ include_directories ("${ROOT_DIR}/src")
 # system boost is installed then CMake might use that boost version.
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
+set(Boost_USE_STATIC_RUNTIME ON)
 set(Boost_NO_SYSTEM_PATHS TRUE)
 if (Boost_NO_SYSTEM_PATHS)
   set(BOOST_ROOT "${EXTERNAL_DIR}")
   set(BOOST_INCLUDE_DIRS "${BOOST_ROOT}/include")
   set(BOOST_LIBRARY_DIRS "${BOOST_ROOT}/lib")
 endif (Boost_NO_SYSTEM_PATHS)
-find_package(Boost REQUIRED system filesystem iostreams program_options)
+find_package(Boost REQUIRED program_options)
 
 # Build all
 set(CMAKE_INSTALL_PREFIX "$ENV{HOME}")
