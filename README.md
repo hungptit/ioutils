@@ -1,12 +1,26 @@
-# ioutils
-
-## Introduction
+# Introduction #
 
 I need reusable and fast file search algorithms that can be used in my projects and none of existing C/C++ libraries can fit for my need.
 
+# Features #
+
+* Very fast file read algorithms.
+
+* Very fast file traversal algorithms.
+
+* A small set of high performance file related functions and classes.
+
+* The mfind command line utility is faster than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands.
+
 # What is the different between mfind and find and/or fd?
 
-ioutils is written as a library and mfind is its command line utility. This library is built using generic programming concepts and the Policy Based Design pattern is heavily used through out the code base. This approach helps to create a flexible and reusable algorithms without sacrificing the performance. Plus the Policy Based Design approach helps to reduce the number of test cases from O(MN) to O(M + N), where M is the number of algorithms and N is the number of policies or behaviors. One side effect of C++ template code is the binary size of mfind is significantly larger than that of [find](https://www.gnu.org/software/findutils/) or [fd](https://github.com/sharkdp/fd).
+ioutils is written as a library and mfind is its command line utility. This library is built using generic programming concepts and the Policy Based Design pattern is heavily used through out the code base. This approach helps to
+
+* Create a flexible and reusable algorithms without sacrificing the performance.
+
+* Reduce the number of test cases from O(MN) to O(M + N), where M is the number of algorithms and N is the number of policies or behaviors.
+
+* One side effect of heavily template code is the binary size of [mfind](https://github.com/hungptit/ioutils/blob/master/command/mfind.cpp) is significantly larger than that of [find](https://www.gnu.org/software/findutils/) or [fd](https://github.com/sharkdp/fd).
 
 Below are key factors that make mfind fast:
 
