@@ -1,12 +1,20 @@
 # ioutils
 
-## Why?
+## Introduction
 
 I need reusable and fast file search algorithms that can be used in my projects and none of existing C/C++ libraries can fit for my need.
 
-# How?
+# What is the different between mfind and find and/or fd?
 
-All algorithms are written in modern C++ and some core functions are optimized using SSE2 and AVX2. For example **mfind** command is faster than **GNU find** because it requires less system calls and can skip .git folder by default. The policy based design pattern has been used extensively to make all algorithms reusable and extensible without sacrificing the performance.
+ioutils is written as a library and mfind is its command line utility. This library is built using generic programming concepts and the Policy Based Design pattern is heavily used through out the code base. This approach helps to create a flexible and reusable algorithms without sacrificing the performance. Plus the Policy Based Design approach helps to reduce the number of test cases from O(MN) to O(M + N), where M is the number of algorithms and N is the number of policies or behaviors. One side effect of C++ template code is the binary size of mfind is significantly larger than that of [find](https://www.gnu.org/software/findutils/) or [fd](https://github.com/sharkdp/fd).
+
+Below are key factors that make mfind fast:
+
+1. mfind uses a very fast file traversal algorithms. It is consistently 2x faster than grep in all of my tests.
+
+2. mfind uses [hyperscan](https://github.com/intel/hyperscan "hyperscan") as the main expression engine. According to [previous performance studies](https://rust-leipzig.github.io/regex/2017/03/28/comparison-of-regex-engines/) hyperscan is the fastest C/C++ regular expression engine.
+
+3. Core algorithms are written in modern C++. Classes and functions generated at compile time that allow mfind to fully take advantage of the modern C++ architecture.
 
 # Usage #
 
@@ -34,56 +42,88 @@ hungptit@hungptit ~/working/ioutils/command $ ./mfind ../src/
 
 ```
 
-## Search for files that match specified pattern ##
+## Search for files that match specified regular expression pattern ##
 
 ``` shell
 hungptit@hungptit ~/working/ioutils/command $ ./mfind ../src/ -r "search\wre.*"
 ../src/search_regex.hpp
 ```
 
+Note that mfind can accept multiple paths. Below is an example that search for a source code file from both boost and Linux kernel source code
+
+``` shell
+hungptit@hungptit ~/working/ioutils/benchmark $ time mfind -r '/\w+options.c(p)*$' ../../3p/src/boost/ /usr/src/linux-4.17.1-gentoo/
+/usr/src/linux-4.17.1-gentoo/net/ipv4/ip_options.c
+/usr/src/linux-4.17.1-gentoo/drivers/net/bonding/bond_options.c
+/usr/src/linux-4.17.1-gentoo/tools/perf/trace/beauty/waitid_options.c
+../../3p/src/boost/libs/program_options/src/positional_options.cpp
+
+real    0m0.187s
+user    0m0.064s
+sys     0m0.121s
+```
+
 # Benchmark results
 
-## Search for files only ##
+## Test environments ##
 
-Below are benchmark results that I have collected in my Linux box using a fast SSD hard drive. All benchmark results are collected using a Boost library.
+* CPU: Intel Core i7 920
+* Memory: 24 GB
+* Hard drive: Fast SSD drive and the partition is formatted using ext4.
+* OS: Gentoo Linux kernel 4.17.1 with glibc-2.27 and gcc-7.3
 
-```
-hungptit@hungptit ~/w/i/command> perf stat -r 5 ./mfind ../../3p/src/boost/ > /dev/null
+## Test data ##
 
- Performance counter stats for './mfind ../../3p/src/boost/' (5 runs):
+* [boost libraries](https://www.boost.org/) source code which has more than 50K source code and object files.
+* Linux kernel source code with more than 78K files.
 
-         78.043470      task-clock:u (msec)       #    0.991 CPUs utilized            ( +-  3.92% )
-                 0      context-switches:u        #    0.000 K/sec
-                 0      cpu-migrations:u          #    0.000 K/sec
-               126      page-faults:u             #    0.002 M/sec                    ( +-  0.77% )
-        74,884,265      cycles:u                  #    0.960 GHz                      ( +-  3.92% )
-       191,961,924      stalled-cycles-frontend:u #  256.34% frontend cycles idle     ( +-  3.97% )
-       183,528,930      stalled-cycles-backend:u  #  245.08% backend cycles idle      ( +-  2.80% )
-        72,211,909      instructions:u            #    0.96  insn per cycle
-                                                  #    2.66  stalled cycles per insn  ( +-  0.00% )
-        15,655,523      branches:u                #  200.600 M/sec                    ( +-  0.00% )
-           163,363      branch-misses:u           #    1.04% of all branches          ( +-  2.18% )
+## Results ##
 
-       0.078759451 seconds time elapsed                                          ( +-  3.91% )
+### Search for files in boost library source code ###
 
-hungptit@hungptit ~/w/i/command> perf stat -r 5 find ../../3p/src/boost/ > /dev/null
-
- Performance counter stats for 'find ../../3p/src/boost/' (5 runs):
-
-        150.271225      task-clock:u (msec)       #    0.993 CPUs utilized            ( +-  2.28% )
-                 0      context-switches:u        #    0.000 K/sec
-                 0      cpu-migrations:u          #    0.000 K/sec
-               237      page-faults:u             #    0.002 M/sec                    ( +-  0.32% )
-       160,563,463      cycles:u                  #    1.068 GHz                      ( +-  1.85% )
-       383,339,551      stalled-cycles-frontend:u #  238.75% frontend cycles idle     ( +-  2.23% )
-       361,275,865      stalled-cycles-backend:u  #  225.01% backend cycles idle      ( +-  1.81% )
-       103,169,241      instructions:u            #    0.64  insn per cycle
-                                                  #    3.72  stalled cycles per insn  ( +-  0.00% )
-        22,721,983      branches:u                #  151.206 M/sec                    ( +-  0.00% )
-           440,318      branch-misses:u           #    1.94% of all branches          ( +-  1.63% )
-
-       0.151353213 seconds time elapsed                                          ( +-  2.30% )
-
+``` shell
+hungptit@hungptit ~/working/ioutils/benchmark $ ./mfind -g boost
+Celero
+Timer resolution: 0.001000 us
+-----------------------------------------------------------------------------------------------------------------------------------------------
+     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
+-----------------------------------------------------------------------------------------------------------------------------------------------
+boost           | gnu_find        |            Null |              10 |               1 |         1.00000 |    146265.00000 |            6.84 |
+boost           | fd              |            Null |              10 |               1 |         0.87407 |    127846.00000 |            7.82 |
+boost           | mfind_to_consol |            Null |              10 |               1 |         0.51545 |     75392.00000 |           13.26 |
+Complete.
 ```
 
-## Search for files using given pattern ##
+### Search for files in Linux kernel source code ###
+
+``` shell
+hungptit@hungptit ~/working/ioutils/benchmark $ ./mfind -g linux_kernel
+Celero
+Timer resolution: 0.001000 us
+-----------------------------------------------------------------------------------------------------------------------------------------------
+Group           |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
+-----------------------------------------------------------------------------------------------------------------------------------------------
+linux_kernel    | gnu_find        |            Null |              10 |               1 |         1.00000 |    139244.00000 |            7.18 |
+linux_kernel    | fd              |            Null |              10 |               1 |         1.23248 |    171616.00000 |            5.83 |
+linux_kernel    | mfind_to_consol |            Null |              10 |               1 |         0.69987 |     97453.00000 |           10.26 |
+Complete.
+```
+
+### Search for file using a given pattern ###
+
+Regular expression benchmark results are depended of given search patterns since all test commands use different regular expression engine. In the benchmark below we will find source code files that match this pattern **'/\w+options.c(p)*$'** in the boost library source code. Note that the benchmark results below might be biased since I have not found any a good way to test both **find** and **fd** commands.
+
+``` shell
+hungptit@hungptit ~/working/ioutils/benchmark $ ./mfind -g boost_regex
+Celero
+Timer resolution: 0.001000 us
+-----------------------------------------------------------------------------------------------------------------------------------------------
+     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
+     -----------------------------------------------------------------------------------------------------------------------------------------------
+     boost_regex     | gnu_find        |            Null |              10 |               1 |         1.00000 |    152122.00000 |            6.57 |
+     boost_regex     | fd              |            Null |              10 |               1 |         1.06981 |    162741.00000 |            6.14 |
+     boost_regex     | mfind_to_consol |            Null |              10 |               1 |         0.52748 |     80241.00000 |           12.46 |
+     Complete.
+     hungptit@hungptit ~/working/ioutils/benchmark $ ./mfind -g boost
+Celero
+```
