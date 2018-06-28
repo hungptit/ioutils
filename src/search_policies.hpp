@@ -2,6 +2,7 @@
 #include "filesystem.hpp"
 
 namespace ioutils {
+    constexpr char SEP = '/';
     class AllPassFilter {
       protected:
         bool is_valid_file(const std::string &) { return true; }
@@ -29,7 +30,9 @@ namespace ioutils {
     class ConsolePolicy {
       protected:
         bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
-        void process_file(std::string &&p) const { fmt::print("{}\n", p); }
+        void process_file(const std::string &parent, const char *stem) const {
+            fmt::print("{0}/{1}\n", parent, stem);
+        }
         void process_dir(const std::string &p) const { fmt::print("{}\n", p); }
     };
 
@@ -41,7 +44,9 @@ namespace ioutils {
 
       protected:
         bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
-        void process_file(std::string &&p) { files.emplace_back(p); }
+        void process_file(const std::string &parent, const char *stem) {
+            files.emplace_back(parent + SEP + stem);
+        }
         void process_dir(const std::string) const {}
         container_type files;
     };

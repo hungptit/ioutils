@@ -12,8 +12,8 @@
 #include <unistd.h>
 #include <vector>
 
-#include "filesystem.hpp"
 #include "fdwriter.hpp"
+#include "filesystem.hpp"
 #include "fmt/format.h"
 #include "utils/regex_matchers.hpp"
 
@@ -95,11 +95,11 @@ namespace ioutils {
                             }
                             break;
                         case DT_REG:
-                            Policy::process_file(dir.path + SEP + info->d_name);
+                            Policy::process_file(dir.path, info->d_name);
                             break;
                         case DT_LNK: {
                             // We only store symlink path.
-                            Policy::process_file(dir.path + SEP + info->d_name);
+                            Policy::process_file(dir.path, info->d_name);
                             break;
                         }
 
@@ -111,7 +111,7 @@ namespace ioutils {
                 }
                 (void)closedir(dirp);
             } else if (ioutils::filesystem::is_regular_file(props.st_mode)) {
-                Policy::process_file(std::move(dir.path));
+                Policy::process_file(dir.path, nullptr);
                 ::close(fd);
             } else {
                 throw "We should not be here!";

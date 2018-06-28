@@ -1,4 +1,5 @@
 #include "linestats.hpp"
+#include "../benchmark/experiments.hpp"
 #include "boost_memmap.hpp"
 #include "fmt/format.h"
 #include "ioutils.hpp"
@@ -33,14 +34,14 @@ namespace {
 } // namespace
 
 int main(int argc, char *argv[]) {
-    constexpr int BUFFER_SIZE = 1 << 17;
-    using Reader1 = ioutils::FileReader<
-        ioutils::experiments::LineStats_std<ioutils::experiments::LineStatsBase>, BUFFER_SIZE>;
+    // constexpr int BUFFER_SIZE = 1 << 17;
+    // using Reader1 = ioutils::FileReader<
+    //     ioutils::experiments::LineStats_std<ioutils::experiments::LineStatsBase>, BUFFER_SIZE>;
 
-    using Reader2 = ioutils::FileReader<
-        ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>, BUFFER_SIZE>;
+    // using Reader2 = ioutils::FileReader<
+    //     ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>, BUFFER_SIZE>;
 
-    using Reader3 = ioutils::FileReader<ioutils::FileStats, BUFFER_SIZE>;
+    // using Reader3 = ioutils::FileReader<ioutils::FileStats, BUFFER_SIZE>;
     using Reader4 = ioutils::MMapReader<ioutils::FileStats>;
 
     Reader4 linestats;

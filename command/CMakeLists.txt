@@ -75,10 +75,15 @@ find_package(Boost REQUIRED system filesystem iostreams program_options)
 
 # Build all
 set(CMAKE_INSTALL_PREFIX "$ENV{HOME}")
+
+# Hyperscan
+SET(LIB_HS "${EXTERNAL_DIR}/lib/libhs.a")
+SET(LIB_HS_RUNTIME "${EXTERNAL_DIR}/lib/libhs_runtime.a")
+
 set(COMMAND_SRC_FILES mfind)
 foreach (src_file ${COMMAND_SRC_FILES})
   ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
-  TARGET_LINK_LIBRARIES(${src_file})
+  TARGET_LINK_LIBRARIES(${src_file} ${Boost_LIBRARIES} ${LIB_HS} ${LIB_HS_RUNTIME})
 endforeach (src_file)
 INSTALL_PROGRAMS("/bin/" FILES ${COMMAND_SRC_FILES})
 

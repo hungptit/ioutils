@@ -2,27 +2,29 @@
 
 #include "filesystem.hpp"
 #include "search.hpp"
+#include <ostream>
 #include <set>
 #include <string>
-#include <ostream>
 #include <unordered_set>
 
 namespace ioutils {
     namespace mlocate {
         struct MlocatePolicy {
-        public:
+          public:
             void print() const {
                 for (auto const &item : data) {
-                    fmt::print("{0:b} {1:>10} {2}\n", item.st_mode & MODE_MASK, item.st_size, item.path);
+                    fmt::print("{0:b} {1:>10} {2}\n", item.st_mode & MODE_MASK, item.st_size,
+                               item.path);
                 }
             }
+
           protected:
             bool is_valid_dir(const char *dname) const {
                 return filesystem::is_valid_dir(dname);
             }
-            void process_file(std::string &&p) {
+            void process_file(const std::string &parent, const char *stem) {
                 ioutils::Stats info;
-                info.path = p;
+                info.path = parent;
 
                 // Skip if we cannot get information of a given file
                 if (stat(info.path.data(), &statbuf)) return;
@@ -40,10 +42,9 @@ namespace ioutils {
 
             void process_dir(const std::string) const {}
 
-
             std::vector<ioutils::Stats> data;
             struct stat statbuf;
-			static constexpr int MODE_MASK = 0xfff;
+            static constexpr int MODE_MASK = 0xfff;
         };
 
         // Write search data to database.

@@ -29,11 +29,11 @@ constexpr int number_of_operations = 1;
 CELERO_MAIN
 
 BASELINE(find, gnu_find, number_of_samples, number_of_operations) {
-    system("find ../../3p/src/boost/ > /dev/null");
+    system("find ../../3p/src/boost/ > /tmp/output.log");
 }
 
 BENCHMARK(find, mfind_to_console, number_of_samples, number_of_operations) {
-    system("../command/mfind ../../3p/src/boost/ > /dev/null");
+    system("../command/mfind ../../3p/src/boost/ > /tmp/output.log");
 }
 
 BENCHMARK(find, mfind_dfs_store, number_of_samples, number_of_operations) {
