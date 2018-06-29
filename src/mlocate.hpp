@@ -9,8 +9,13 @@
 
 namespace ioutils {
     namespace mlocate {
-        struct MlocatePolicy {
+        struct Policy {
           public:
+			using container_type = std::vector<ioutils::Stats>;
+			const container_type & get_data() const {
+				return data;
+			}
+			
             void print() const {
                 for (auto const &item : data) {
                     fmt::print("{0:b} {1:>10} {2}\n", item.st_mode & MODE_MASK, item.st_size,
@@ -24,7 +29,7 @@ namespace ioutils {
             }
             void process_file(const std::string &parent, const char *stem) {
                 ioutils::Stats info;
-                info.path = parent;
+                info.path = parent + "/" + stem;
 
                 // Skip if we cannot get information of a given file
                 if (stat(info.path.data(), &statbuf)) return;
@@ -42,7 +47,9 @@ namespace ioutils {
 
             void process_dir(const std::string) const {}
 
-            std::vector<ioutils::Stats> data;
+			
+			
+            container_type data;
             struct stat statbuf;
             static constexpr int MODE_MASK = 0xfff;
         };
@@ -55,4 +62,25 @@ namespace ioutils {
 
     } // namespace mlocate
 
+
+	template <typename OArchive, typename T>
+	std::string save(T && data) {
+		std::stringstream os;
+		{
+			OArchive oar(os);
+			oar(CEREAL_NVP(data));
+		}
+		return os.str();
+	}
+
+	template <typename IArchive, typename T>
+	T load(std::string &&buffer) {
+		std::stringstream is(buffer);
+		IArchive iar(is);
+		T data;
+		iar(data);
+		return data;
+	}
+
+	
 } // namespace ioutils
