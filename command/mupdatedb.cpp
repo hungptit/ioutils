@@ -90,6 +90,6 @@ int main(int argc, char *argv[]) {
     std::string buffer = ioutils::save<cereal::BinaryOutputArchive>(search.get_data());
     if (params.verbose) fmt::print("buffer size: {}\n", buffer.size());
     ioutils::write(buffer.data(), buffer.size(), params.database.data());
-
+	
     return EXIT_SUCCESS;
 }
