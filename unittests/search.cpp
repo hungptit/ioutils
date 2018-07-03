@@ -49,31 +49,30 @@ TEST_CASE("Utility function", "basic") {
 
     SECTION("Search for files using DFS algorithm and print results") {
         ioutils::FileSearch<ioutils::ConsolePolicy> search;
-		fmt::print("DFS - ConsolePolicy:\n");
+        fmt::print("DFS - ConsolePolicy:\n");
         search.dfs({p});
     }
 
     SECTION("Search for files in a given folder using DFS algorithm and store results") {
         ioutils::FileSearch<ioutils::StorePolicy> search;
-		fmt::print("DFS - StorePolicy:\n");
+        fmt::print("DFS - StorePolicy:\n");
         search.dfs({p});
-		CHECK(search.get_files().size() == 12);
-		for (auto item : search.get_files()) {
-			fmt::print("{}\n", item);
-		}
+        CHECK(search.get_files().size() == 12);
+        for (auto item : search.get_files()) {
+            fmt::print("{}\n", item);
+        }
     }
 
     SECTION("Search for files in a given folder and return a list of files") {
         ioutils::FileSearch<ioutils::ConsolePolicy> search;
-		fmt::print("BFS - ConsolePolicy:\n");
+        fmt::print("BFS - ConsolePolicy:\n");
         search.bfs({p});
     }
 
-	SECTION("Search for files in a given folder using BFS algorithm and store results") {
+    SECTION("Search for files in a given folder using BFS algorithm and store results") {
         ioutils::FileSearch<ioutils::StorePolicy> search;
-		fmt::print("BFS - StorePolicy:\n");
+        fmt::print("BFS - StorePolicy:\n");
         search.bfs({p});
-		CHECK(search.get_files().size() == 12);
+        CHECK(search.get_files().size() == 12);
     }
-
 }

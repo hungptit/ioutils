@@ -3,11 +3,13 @@
 #include "filesystem.hpp"
 #include "fmt/format.h"
 #include <string>
+#include "utils/regex_matchers.hpp"
 
 namespace ioutils {
     template <typename Matcher> class RegexPolicy {
       public:
-        RegexPolicy(const std::string &pattern) : buffer(), matcher(pattern) {
+        RegexPolicy(const std::string &pattern, const int mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH))
+            : buffer(), matcher(pattern, mode) {
             buffer.reserve(1023);
         }
 

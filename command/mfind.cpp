@@ -4,17 +4,17 @@
 #include "search.hpp"
 #include "search_policies.hpp"
 #include "utilities.hpp"
+#include "utils/matchers.hpp"
 #include "utils/regex_matchers.hpp"
-#include "utils/timeutils.hpp"
 
 namespace {
     struct SearchParams {
         bool ignore_case;  // Ignore case distinctions
         bool invert_match; // Select non-matching lines
-        bool exact_match;  // Use exact matching algorithms.
+        bool verbose;      // Display verbose information.
 
         template <typename Archive> void serialize(Archive &ar) {
-            ar(CEREAL_NVP(ignore_case), CEREAL_NVP(invert_match), CEREAL_NVP(exact_match));
+            ar(CEREAL_NVP(ignore_case), CEREAL_NVP(invert_match), CEREAL_NVP(verbose));
         }
     };
 
@@ -40,12 +40,14 @@ namespace {
         desc.add_options()
             ("help,h", "Print this help")
             ("verbose,v", "Display verbose information.")
+
+            ("ignore-case", "Ignore case.")
+            ("invert-match", "Select non-matching files.")
+            ("exact-match", "Use exact matching algorithms")
+
             ("pattern,r", po::value<std::string>(&params.pattern), "Search pattern")
             ("paths,p", po::value<std::vector<std::string>>(&paths), "A list of files and folders")
-            ("output-file,o", po::value<std::string>(&params.output_file), "Output file")
-            ("ignore-case", po::value<bool>(&params.parameters.ignore_case)->default_value(false), "Ignore case.")
-            ("invert-match", po::value<bool>(&params.parameters.invert_match)->default_value(false), "Select non-matching lines.")
-            ("exact-match", po::value<bool>(&params.parameters.exact_match)->default_value(false), "Use exact matching algorithms");
+            ("output-file,o", po::value<std::string>(&params.output_file), "Output file");
         // clang-format on
 
         // Parse input arguments
@@ -79,7 +81,11 @@ namespace {
         }
 
         // Display input arguments in JSON format if verbose flag is on
-        if (vm.count("verbose")) {
+        params.parameters.verbose = vm.count("verbose");
+        params.parameters.ignore_case = vm.count("ignore-case");
+        params.parameters.invert_match = vm.count("invert-match");
+
+        if (params.parameters.verbose) {
             std::stringstream ss;
             {
                 cereal::JSONOutputArchive ar(ss);
@@ -90,6 +96,7 @@ namespace {
 
         return params;
     }
+
 } // namespace
 
 int main(int argc, char *argv[]) {
@@ -100,11 +107,26 @@ int main(int argc, char *argv[]) {
         Search search;
         search.dfs(params.paths);
     } else {
-        using Matcher = utils::hyperscan::RegexMatcher;
-        using Policy = ioutils::RegexPolicy<Matcher>;
-        using Search = typename ioutils::FileSearch<Policy>;
-        Search search(params.pattern);
-        search.dfs(params.paths);
+        // Compute mode using input parameter information.
+        int mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH);
+        if (params.parameters.ignore_case) {
+            mode |= HS_FLAG_CASELESS;
+        }
+
+        // Find desired files and folders
+        if (!params.parameters.invert_match) {
+            using Matcher = utils::hyperscan::RegexMatcher;
+            using Policy = ioutils::RegexPolicy<Matcher>;
+            using Search = typename ioutils::FileSearch<Policy>;
+            Search search(params.pattern, mode);
+            search.dfs(params.paths);
+        } else {
+            using Matcher = utils::hyperscan::RegexMatcherInv;
+            using Policy = ioutils::RegexPolicy<Matcher>;
+            using Search = typename ioutils::FileSearch<Policy>;
+            Search search(params.pattern, mode);
+            search.dfs(params.paths);
+        }
     }
 
     return EXIT_SUCCESS;

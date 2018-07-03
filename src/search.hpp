@@ -36,7 +36,7 @@ namespace ioutils {
         explicit FileSearch() : folders() {}
 
         // Filtering files using given patterns.
-        explicit FileSearch(const std::string &pattern) : Policy(pattern), folders() {}
+        explicit FileSearch(const std::string &pattern, const int mode) : Policy(pattern, mode), folders() {}
 
         // Filtering files using given extensions.
         explicit FileSearch(const std::vector<std::string> &extensions)
