@@ -1,5 +1,5 @@
 #include "mlocate.hpp"
-#include "boost/program_options.hpp"
+#include "clara.hpp"
 #include "filesystem.hpp"
 #include "fmt/format.h"
 #include "ioutils.hpp"
@@ -32,65 +32,48 @@ namespace {
     };
 
     InputParams parse_input_arguments(int argc, char *argv[]) {
-        namespace po = boost::program_options;
-        po::options_description desc("Allowed options");
         InputParams params;
-        std::vector<std::string> db, paths;
+        bool help = false;
+        auto cli =
+            clara::Help(help) |
+            clara::Opt(params.databases,
+                       "database")["-d"]["--database"]("The file information database.") |
+            clara::Opt(params.parameters.verbose)["-v"]["--verbose"](
+                "Display verbose information") |
+            clara::Opt(params.parameters.ignore_case)["-i"]["--ignore-case"](
+                "Display verbose information") |
+            clara::Opt(params.parameters.invert_match)["-u"]["--verbose"](
+                "Display verbose information") |
+            clara::Opt(params.parameters.exact_match)["-x"]["--verbose"](
+                "Display verbose information") |
+            clara::Opt(params.parameters.info)["--info"]("Display database information") |
+            clara::Arg(params.pattern, "pattern")("Search pattern");
 
-        // clang-format off
-        desc.add_options()
-            ("help,h", "Print this help")
-            ("verbose,v", "Display verbose information.")
-            ("info", "Display database information.")
-            ("ignore-case", "Ignore case.")
-            ("exact-match", "Use exact matching algorithms")
-            ("invert-match", "Select non-matching lines.")
-            ("pattern,e", po::value<std::string>(&params.pattern), "Search pattern")
-            ("database,d", po::value<std::vector<std::string>>(&db), "A list of mlocate database");
-        // clang-format on
+        auto result = cli.parse(clara::Args(argc, argv));
+        if (!result) {
+            fmt::print(stderr, "Invalid option: {}\n", result.errorMessage());
+            exit(1);
+        }
 
-        // Parse input arguments
-        po::positional_options_description p;
-        p.add("pattern", -1);
-        po::variables_map vm;
-        po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
-        po::notify(vm);
-
-        // Pre-process input arguments
-        if (vm.count("help")) {
-            std::cout << desc << "\n";
-            std::cout << "Examples:"
-                      << "\n";
-            std::cout << "    mlocate foo"
-                      << "\n";
-            std::cout << "    mlocate -p '*.cpp' -d foo.bin"
-                      << "\n";
-
+        // Print out the help document.
+        if (help) {
+            std::ostringstream oss;
+            oss << cli;
+            fmt::print("{}", oss.str());
             exit(EXIT_SUCCESS);
         }
 
-        if (db.empty()) {
+        if (params.databases.empty()) {
             auto default_db = std::getenv("MLOCATE_DB");
             if (default_db == nullptr) {
                 params.databases.emplace_back(".database");
             } else {
                 params.databases.push_back(default_db);
             }
-        } else {
-            for (auto p : db) {
-                params.databases.push_back(p);
-            }
         }
 
         // Display input arguments in JSON format if verbose flag is on
-        params.parameters.verbose = vm.count("verbose");
-        params.parameters.ignore_case = vm.count("ignore-case");
-        params.parameters.invert_match = vm.count("invert-match");
-        params.parameters.exact_match = vm.count("exact-match");
-        params.parameters.info = vm.count("info");
-
         if (params.parameters.verbose) {
-            params.parameters.verbose = true;
             std::stringstream ss;
             {
                 cereal::JSONOutputArchive ar(ss);
@@ -109,7 +92,10 @@ int main(int argc, char *argv[]) {
     for (auto db : params.databases) {
         std::string buffer = ioutils::read(db.data());
         if (buffer.empty()) {
-            fmt::print(stderr, "Cannot read data from {0} or the file content is empty.\n", db);
+            if (params.parameters.verbose) {
+                fmt::print(stderr, "Cannot read data from {0} or the file content is empty.\n",
+                           db);
+            }
             continue;
         }
 

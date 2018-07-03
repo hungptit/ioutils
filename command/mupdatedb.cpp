@@ -1,17 +1,20 @@
+#include "clara.hpp"
 #include "fmt/format.h"
 #include "mlocate.hpp"
 #include "search.hpp"
 #include "utilities.hpp"
 #include "utils/timeutils.hpp"
 #include "writer.hpp"
-
-#include "boost/program_options.hpp"
+#include <set>
+#include <string>
+#include <vector>
 
 namespace {
     struct InputParams {
         std::vector<std::string> paths; // Input databases
         std::string database;
-        bool verbose;
+        bool stats = 0;
+        bool verbose = 0;
 
         template <typename Archive> void serialize(Archive &ar) {
             ar(CEREAL_NVP(paths), CEREAL_NVP(database), CEREAL_NVP(verbose));
@@ -19,35 +22,33 @@ namespace {
     };
 
     InputParams parse_input_arguments(int argc, char *argv[]) {
-        namespace po = boost::program_options;
-        po::options_description desc("Allowed options");
         InputParams params;
+        std::string database;
         std::vector<std::string> paths;
+        bool help = false;
+        auto cli =
+            clara::Help(help) |
+            clara::Opt(params.database,
+                       "database")["-d"]["--database"]("The file information database.") |
+            clara::Opt(params.verbose)["-v"]["--verbose"]("Display verbose information") |
+            clara::Arg(paths, "paths")("Search paths.");
 
-        // clang-format off
-        desc.add_options()
-            ("help,h", "Print this help")
-            ("verbose,v", "Display verbose information.")
-            ("database,d", po::value<std::string>(&params.database), "An output file information database.")
-            ("path,p", po::value<std::vector<std::string>>(&paths), "A list of folders");
-        // clang-format on
+        auto result = cli.parse(clara::Args(argc, argv));
+        if (!result) {
+            fmt::print(stderr, "Error in command line: {}\n", result.errorMessage());
+            exit(1);
+        }
 
-        // Parse input arguments
-        po::positional_options_description p;
-        p.add("path", -1);
-        po::variables_map vm;
-        po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
-        po::notify(vm);
-
-        // Pre-process input arguments
-        if (vm.count("help")) {
-            std::cout << desc << "\n";
-            std::cout << "Examples:"
-                      << "\n";
-            std::cout <<     "mupdatedb path1 path2 -d your_database_file "
-                      << "\n";
-
+        // Print out the help document.
+        if (help) {
+            std::ostringstream oss;
+            oss << cli;
+            fmt::print("{}", oss.str());
             exit(EXIT_SUCCESS);
+        }
+
+        if (params.database.empty()) {
+            database = ".database";
         }
 
         if (paths.empty()) {
@@ -55,18 +56,15 @@ namespace {
             exit(EXIT_FAILURE);
         }
 
-        // Cleanup extrace back slash characters.
+        // Cleanup extra back slash characters.
+        std::set<std::string> search_paths;
         for (auto p : paths) {
             ioutils::remove_trailing_slash(p);
-            params.paths.emplace_back(p);
+            search_paths.emplace(p);
         }
-
-        if (params.database.empty()) {
-            params.database = ".database";
-        }
+        params.paths.insert(params.paths.begin(), search_paths.cbegin(), search_paths.cend());
 
         // Display input arguments in JSON format if verbose flag is on
-        params.verbose = vm.count("verbose");
         if (params.verbose) {
             std::stringstream ss;
             {
@@ -90,6 +88,6 @@ int main(int argc, char *argv[]) {
     std::string buffer = ioutils::save<cereal::BinaryOutputArchive>(search.get_data());
     if (params.verbose) fmt::print("buffer size: {}\n", buffer.size());
     ioutils::write(buffer.data(), buffer.size(), params.database.data());
-	
+
     return EXIT_SUCCESS;
 }

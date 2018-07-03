@@ -1,4 +1,4 @@
-#include "boost/program_options.hpp"
+#include "clara.hpp"
 #include "fmt/format.h"
 #include "regex_policies.hpp"
 #include "search.hpp"
@@ -31,60 +31,45 @@ namespace {
     };
 
     InputParams parse_input_arguments(int argc, char *argv[]) {
-        namespace po = boost::program_options;
-        po::options_description desc("Allowed options");
         InputParams params;
         std::vector<std::string> paths;
+        bool help = false;
+        auto cli =
+            clara::Help(help) |
+            clara::Opt(params.parameters.verbose)["-v"]["--verbose"](
+                "Display verbose information") |
+            clara::Opt(params.parameters.ignore_case)["-i"]["--ignore-case"](
+                "Ignore case") |
+            clara::Opt(params.parameters.invert_match)["-u"]["--invert-match"](
+                "Display verbose information") |
+            clara::Opt(params.pattern,
+                       "pattern")["-p"]["--pattern"]("Search pattern.") |
+            clara::Arg(paths, "paths")("Search paths");
 
-        // clang-format off
-        desc.add_options()
-            ("help,h", "Print this help")
-            ("verbose,v", "Display verbose information.")
+        auto result = cli.parse(clara::Args(argc, argv));
+        if (!result) {
+            fmt::print(stderr, "Invalid option: {}\n", result.errorMessage());
+            exit(1);
+        }
 
-            ("ignore-case", "Ignore case.")
-            ("invert-match", "Select non-matching files.")
-            ("exact-match", "Use exact matching algorithms")
-
-            ("pattern,r", po::value<std::string>(&params.pattern), "Search pattern")
-            ("paths,p", po::value<std::vector<std::string>>(&paths), "A list of files and folders")
-            ("output-file,o", po::value<std::string>(&params.output_file), "Output file");
-        // clang-format on
-
-        // Parse input arguments
-        po::positional_options_description p;
-        p.add("paths", -1);
-        po::variables_map vm;
-        po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
-        po::notify(vm);
-
-        // Pre-process input arguments
-        if (vm.count("help")) {
-            std::cout << desc << "\n";
-            std::cout << "Examples:"
-                      << "\n";
-            std::cout << "    mfind ."
-                      << "\n";
-            std::cout << "    mfind -p '*.cpp' ."
-                      << "\n";
-
+        // Print out the help document.
+        if (help) {
+            std::ostringstream oss;
+            oss << cli;
+            fmt::print("{}", oss.str());
             exit(EXIT_SUCCESS);
         }
 
         if (paths.empty()) {
-            paths.emplace_back(".");
-        }
-
-        // Normalize paths
-        for (auto p : paths) {
-            ioutils::remove_trailing_slash(p);
-            params.paths.emplace_back(p);
+            params.paths.push_back(".");
+        } else {
+            for (auto p : paths) {
+                ioutils::remove_trailing_slash(p);
+                params.paths.emplace_back(p);
+            }
         }
 
         // Display input arguments in JSON format if verbose flag is on
-        params.parameters.verbose = vm.count("verbose");
-        params.parameters.ignore_case = vm.count("ignore-case");
-        params.parameters.invert_match = vm.count("invert-match");
-
         if (params.parameters.verbose) {
             std::stringstream ss;
             {
