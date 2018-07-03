@@ -37,7 +37,7 @@ void test_find_regex(const std::string &command, const std::string &regex, const
 }
 
 void test_mfind_regex(const std::string &command, const std::string &regex, const std::string &path) {
-    std::string buffer = command + " -r " + regex + " " + path + " > /tmp/output.log";
+    std::string buffer = command + " -e " + regex + " " + path + " > /tmp/output.log";
     system(buffer.data());
 }
 

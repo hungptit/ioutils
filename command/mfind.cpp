@@ -43,7 +43,7 @@ namespace {
             clara::Opt(params.parameters.invert_match)["-u"]["--invert-match"](
                 "Display verbose information") |
             clara::Opt(params.pattern,
-                       "pattern")["-p"]["--pattern"]("Search pattern.") |
+                       "pattern")["-e"]["--pattern"]("Search pattern.") |
             clara::Arg(paths, "paths")("Search paths");
 
         auto result = cli.parse(clara::Args(argc, argv));
