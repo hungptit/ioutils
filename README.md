@@ -1,6 +1,6 @@
 # Introduction #
 
-I need reusable and fast file search algorithms that can be used in my projects and none of existing C/C++ libraries can fit for my need.
+ioutils is a small and very fast file system library for Linux and Unix environments.
 
 # Features #
 
@@ -10,7 +10,9 @@ I need reusable and fast file search algorithms that can be used in my projects 
 
 * A small set of high performance file related functions and classes.
 
-* The mfind command line utility is faster than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands.
+* The mfind command line utility is 2x faster than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands.
+
+* The mlocate command is at least 80% faster than that of GNU locate command.
 
 # What is the different between mfind and find and/or fd?
 
