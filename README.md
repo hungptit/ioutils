@@ -10,7 +10,7 @@ ioutils is a small and very fast file system library for Linux and Unix environm
 
 * A small set of high performance file related functions and classes.
 
-* The mfind command line utility is 2x faster than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands.
+* The mfind command line utility is faster than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands. Our performance benchmark shows that mfind is consistently 2x faster than [GNU find](https://www.gnu.org/software/findutils/) in most tests and 20%-100% faster than [fd](https://github.com/sharkdp/fd).
 
 * The mlocate command is at least 80% faster than that of GNU locate command.
 
