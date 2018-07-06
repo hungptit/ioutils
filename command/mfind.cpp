@@ -41,7 +41,7 @@ namespace {
             clara::Opt(params.parameters.ignore_case)["-i"]["--ignore-case"](
                 "Ignore case") |
             clara::Opt(params.parameters.invert_match)["-u"]["--invert-match"](
-                "Display verbose information") |
+                "Select lines that do not match specified pattern.") |
             clara::Opt(params.pattern,
                        "pattern")["-e"]["--pattern"]("Search pattern.") |
             clara::Arg(paths, "paths")("Search paths");
