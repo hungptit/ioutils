@@ -40,12 +40,11 @@ namespace {
                        "database")["-d"]["--database"]("The file information database.") |
             clara::Opt(params.parameters.verbose)["-v"]["--verbose"](
                 "Display verbose information") |
-            clara::Opt(params.parameters.ignore_case)["-i"]["--ignore-case"](
-                "Display verbose information") |
-            clara::Opt(params.parameters.invert_match)["-u"]["--verbose"](
-                "Display verbose information") |
-            clara::Opt(params.parameters.exact_match)["-x"]["--verbose"](
-                "Display verbose information") |
+            clara::Opt(params.parameters.ignore_case)["-i"]["--ignore-case"]("Ignore case.") |
+            clara::Opt(params.parameters.invert_match)["-u"]["--invert-match"](
+                "Display lines that do not match given pattern.") |
+            clara::Opt(params.parameters.exact_match)["-x"]["--exact-match"](
+                "Use exact match algorithm") |
             clara::Opt(params.parameters.info)["--info"]("Display database information") |
             clara::Arg(params.pattern, "pattern")("Search pattern");
 
