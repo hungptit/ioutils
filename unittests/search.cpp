@@ -5,6 +5,7 @@
 #include "fmt/format.h"
 #include "search.hpp"
 #include "search_policies.hpp"
+#include "regex_policies.hpp"
 #include "temporary_dir.hpp"
 #include "test_data.hpp"
 
@@ -75,4 +76,22 @@ TEST_CASE("Utility function", "basic") {
         search.bfs({p});
         CHECK(search.get_files().size() == 12);
     }
+}
+
+TEST_CASE("Search with regex", "basic") {
+    TestData test(false);
+    filesystem::path tmpdir = test.get_path();
+    std::string p = tmpdir.string();
+
+    fmt::print("RegexStorePolicy - StorePolicy:\n");
+    using Matcher = utils::hyperscan::RegexMatcher;
+    using Policy = ioutils::RegexStorePolicy<Matcher>;
+    using Search = typename ioutils::FileSearch<Policy>;
+    int mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH);
+    Search search("cpp$", mode);
+    search.dfs({p});
+    for (auto afile : search.get_files()) {
+        fmt::print("{}\n", afile);
+    }
+    CHECK(search.get_files().size() == 3);
 }

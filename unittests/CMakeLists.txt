@@ -90,15 +90,26 @@ if (Boost_NO_SYSTEM_PATHS)
   set(BOOST_LIBRARY_DIRS "${BOOST_ROOT}/lib")
 endif (Boost_NO_SYSTEM_PATHS)
 # message(${BOOST_ROOT})
-find_package(Boost REQUIRED system filesystem iostreams)
+find_package(Boost REQUIRED system filesystem)
 
 # Include folder
 include_directories ("${EXTERNAL_DIR}/include")
 include_directories ("${ROOT_DIR}/src")
 
-set(COMMAND_SRC_FILES read_data tempdir search utilities)
+# Hyperscan
+SET(LIB_HS "${EXTERNAL_DIR}/lib/libhs.a")
+SET(LIB_HS_RUNTIME "${EXTERNAL_DIR}/lib/libhs_runtime.a")
+
+set(COMMAND_SRC_FILES read_data tempdir utilities)
 foreach (src_file ${COMMAND_SRC_FILES})
   ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
-  TARGET_LINK_LIBRARIES(${src_file} ${LIB_CELERO} ${Boost_LIBRARIES} -lpthread -lm -lc -ldl)
+  TARGET_LINK_LIBRARIES(${src_file} ${Boost_LIBRARIES} -lpthread -lm -lc -ldl)
+  ADD_TEST(${src_file} ./${src_file})
+endforeach (src_file)
+
+set(COMMAND_SRC_FILES search)
+foreach (src_file ${COMMAND_SRC_FILES})
+  ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
+  TARGET_LINK_LIBRARIES(${src_file} ${LIB_HS} ${LIB_HS_RUNTIME} ${Boost_LIBRARIES} -lpthread -lm -lc -ldl)
   ADD_TEST(${src_file} ./${src_file})
 endforeach (src_file)
