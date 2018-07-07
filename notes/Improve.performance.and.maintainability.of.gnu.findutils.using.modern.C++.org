@@ -1,5 +1,8 @@
 * Abstract
 * Introduction
+** Why?
+We have already had [[https://www.gnu.org/software/findutils/][findutils]] why do ioutils is created? 
+ioutils is created because of the following reasons. 
 * Method
 ** What is the policy based designed pattern?
 ** How to write a fast file search algorithm in NIX environments?

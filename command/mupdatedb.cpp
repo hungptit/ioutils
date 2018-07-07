@@ -23,7 +23,6 @@ namespace {
 
     InputParams parse_input_arguments(int argc, char *argv[]) {
         InputParams params;
-        std::string database;
         std::vector<std::string> paths;
         bool help = false;
         auto cli =
@@ -48,7 +47,7 @@ namespace {
         }
 
         if (params.database.empty()) {
-            database = ".database";
+            params.database = ".database";
         }
 
         if (paths.empty()) {

@@ -99,6 +99,28 @@ hdang@dev115 ~/w/i/command> ./mfind . -e '(o|bin|cmake|make|txt|internal|include
 ./foo.bi
 ```
 
+## Build file information database ##
+Before using mlocate command we do need to build the file information database for our interrested folders.  Below command will build file information database for boost, hyperscan, tbb, and seastar packages. 
+
+``` shell
+mupdatedb boost/ hyperscan/ tbb/ rocksdb/ seastar/ -v
+```
+## Locate files using regular expression ##
+
+Assume we have already built the file information database using mupdatedb command then we can use mlocate to look for files that match our desired pattern. 
+
+This example will seach for all files with h and hh extensions
+
+``` shell
+mlocate '/\wfuture.(h|hh)$'
+```
+
+Or we can display all files in our database using *.* pattern
+
+``` shell
+mlocate '.'
+```
+
 # Benchmark results
 
 ## Test environments ##
