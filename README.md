@@ -10,7 +10,7 @@ ioutils is a small and very fast file system library for Linux and Unix environm
 
 * A small set of high performance file related functions and classes.
 
-* The mfind command line utility is 2x faster than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands.
+* The mfind command line utility is faster than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands. Our performance benchmark shows that mfind is consistently 2x faster than [GNU find](https://www.gnu.org/software/findutils/) in most tests and 20%-100% faster than [fd](https://github.com/sharkdp/fd).
 
 * The mlocate command is at least 80% faster than that of GNU locate command.
 
@@ -61,14 +61,14 @@ hungptit@hungptit ~/working/ioutils/command $ ./mfind ../src/
 ## Search for files that match specified regular expression pattern ##
 
 ``` shell
-hungptit@hungptit ~/working/ioutils/command $ ./mfind ../src/ -r "search\wre.*"
+hungptit@hungptit ~/working/ioutils/command $ ./mfind ../src/ -e "search\wre.*"
 ../src/search_regex.hpp
 ```
 
 Note that mfind can accept multiple paths. Below is an example that search for a source code file from both boost and Linux kernel source code
 
 ``` shell
-hungptit@hungptit ~/working/ioutils/benchmark $ time mfind -r '/\w+options.c(p)*$' ../../3p/src/boost/ /usr/src/linux-4.17.1-gentoo/
+hungptit@hungptit ~/working/ioutils/benchmark $ time mfind -e '/\w+options.c(p)*$' ../../3p/src/boost/ /usr/src/linux-4.17.1-gentoo/
 /usr/src/linux-4.17.1-gentoo/net/ipv4/ip_options.c
 /usr/src/linux-4.17.1-gentoo/drivers/net/bonding/bond_options.c
 /usr/src/linux-4.17.1-gentoo/tools/perf/trace/beauty/waitid_options.c
@@ -77,6 +77,26 @@ hungptit@hungptit ~/working/ioutils/benchmark $ time mfind -r '/\w+options.c(p)*
 real    0m0.187s
 user    0m0.064s
 sys     0m0.121s
+```
+
+*Note: mfind does support caseless matching using ignore-case flag.*
+
+## Search for files that do not match the given pattern ##
+mfind does allow users to search for files that do not match a given option by turn on the invert-match flag. Below is an example
+``` shell
+hdang@dev115 ~/w/i/command> ./mfind . -e '(o|bin|cmake|make|txt|internal|includecache|tmp|out)$|cache|CMakeFiles' -u
+./linestats.cpp
+./linestats
+./compile_commands.json
+./Makefile
+./mfind
+./mupdatedb
+./mfind.cpp
+./mlocate
+./mlocate.cpp
+./mupdatedb.cpp
+./.database
+./foo.bi
 ```
 
 # Benchmark results
