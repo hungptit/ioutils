@@ -65,6 +65,12 @@ namespace ioutils {
             }
             size_t length = info.st_size;
 
+            // If a given file is empty then return early.
+            if (length == 0) {
+                close(fd);
+                return;
+            }
+            
             // Create mapped memory
             const int flags = MAP_PRIVATE;
             // const int flags = MAP_PRIVATE | MAP_POPULATE;
