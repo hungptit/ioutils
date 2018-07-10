@@ -72,8 +72,8 @@ namespace ioutils {
             }
             
             // Create mapped memory
-            // const int flags = MAP_PRIVATE;
-            const int flags = MAP_PRIVATE | MAP_POPULATE;
+            const int flags = MAP_PRIVATE;
+            // const int flags = MAP_PRIVATE | MAP_POPULATE;
             char *begin = static_cast<char *>(mmap(nullptr, length, PROT_READ, flags, fd, 0u));
 
             if (begin == MAP_FAILED) {
