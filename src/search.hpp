@@ -36,7 +36,8 @@ namespace ioutils {
         explicit FileSearch() : folders() {}
 
         // Filtering files using given patterns.
-        explicit FileSearch(const std::string &pattern, const int mode) : Policy(pattern, mode), folders() {}
+        template <typename T>
+        explicit FileSearch(const std::string &pattern, T && params) : Policy(pattern, params), folders() {}
 
         // Filtering files using given extensions.
         explicit FileSearch(const std::vector<std::string> &extensions)
@@ -99,7 +100,7 @@ namespace ioutils {
                             break;
                         case DT_LNK: {
                             // We only store symlink path.
-                            Policy::process_file(dir.path, info->d_name);
+                            Policy::process_symlink(dir.path, info->d_name);
                             break;
                         }
 

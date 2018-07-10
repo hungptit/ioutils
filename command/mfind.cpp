@@ -7,14 +7,19 @@
 #include "utils/matchers.hpp"
 #include "utils/regex_matchers.hpp"
 
+// System headers
+#include <dirent.h>
+
 namespace {
     struct SearchParams {
-        bool ignore_case;  // Ignore case distinctions
-        bool invert_match; // Select non-matching lines
-        bool verbose;      // Display verbose information.
+        bool invert_match = false;                  // Select non-matching lines
+        bool verbose = false;                       // Display verbose information.
+        int type = ioutils::DisplayType::DISP_NONE; // Display type
+        int regex_mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH);
 
         template <typename Archive> void serialize(Archive &ar) {
-            ar(CEREAL_NVP(ignore_case), CEREAL_NVP(invert_match), CEREAL_NVP(verbose));
+            ar(CEREAL_NVP(invert_match), CEREAL_NVP(verbose), CEREAL_NVP(type),
+               CEREAL_NVP(regex_mode));
         }
     };
 
@@ -34,17 +39,21 @@ namespace {
         InputParams params;
         std::vector<std::string> paths;
         bool help = false;
-        auto cli =
-            clara::Help(help) |
-            clara::Opt(params.parameters.verbose)["-v"]["--verbose"](
-                "Display verbose information") |
-            clara::Opt(params.parameters.ignore_case)["-i"]["--ignore-case"](
-                "Ignore case") |
-            clara::Opt(params.parameters.invert_match)["-u"]["--invert-match"](
-                "Select lines that do not match specified pattern.") |
-            clara::Opt(params.pattern,
-                       "pattern")["-e"]["--pattern"]("Search pattern.") |
-            clara::Arg(paths, "paths")("Search paths");
+        bool display_file = false;
+        bool display_dir = false;
+        bool display_symlink = false;
+        bool ignore_case = false;
+        auto cli = clara::Help(help) |
+                   clara::Opt(params.parameters.verbose)["-v"]["--verbose"](
+                       "Display verbose information") |
+                   clara::Opt(ignore_case)["-i"]["--ignore-case"]("Ignore case") |
+                   clara::Opt(params.parameters.invert_match)["-u"]["--invert-match"](
+                       "Select lines that do not match specified pattern.") |
+                   clara::Opt(display_file)["--file"]("Display matched files.") |
+                   clara::Opt(display_dir)["--dir"]("Display matched directory.") |
+                   clara::Opt(display_symlink)["--symlink"]("Display matched symlink.") |
+                   clara::Opt(params.pattern, "pattern")["-e"]["--pattern"]("Search pattern.") |
+                   clara::Arg(paths, "paths")("Search paths");
 
         auto result = cli.parse(clara::Args(argc, argv));
         if (!result) {
@@ -69,6 +78,17 @@ namespace {
             }
         }
 
+        // Init the mode for our regular expression engine.
+        if (ignore_case) {
+            params.parameters.regex_mode |= HS_FLAG_CASELESS;
+        }
+
+        // Parse the display type
+        params.parameters.type = display_file * ioutils::DisplayType::DISP_FILE +
+                                 display_dir * ioutils::DisplayType::DISP_DIR +
+                                 display_symlink * ioutils::DisplayType::DISP_SYMLINK;
+        if (!params.parameters.type) params.parameters.type = ioutils::DisplayType::DISP_FILE;
+
         // Display input arguments in JSON format if verbose flag is on
         if (params.parameters.verbose) {
             std::stringstream ss;
@@ -92,24 +112,18 @@ int main(int argc, char *argv[]) {
         Search search;
         search.dfs(params.paths);
     } else {
-        // Compute mode using input parameter information.
-        int mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH);
-        if (params.parameters.ignore_case) {
-            mode |= HS_FLAG_CASELESS;
-        }
-
         // Find desired files and folders
         if (!params.parameters.invert_match) {
             using Matcher = utils::hyperscan::RegexMatcher;
-            using Policy = ioutils::RegexPolicy<Matcher>;
+            using Policy = ioutils::RegexPolicy<Matcher, decltype(params.parameters)>;
             using Search = typename ioutils::FileSearch<Policy>;
-            Search search(params.pattern, mode);
+            Search search(params.pattern, params.parameters);
             search.dfs(params.paths);
         } else {
             using Matcher = utils::hyperscan::RegexMatcherInv;
-            using Policy = ioutils::RegexPolicy<Matcher>;
+            using Policy = ioutils::RegexPolicy<Matcher, decltype(params.parameters)>;
             using Search = typename ioutils::FileSearch<Policy>;
-            Search search(params.pattern, mode);
+            Search search(params.pattern, params.parameters);
             search.dfs(params.paths);
         }
     }
