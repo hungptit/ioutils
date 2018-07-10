@@ -9,9 +9,11 @@
 
 namespace {
     struct SearchParams {
-        bool ignore_case;  // Ignore case distinctions
-        bool invert_match; // Select non-matching lines
-        bool verbose;      // Display verbose information.
+        bool ignore_case;    // Ignore case distinctions
+        bool invert_match;   // Select non-matching lines
+        bool matched_file;   // Print matched files
+        bool matched_folder; // Print matched folders
+        bool verbose;        // Print verbose information.
 
         template <typename Archive> void serialize(Archive &ar) {
             ar(CEREAL_NVP(ignore_case), CEREAL_NVP(invert_match), CEREAL_NVP(verbose));
@@ -38,12 +40,13 @@ namespace {
             clara::Help(help) |
             clara::Opt(params.parameters.verbose)["-v"]["--verbose"](
                 "Display verbose information") |
-            clara::Opt(params.parameters.ignore_case)["-i"]["--ignore-case"](
-                "Ignore case") |
+            clara::Opt(params.parameters.matched_file)["--file"]("Print matched file paths") |
+            clara::Opt(params.parameters.matched_foler)["--folder"](
+                "Print matched folder path. ") |
+            clara::Opt(params.parameters.ignore_case)["-i"]["--ignore-case"]("Ignore case") |
             clara::Opt(params.parameters.invert_match)["-u"]["--invert-match"](
                 "Select lines that do not match specified pattern.") |
-            clara::Opt(params.pattern,
-                       "pattern")["-e"]["--pattern"]("Search pattern.") |
+            clara::Opt(params.pattern, "pattern")["-e"]["--pattern"]("Search pattern.") |
             clara::Arg(paths, "paths")("Search paths");
 
         auto result = cli.parse(clara::Args(argc, argv));
