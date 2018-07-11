@@ -16,7 +16,6 @@ namespace {
         bool verbose = false;                       // Display verbose information.
         int type = ioutils::DisplayType::DISP_NONE; // Display type
         int regex_mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH);
-
         template <typename Archive> void serialize(Archive &ar) {
             ar(CEREAL_NVP(invert_match), CEREAL_NVP(verbose), CEREAL_NVP(type),
                CEREAL_NVP(regex_mode));
