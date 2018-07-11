@@ -74,7 +74,7 @@ namespace ioutils {
         bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
 
         void process_file(const std::string &parent, const char *stem) {
-            if (!display_file) return;
+            if (!store_file) return;
             buffer = parent + "/" + stem;
             if (matcher.is_matched(buffer.data(), buffer.size())) {
                 files.push_back(buffer);
@@ -82,7 +82,7 @@ namespace ioutils {
         }
 
         void process_symlink(const std::string &parent, const char *stem) {
-            if (!display_symlink) return;
+            if (!store_symlink) return;
             buffer = parent + "/" + stem;
             if (matcher.is_matched(buffer.data(), buffer.size())) {
                 files.push_back(buffer);
@@ -95,9 +95,7 @@ namespace ioutils {
         Matcher matcher;
         std::vector<std::string> files;
 
-        // Display functionality related flags.
-        bool display_file;
-        bool display_dir;
-        bool display_symlink;
+        static constexpr bool store_file = true;
+        static constexpr bool store_symlink = true;
     };
 } // namespace ioutils
