@@ -86,11 +86,31 @@ namespace ioutils {
         }
         Matcher matcher;
 
-      protected:
+      private:
         void process_line(const char *begin, const size_t len) {
             if (matcher.is_matched(begin, len)) {
                 fmt::print("{0}", std::string(begin, len));
             }
+        }
+    };
+
+    class PrintAllPolicy {
+      public:
+        void process(const char *begin, const size_t len) {
+            constexpr char EOL = '\n';
+            const char *start = begin;
+            const char *end = begin + len;
+            const char *ptr = begin;
+            while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
+                process_line(start, ptr - start + 1);
+                start = ++ptr;
+                if (start == end) break;
+            }
+        }
+
+      private:
+        void process_line(const char *begin, const size_t len) {
+            fmt::print("{0}", std::string(begin, len));
         }
     };
 } // namespace ioutils

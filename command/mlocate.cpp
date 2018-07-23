@@ -106,7 +106,11 @@ int main(int argc, char *argv[]) {
     auto params = parse_input_arguments(argc, argv);
     for (auto db : params.databases) {
         if (params.pattern.empty()) {
-            // TODO: Update this
+            using GrepAlg = ioutils::MMapReader<ioutils::PrintAllPolicy>;
+            GrepAlg grep;
+            for (auto db : params.databases) {
+                grep(db.data());
+            }
         } else {
             // Only display files that match the given pattern.
             if (params.parameters.exact_match) {
