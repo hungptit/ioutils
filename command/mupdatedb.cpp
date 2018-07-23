@@ -84,7 +84,11 @@ int main(int argc, char *argv[]) {
     search.dfs(params.paths);
 
     // Serialize data to a string then save it to a file.
-    std::string buffer = ioutils::save<cereal::BinaryOutputArchive>(search.get_data());
+    fmt::memory_buffer buffer;
+    auto const data = search.get_data();
+    for (auto item : data) {
+        fmt::format_to(buffer, "{0}\n", item.path);
+    }
     if (params.verbose) fmt::print("buffer size: {}\n", buffer.size());
     ioutils::write(buffer.data(), buffer.size(), params.database.data());
 

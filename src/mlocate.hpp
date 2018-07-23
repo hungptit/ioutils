@@ -11,11 +11,9 @@ namespace ioutils {
     namespace mlocate {
         struct Policy {
           public:
-			using container_type = std::vector<ioutils::Stats>;
-			const container_type & get_data() const {
-				return data;
-			}
-			
+            using container_type = std::vector<ioutils::Stats>;
+            const container_type &get_data() const { return data; }
+
             void print() const {
                 for (auto const &item : data) {
                     fmt::print("{0:b} {1:>10} {2}\n", item.st_mode & MODE_MASK, item.st_size,
@@ -47,40 +45,52 @@ namespace ioutils {
 
             void process_dir(const std::string) const {}
 
-			
-			
             container_type data;
             struct stat statbuf;
             static constexpr int MODE_MASK = 0xfff;
         };
 
-        // Write search data to database.
-        struct MlocateDBWriter {};
-
-        // Read mlocate database
-        struct MlocateDBReader {};
-
     } // namespace mlocate
 
+    template <typename OArchive, typename T> std::string save(T &&data) {
+        std::stringstream os;
+        {
+            OArchive oar(os);
+            oar(CEREAL_NVP(data));
+        }
+        return os.str();
+    }
 
-	template <typename OArchive, typename T>
-	std::string save(T && data) {
-		std::stringstream os;
-		{
-			OArchive oar(os);
-			oar(CEREAL_NVP(data));
-		}
-		return os.str();
-	}
+    template <typename IArchive, typename T> T load(std::string &&buffer) {
+        std::stringstream is(buffer);
+        IArchive iar(is);
+        T data;
+        iar(data);
+        return data;
+    }
 
-	template <typename IArchive, typename T>
-	T load(std::string &&buffer) {
-		std::stringstream is(buffer);
-		IArchive iar(is);
-		T data;
-		iar(data);
-		return data;
-	}
+    template <typename Matcher> class LocatePolicy {
+      public:
+        LocatePolicy(const std::string &patt) : matcher(patt) {}
 
-	
+        void process(const char *begin, const size_t len) {
+            constexpr char EOL = '\n';
+            const char *start = begin;
+            const char *end = begin + len;
+            const char *ptr = begin;
+            while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
+                process_line(start, ptr - start + 1);
+                start = ++ptr;
+                if (start == end) break;
+            }
+        }
+        Matcher matcher;
+
+      protected:
+        void process_line(const char *begin, const size_t len) {
+            if (matcher.is_matched(begin, len)) {
+                fmt::print("{0}", std::string(begin, len));
+            }
+        }
+    };
 } // namespace ioutils

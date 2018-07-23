@@ -83,51 +83,38 @@ namespace {
 
         return params;
     }
+
+    // Find the matched file names from the database.
+    template <typename T> void fgrep(const InputParams &params) {
+        T grep(params.pattern.data());
+        for (auto afile : params.databases) {
+            grep(afile.data());
+        }
+    }
+
+    template <typename Matcher, typename Params> void locate(Params &&params) {
+        using GrepAlg = ioutils::MMapReader<ioutils::LocatePolicy<Matcher>>;
+        GrepAlg grep(params.pattern.data());
+        for (auto db : params.databases) {
+            grep(db.data());
+        }
+    }
+
 } // namespace
 
 int main(int argc, char *argv[]) {
-    using container_type = ioutils::mlocate::Policy::container_type;
     auto params = parse_input_arguments(argc, argv);
     for (auto db : params.databases) {
-        std::string buffer = ioutils::read(db.data());
-        if (buffer.empty()) {
-            if (params.parameters.verbose) {
-                fmt::print(stderr, "Cannot read data from {0} or the file content is empty.\n",
-                           db);
-            }
-            continue;
-        }
-
-        if (params.parameters.verbose) {
-            fmt::print("Read bytes: {}\n", buffer.size());
-        }
-
-        container_type data =
-            ioutils::load<cereal::BinaryInputArchive, container_type>(std::move(buffer));
-
-        if (params.parameters.info) {
-            fmt::print("The number of files and folders: {}\n", data.size());
-            continue;
-        }
-
         if (params.pattern.empty()) {
-            // Display all files
-            for (auto &item : data) {
-                fmt::print("{0}\n", item.path);
-            }
+            // TODO: Update this
         } else {
             // Only display files that match the given pattern.
             if (params.parameters.exact_match) {
-                utils::ExactMatchSSE2 matcher(
-                    params.pattern.data()); // Use exact matching algorithm.
-                for (auto &item : data) {
-                    if (matcher.is_matched(item.path.data(), item.path.size())) {
-                        fmt::print("{0}\n", item.path);
-                    }
-                }
+                using Matcher = utils::ExactMatchSSE2;
+                locate<Matcher>(params);
             } else {
                 // Use regular expression engine. This approach will
-                // slightly slower than that of exact matching
+                // slightly slower than using the exact matching
                 // algorithm.
                 int mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH);
                 if (params.parameters.ignore_case) {
@@ -135,20 +122,11 @@ int main(int argc, char *argv[]) {
                 }
 
                 if (!params.parameters.invert_match) {
-                    utils::hyperscan::RegexMatcher matcher(params.pattern.data(), mode);
-                    for (auto &item : data) {
-                        if (matcher.is_matched(item.path.data(), item.path.size())) {
-                            fmt::print("{0}\n", item.path);
-                        }
-                    }
-
+                    using Matcher = utils::hyperscan::RegexMatcher;
+                    locate<Matcher>(params);
                 } else {
-                    utils::hyperscan::RegexMatcherInv matcher(params.pattern.data(), mode);
-                    for (auto &item : data) {
-                        if (matcher.is_matched(item.path.data(), item.path.size())) {
-                            fmt::print("{0}\n", item.path);
-                        }
-                    }
+                    using Matcher = utils::hyperscan::RegexMatcherInv;
+                    locate<Matcher>(params);
                 }
             }
         }
