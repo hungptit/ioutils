@@ -33,7 +33,7 @@ include(CXXFeatureCheck)
 # set(CMAKE_BUILD_TYPE Debug)
 
 set (CMAKE_BUILD_TYPE Release)
-add_cxx_compiler_flag(-Ofast)
+add_cxx_compiler_flag(-O3)
 add_cxx_compiler_flag(-march=native)
 add_cxx_compiler_flag(-std=c++14)
 add_cxx_compiler_flag(-Wall)
