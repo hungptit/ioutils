@@ -2,7 +2,6 @@
 #include "read_policies.hpp"
 #include "reader.hpp"
 #include "search.hpp"
-#include "search_policies.hpp"
 #include <string>
 
 namespace ioutils {

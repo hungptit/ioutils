@@ -46,19 +46,13 @@ namespace ioutils {
             void process_symlink(const std::string &parent, const char *stem) {
                 process_file(parent, stem);
             }
-            
+
             void process_dir(const std::string) const {}
 
             container_type data;
             struct stat statbuf;
             static constexpr int MODE_MASK = 0xfff;
         };
-
-        // Write search data to database.
-        struct MlocateDBWriter {};
-
-        // Read mlocate database
-        struct MlocateDBReader {};
 
     } // namespace mlocate
 
@@ -79,4 +73,48 @@ namespace ioutils {
         return data;
     }
 
+    template <typename Matcher> class LocatePolicy {
+      public:
+        LocatePolicy(const std::string &patt) : matcher(patt) {}
+
+        void process(const char *begin, const size_t len) {
+            constexpr char EOL = '\n';
+            const char *start = begin;
+            const char *end = begin + len;
+            const char *ptr = begin;
+            while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
+                process_line(start, ptr - start + 1);
+                start = ++ptr;
+                if (start == end) break;
+            }
+        }
+        Matcher matcher;
+
+      private:
+        void process_line(const char *begin, const size_t len) {
+            if (matcher.is_matched(begin, len)) {
+                fmt::print("{0}", std::string(begin, len));
+            }
+        }
+    };
+
+    class PrintAllPolicy {
+      public:
+        void process(const char *begin, const size_t len) {
+            constexpr char EOL = '\n';
+            const char *start = begin;
+            const char *end = begin + len;
+            const char *ptr = begin;
+            while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
+                process_line(start, ptr - start + 1);
+                start = ++ptr;
+                if (start == end) break;
+            }
+        }
+
+      private:
+        void process_line(const char *begin, const size_t len) {
+            fmt::print("{0}", std::string(begin, len));
+        }
+    };
 } // namespace ioutils

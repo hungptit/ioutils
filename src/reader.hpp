@@ -1,6 +1,6 @@
 #pragma once
-#include <stdio.h>
 #include <fcntl.h>
+#include <stdio.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -12,7 +12,7 @@ namespace ioutils {
     template <typename Policy, size_t BUFFER_SIZE = READ_TRUNK_SIZE>
     struct FileReader : public Policy {
         FileReader() : Policy() {}
-        FileReader(const char* pattern) : Policy(pattern) {}
+        FileReader(const char *pattern) : Policy(pattern) {}
 
         void operator()(const char *datafile) {
             char read_buffer[BUFFER_SIZE + 1];
@@ -49,7 +49,7 @@ namespace ioutils {
     // A reader that use memory mapped approach.
     template <typename Policy> struct MMapReader : public Policy {
         MMapReader() : Policy() {}
-        MMapReader(const char* pattern) : Policy(pattern) {}
+        MMapReader(const char *pattern) : Policy(pattern) {}
         void operator()(const char *datafile) {
             // Open data file for reading
             int fd = open(datafile, O_RDONLY);
@@ -70,7 +70,7 @@ namespace ioutils {
                 close(fd);
                 return;
             }
-            
+
             // Create mapped memory
             const int flags = MAP_PRIVATE;
             // const int flags = MAP_PRIVATE | MAP_POPULATE;
