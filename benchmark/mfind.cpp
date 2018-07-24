@@ -52,41 +52,41 @@ CELERO_MAIN
 
 // Find all files in the boost source code
 BASELINE(boost, gnu_find, number_of_samples, number_of_operations) {
-    test("find ", "../../3p/src/boost/");
+    test("find ", "../../3p/src/");
 }
 
 BENCHMARK(boost, fd, number_of_samples, number_of_operations) {
-    test("fd --no-ignore . ", "../../3p/src/boost/");
+    test("fd --no-ignore . ", "../../3p/src");
 }
 
 BENCHMARK(boost, mfind_to_console, number_of_samples, number_of_operations) {
-    test("../command/mfind ", "../../3p/src/boost/");
+    test("../command/mfind ", "../../3p/src");
 }
 
 // Find all files in the kernel source code.
 BASELINE(linux_kernel, gnu_find, number_of_samples, number_of_operations) {
-    test("find ", "/usr/src/linux-4.17.1-gentoo/");
+    test("find ", "/usr/src/linux-4.17.5-gentoo/");
 }
 
 BENCHMARK(linux_kernel, fd, number_of_samples, number_of_operations) {
-    test("fd --no-ignore . ", "/usr/src/linux-4.17.1-gentoo/");
+    test("fd --no-ignore . ", "/usr/src/linux-4.17.5-gentoo/");
 }
 
 BENCHMARK(linux_kernel, mfind_to_console, number_of_samples, number_of_operations) {
-    test("../command/mfind ", "/usr/src/linux-4.17.1-gentoo/");
+    test("../command/mfind ", "/usr/src/linux-4.17.5-gentoo/");
 }
 
 // Find all files using a regex that does not match any results
 BASELINE(boost_regex, gnu_find, number_of_samples, number_of_operations) {
-    test_find_regex("find ", pattern1, " ../../3p/src/boost/");
+    test_find_regex("find ", pattern1, " ../../3p/src/");
 }
 
 BENCHMARK(boost_regex, fd, number_of_samples, number_of_operations) {
-    test_fd_regex("fd --no-ignore ", pattern1, " ../../3p/src/boost/");
+    test_fd_regex("fd --no-ignore ", pattern1, " ../../3p/src/");
 }
 
 BENCHMARK(boost_regex, mfind_to_console, number_of_samples, number_of_operations) {
-    test_mfind_regex("../command/mfind ", pattern1, " ../../3p/src/boost/");
+    test_mfind_regex("../command/mfind ", pattern1, " ../../3p/src/");
 }
 
 // Find all files using a regex that matches some files.

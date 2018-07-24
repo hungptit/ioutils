@@ -9,11 +9,11 @@
 
 namespace {
     struct SearchParams {
-        bool ignore_case;  // Ignore case distinctions
-        bool invert_match; // Select non-matching lines
-        bool exact_match;  // Use exact matching algorithms.
-        bool verbose;      // Display verbose information.
-        bool info;
+        bool ignore_case = false;  // Ignore case distinctions
+        bool invert_match = false; // Select non-matching lines
+        bool exact_match = false;  // Use exact matching algorithms.
+        bool verbose = false;      // Display verbose information.
+        bool info = false;
 
         template <typename Archive> void serialize(Archive &ar) {
             ar(CEREAL_NVP(ignore_case), CEREAL_NVP(invert_match), CEREAL_NVP(exact_match),
@@ -45,7 +45,6 @@ namespace {
                 "Display lines that do not match given pattern.") |
             clara::Opt(params.parameters.exact_match)["-x"]["--exact-match"](
                 "Use exact match algorithm") |
-            clara::Opt(params.parameters.info)["--info"]("Display database information") |
             clara::Arg(params.pattern, "pattern")("Search pattern");
 
         auto result = cli.parse(clara::Args(argc, argv));
