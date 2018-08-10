@@ -49,7 +49,9 @@ namespace ioutils {
     // A reader that use memory mapped approach.
     template <typename Policy> struct MMapReader : public Policy {
         MMapReader() : Policy() {}
-        MMapReader(const char *pattern) : Policy(pattern) {}
+
+        template <typename Params>
+        MMapReader(Params &&params) : Policy(std::forward<Params>(params)) {}
         void operator()(const char *datafile) {
             // Open data file for reading
             int fd = open(datafile, O_RDONLY);

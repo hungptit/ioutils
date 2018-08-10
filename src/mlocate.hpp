@@ -73,9 +73,10 @@ namespace ioutils {
         return data;
     }
 
-    template <typename Matcher> class LocatePolicy {
+    template <typename Matcher, typename Params> class LocatePolicy {
       public:
-        LocatePolicy(const std::string &patt) : matcher(patt) {}
+        LocatePolicy(const Params &args)
+            : matcher(args.pattern, args.parameters.mode), params(args) {}
 
         void process(const char *begin, const size_t len) {
             constexpr char EOL = '\n';
@@ -88,18 +89,20 @@ namespace ioutils {
                 if (start == end) break;
             }
         }
-        Matcher matcher;
 
       private:
+        Matcher matcher;
+        Params params;
         void process_line(const char *begin, const size_t len) {
             if (matcher.is_matched(begin, len)) {
-                fmt::print("{0}", std::string(begin, len));
+                fmt::print("{0}{1}", params.parameters.prefix, std::string(begin, len));
             }
         }
     };
 
-    class PrintAllPolicy {
+    template <typename Params> class PrintAllPolicy {
       public:
+        PrintAllPolicy(const Params &args) : params(args) {}
         void process(const char *begin, const size_t len) {
             constexpr char EOL = '\n';
             const char *start = begin;
@@ -113,8 +116,9 @@ namespace ioutils {
         }
 
       private:
+        Params params;
         void process_line(const char *begin, const size_t len) {
-            fmt::print("{0}", std::string(begin, len));
+            fmt::print("{0}{1}", params.parameters.prefix, std::string(begin, len));
         }
     };
 } // namespace ioutils
