@@ -14,10 +14,12 @@ namespace {
         bool exact_match = false;  // Use exact matching algorithms.
         bool verbose = false;      // Display verbose information.
         bool info = false;
+        int mode;           // Regex mode
+        std::string prefix; // Root folder prefix
 
         template <typename Archive> void serialize(Archive &ar) {
             ar(CEREAL_NVP(ignore_case), CEREAL_NVP(invert_match), CEREAL_NVP(exact_match),
-               CEREAL_NVP(verbose), CEREAL_NVP(info));
+               CEREAL_NVP(verbose), CEREAL_NVP(info), CEREAL_NVP(prefix));
         }
     };
 
@@ -45,6 +47,7 @@ namespace {
                 "Display lines that do not match given pattern.") |
             clara::Opt(params.parameters.exact_match)["-x"]["--exact-match"](
                 "Use exact match algorithm") |
+            clara::Opt(params.parameters.prefix, "prefix")["--prefix"]("Path prefix.") |
             clara::Arg(params.pattern, "pattern")("Search pattern");
 
         auto result = cli.parse(clara::Args(argc, argv));
@@ -70,6 +73,15 @@ namespace {
             }
         }
 
+        // If user does not specify prefix then fallback to the
+        // MLOCATE_PREFIX environment variable.
+        if (params.parameters.prefix.empty()) {
+            auto const default_prefix = std::getenv("MLOCATE_PREFIX");
+            if (default_prefix) {
+                params.parameters.prefix = std::string(default_prefix);
+            }
+        }
+
         // Display input arguments in JSON format if verbose flag is on
         if (params.parameters.verbose) {
             std::stringstream ss;
@@ -82,76 +94,39 @@ namespace {
 
         return params;
     }
+
+    template <typename Matcher, typename Params> void locate(Params &&params) {
+        using GrepAlg = ioutils::MMapReader<ioutils::LocatePolicy<Matcher, Params>>;
+        GrepAlg grep(params);
+        for (auto db : params.databases) {
+            grep(db.data());
+        }
+    }
 } // namespace
 
 int main(int argc, char *argv[]) {
-    using container_type = ioutils::mlocate::Policy::container_type;
     auto params = parse_input_arguments(argc, argv);
     for (auto db : params.databases) {
-        std::string buffer = ioutils::read(db.data());
-        if (buffer.empty()) {
-            if (params.parameters.verbose) {
-                fmt::print(stderr, "Cannot read data from {0} or the file content is empty.\n",
-                           db);
-            }
-            continue;
-        }
-
-        if (params.parameters.verbose) {
-            fmt::print("Read bytes: {}\n", buffer.size());
-        }
-
-        container_type data =
-            ioutils::load<cereal::BinaryInputArchive, container_type>(std::move(buffer));
-
-        if (params.parameters.info) {
-            fmt::print("The number of files and folders: {}\n", data.size());
-            continue;
-        }
-
         if (params.pattern.empty()) {
-            // Display all files
-            for (auto &item : data) {
-                fmt::print("{0}\n", item.path);
+            using GrepAlg = ioutils::MMapReader<ioutils::PrintAllPolicy<decltype(params)>>;
+            GrepAlg grep(params);
+            for (auto db : params.databases) {
+                grep(db.data());
             }
         } else {
-            // Only display files that match the given pattern.
-            if (params.parameters.exact_match) {
-                utils::ExactMatchSSE2 matcher(
-                    params.pattern.data()); // Use exact matching algorithm.
-                for (auto &item : data) {
-                    if (matcher.is_matched(item.path.data(), item.path.size())) {
-                        fmt::print("{0}\n", item.path);
-                    }
-                }
+            params.parameters.mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH);
+            if (params.parameters.ignore_case) {
+                params.parameters.mode |= HS_FLAG_CASELESS;
+            }
+
+            if (!params.parameters.invert_match) {
+                using Matcher = utils::hyperscan::RegexMatcher;
+                locate<Matcher>(params);
             } else {
-                // Use regular expression engine. This approach will
-                // slightly slower than that of exact matching
-                // algorithm.
-                int mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH);
-                if (params.parameters.ignore_case) {
-                    mode |= HS_FLAG_CASELESS;
-                }
-
-                if (!params.parameters.invert_match) {
-                    utils::hyperscan::RegexMatcher matcher(params.pattern.data(), mode);
-                    for (auto &item : data) {
-                        if (matcher.is_matched(item.path.data(), item.path.size())) {
-                            fmt::print("{0}\n", item.path);
-                        }
-                    }
-
-                } else {
-                    utils::hyperscan::RegexMatcherInv matcher(params.pattern.data(), mode);
-                    for (auto &item : data) {
-                        if (matcher.is_matched(item.path.data(), item.path.size())) {
-                            fmt::print("{0}\n", item.path);
-                        }
-                    }
-                }
+                using Matcher = utils::hyperscan::RegexMatcherInv;
+                locate<Matcher>(params);
             }
         }
     }
-
     return EXIT_SUCCESS;
 }
