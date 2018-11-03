@@ -82,7 +82,7 @@ sys     0m0.121s
 *Note: mfind does support caseless matching using ignore-case flag.*
 
 ## Search for files that do not match the given pattern ##
-mfind does allow users to search for files that do not match a given option by turn on the invert-match flag. Below is an example
+mfind does allow users to search for files that do not match a given option by turn on the **inverse-match** flag. Below is an example
 ``` shell
 hdang@dev115 ~/w/i/command> ./mfind . -e '(o|bin|cmake|make|txt|internal|includecache|tmp|out)$|cache|CMakeFiles' -u
 ./linestats.cpp
@@ -100,14 +100,14 @@ hdang@dev115 ~/w/i/command> ./mfind . -e '(o|bin|cmake|make|txt|internal|include
 ```
 
 ## Build file information database ##
-Before using mlocate command we do need to build the file information database for our interrested folders.  Below command will build file information database for boost, hyperscan, tbb, and seastar packages. 
+Before using mlocate command we do need to build the file information database for our interrested folders.  Below command will build file information database for boost, hyperscan, tbb, and seastar packages.
 
 ``` shell
 mupdatedb boost/ hyperscan/ tbb/ rocksdb/ seastar/ -v
 ```
 ## Locate files using regular expression ##
 
-Assume we have already built the file information database using mupdatedb command then we can use mlocate to look for files that match our desired pattern. 
+Assume we have already built the file information database using mupdatedb command then we can use mlocate to look for files that match our desired pattern.
 
 This example will seach for all files with h and hh extensions
 

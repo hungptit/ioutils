@@ -12,12 +12,15 @@
 
 namespace {
     struct SearchParams {
-        bool invert_match = false;                  // Select non-matching lines
+        bool inverse_match = false;                 // Select non-matching lines
         bool verbose = false;                       // Display verbose information.
+        bool ignore_folders;
+        bool ignore_files;
+        bool ignore_symlinks;
         int type = ioutils::DisplayType::DISP_NONE; // Display type
         int regex_mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH);
         template <typename Archive> void serialize(Archive &ar) {
-            ar(CEREAL_NVP(invert_match), CEREAL_NVP(verbose), CEREAL_NVP(type),
+            ar(CEREAL_NVP(inverse_match), CEREAL_NVP(verbose), CEREAL_NVP(type),
                CEREAL_NVP(regex_mode));
         }
     };
@@ -38,19 +41,20 @@ namespace {
         InputParams params;
         std::vector<std::string> paths;
         bool help = false;
-        bool display_file = false;
-        bool display_dir = false;
-        bool display_symlink = false;
         bool ignore_case = false;
+        bool ignore_dir = false;
+        bool ignore_file = false;
+        bool ignore_symlink = false;
+
         auto cli = clara::Help(help) |
                    clara::Opt(params.parameters.verbose)["-v"]["--verbose"](
                        "Display verbose information") |
                    clara::Opt(ignore_case)["-i"]["--ignore-case"]("Ignore case") |
-                   clara::Opt(params.parameters.invert_match)["-u"]["--invert-match"](
+                   clara::Opt(params.parameters.inverse_match)["-u"]["--inverse-match"](
                        "Select lines that do not match specified pattern.") |
-                   clara::Opt(display_file)["--file"]("Display matched files.") |
-                   clara::Opt(display_dir)["--dir"]("Display matched directory.") |
-                   clara::Opt(display_symlink)["--symlink"]("Display matched symlink.") |
+                   clara::Opt(ignore_file)["--ignore-file"]("Ignore files.") |
+                   clara::Opt(ignore_dir)["--ignore-dir"]("Ignore folders.") |
+                   clara::Opt(ignore_symlink)["--ignore-symlink"]("Ignore symlink.") |
                    clara::Opt(params.pattern, "pattern")["-e"]["--pattern"]("Search pattern.") |
                    clara::Arg(paths, "paths")("Search paths");
 
@@ -83,10 +87,9 @@ namespace {
         }
 
         // Parse the display type
-        params.parameters.type = display_file * ioutils::DisplayType::DISP_FILE +
-                                 display_dir * ioutils::DisplayType::DISP_DIR +
-                                 display_symlink * ioutils::DisplayType::DISP_SYMLINK;
-        if (!params.parameters.type) params.parameters.type = ioutils::DisplayType::DISP_FILE;
+        params.parameters.type = !ignore_file * ioutils::DisplayType::DISP_FILE +
+                                 !ignore_dir * ioutils::DisplayType::DISP_DIR +
+                                 !ignore_symlink * ioutils::DisplayType::DISP_SYMLINK;
 
         // Display input arguments in JSON format if verbose flag is on
         if (params.parameters.verbose) {
@@ -101,29 +104,31 @@ namespace {
         return params;
     }
 
+    template<typename Policy, typename Params>
+    void search(Params &&params) {
+        using Search = typename ioutils::FileSearch<Policy>;
+        Search search(params.pattern, params.parameters);
+        search.dfs(params.paths);
+    }
 } // namespace
 
 int main(int argc, char *argv[]) {
     auto params = parse_input_arguments(argc, argv);
 
+    // Search for files based on given constraints.
     if (params.pattern.empty()) {
-        using Search = typename ioutils::FileSearch<ioutils::ConsolePolicy>;
-        Search search;
-        search.dfs(params.paths);
+        using Policy = ioutils::SimplePolicy<decltype(params.parameters)>;
+        search<Policy>(params);
     } else {
         // Find desired files and folders
-        if (!params.parameters.invert_match) {
+        if (!params.parameters.inverse_match) {
             using Matcher = utils::hyperscan::RegexMatcher;
             using Policy = ioutils::RegexPolicy<Matcher, decltype(params.parameters)>;
-            using Search = typename ioutils::FileSearch<Policy>;
-            Search search(params.pattern, params.parameters);
-            search.dfs(params.paths);
+            search<Policy>(params);
         } else {
             using Matcher = utils::hyperscan::RegexMatcherInv;
             using Policy = ioutils::RegexPolicy<Matcher, decltype(params.parameters)>;
-            using Search = typename ioutils::FileSearch<Policy>;
-            Search search(params.pattern, params.parameters);
-            search.dfs(params.paths);
+            search<Policy>(para);
         }
     }
 

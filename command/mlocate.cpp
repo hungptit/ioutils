@@ -9,16 +9,16 @@
 
 namespace {
     struct SearchParams {
-        bool ignore_case = false;  // Ignore case distinctions
-        bool invert_match = false; // Select non-matching lines
-        bool exact_match = false;  // Use exact matching algorithms.
-        bool verbose = false;      // Display verbose information.
+        bool ignore_case = false;   // Ignore case distinctions
+        bool inverse_match = false; // Select non-matching lines
+        bool exact_match = false;   // Use exact matching algorithms.
+        bool verbose = false;       // Display verbose information.
         bool info = false;
         int mode;           // Regex mode
         std::string prefix; // Root folder prefix
 
         template <typename Archive> void serialize(Archive &ar) {
-            ar(CEREAL_NVP(ignore_case), CEREAL_NVP(invert_match), CEREAL_NVP(exact_match),
+            ar(CEREAL_NVP(ignore_case), CEREAL_NVP(inverse_match), CEREAL_NVP(exact_match),
                CEREAL_NVP(verbose), CEREAL_NVP(info), CEREAL_NVP(prefix));
         }
     };
@@ -43,7 +43,7 @@ namespace {
             clara::Opt(params.parameters.verbose)["-v"]["--verbose"](
                 "Display verbose information") |
             clara::Opt(params.parameters.ignore_case)["-i"]["--ignore-case"]("Ignore case.") |
-            clara::Opt(params.parameters.invert_match)["-u"]["--invert-match"](
+            clara::Opt(params.parameters.inverse_match)["-u"]["--inverse-match"](
                 "Display lines that do not match given pattern.") |
             clara::Opt(params.parameters.exact_match)["-x"]["--exact-match"](
                 "Use exact match algorithm") |
@@ -119,7 +119,7 @@ int main(int argc, char *argv[]) {
                 params.parameters.mode |= HS_FLAG_CASELESS;
             }
 
-            if (!params.parameters.invert_match) {
+            if (!params.parameters.inverse_match) {
                 using Matcher = utils::hyperscan::RegexMatcher;
                 locate<Matcher>(params);
             } else {
