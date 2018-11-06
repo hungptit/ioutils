@@ -6,6 +6,8 @@
 
 #include "search.hpp"
 #include "search_policies.hpp"
+#include "store_policy.hpp"
+#include "simple_policy.hpp"
 
 void test_search_dfs(const char *path) {
     int fd = ::open(path, O_RDONLY);
