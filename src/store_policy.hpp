@@ -2,6 +2,8 @@
 
 #include <string>
 #include <vector>
+#include "resources.hpp"
+#include "filesystem.hpp"
 
 namespace ioutils {
     // A policy class that stores all file paths.
