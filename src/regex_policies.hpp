@@ -13,10 +13,10 @@ namespace ioutils {
             : buffer(), matcher(pattern, params.regex_mode),
               parameters(std::forward<Params>(params)) {
             buffer.reserve(1023);
-            display_file = params.type & DisplayType::DISP_FILE;
-            display_dir = params.type & DisplayType::DISP_DIR;
-            display_symlink = params.type & DisplayType::DISP_SYMLINK;
-            fmt::print("==> type: {}", params.type);
+            display_file = (params.type & DisplayType::DISP_FILE) > 0;
+            display_dir = (params.type & DisplayType::DISP_DIR) > 0;
+            display_symlink = (params.type & DisplayType::DISP_SYMLINK) > 0;
+            color = (params.type & DisplayType::DISP_COLOR) > 0;
         }
 
       protected:
@@ -26,7 +26,11 @@ namespace ioutils {
             if (!display_file) return;
             buffer = parent + "/" + stem;
             if (matcher.is_matched(buffer.data(), buffer.size())) {
-                fmt::print("{}\n", buffer);
+                if (!color) {
+                    fmt::print("{}\n", buffer);
+                } else {
+                    fmt::print("\033[1;39m{}\033[0m\n", buffer);
+                }
             }
         }
 
@@ -34,14 +38,22 @@ namespace ioutils {
             if (!display_symlink) return;
             buffer = parent + "/" + stem;
             if (matcher.is_matched(buffer.data(), buffer.size())) {
-                fmt::print("{}\n", buffer);
+                if (!color) {
+                    fmt::print("{}\n", buffer);
+                } else {
+                    fmt::print("\033[1;31m{}\033[0m\n", buffer);
+                }
             }
         }
 
         void process_dir(const std::string &p) {
             if (!display_dir) return;
             if (matcher.is_matched(p.data(), p.size())) {
-                fmt::print("{}\n", p);
+                if (!color) {
+                    fmt::print("{}\n", p);
+                } else {
+                    fmt::print("\033[1;32m{}\033[0m\n", p);
+                }
             }
         }
 
@@ -53,6 +65,7 @@ namespace ioutils {
         bool display_file;
         bool display_dir;
         bool display_symlink;
+        bool color;
     };
 
     template <typename Matcher> class RegexStorePolicy {

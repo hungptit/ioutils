@@ -6,6 +6,8 @@
 
 #include "search.hpp"
 #include "search_policies.hpp"
+#include "store_policy.hpp"
+#include "simple_policy.hpp"
 
 void test_search_dfs(const char *path) {
     int fd = ::open(path, O_RDONLY);
@@ -59,7 +61,7 @@ BASELINE(boost, gnu_find, number_of_samples, number_of_operations) {
 }
 
 BENCHMARK(boost, fd, number_of_samples, number_of_operations) {
-    test("fd --no-ignore . ", "../../3p/src");
+    test("fd  . ", "../../3p/src");
 }
 
 BENCHMARK(boost, mfind_to_console, number_of_samples, number_of_operations) {
@@ -72,7 +74,7 @@ BASELINE(linux_kernels, gnu_find, number_of_samples, number_of_operations) {
 }
 
 BENCHMARK(linux_kernels, fd, number_of_samples, number_of_operations) {
-    test("fd --no-ignore . ", "/usr/src/");
+    test("fd . ", "/usr/src/");
 }
 
 BENCHMARK(linux_kernels, mfind_to_console, number_of_samples, number_of_operations) {
@@ -85,7 +87,7 @@ BASELINE(boost_regex, gnu_find, number_of_samples, number_of_operations) {
 }
 
 BENCHMARK(boost_regex, fd, number_of_samples, number_of_operations) {
-    test_fd_regex("fd --no-ignore ", pattern1, " ../../3p/src/");
+    test_fd_regex("fd ", pattern1, " ../../3p/src/");
 }
 
 BENCHMARK(boost_regex, mfind_to_console, number_of_samples, number_of_operations) {

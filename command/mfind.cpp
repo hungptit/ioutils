@@ -3,6 +3,7 @@
 #include "regex_policies.hpp"
 #include "search.hpp"
 #include "search_policies.hpp"
+#include "simple_policy.hpp"
 #include "utilities.hpp"
 #include "utils/matchers.hpp"
 #include "utils/regex_matchers.hpp"
@@ -14,9 +15,6 @@ namespace {
     struct SearchParams {
         bool inverse_match = false;                 // Select non-matching lines
         bool verbose = false;                       // Display verbose information.
-        bool ignore_folders;
-        bool ignore_files;
-        bool ignore_symlinks;
         int type = ioutils::DisplayType::DISP_NONE; // Display type
         int regex_mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH);
         template <typename Archive> void serialize(Archive &ar) {
@@ -45,6 +43,7 @@ namespace {
         bool ignore_dir = false;
         bool ignore_file = false;
         bool ignore_symlink = false;
+        bool color = false;
 
         auto cli = clara::Help(help) |
                    clara::Opt(params.parameters.verbose)["-v"]["--verbose"](
@@ -55,6 +54,7 @@ namespace {
                    clara::Opt(ignore_file)["--ignore-file"]("Ignore files.") |
                    clara::Opt(ignore_dir)["--ignore-dir"]("Ignore folders.") |
                    clara::Opt(ignore_symlink)["--ignore-symlink"]("Ignore symlink.") |
+                   clara::Opt(color)["-c"]["--color"]("Print out color text.") |
                    clara::Opt(params.pattern, "pattern")["-e"]["--pattern"]("Search pattern.") |
                    clara::Arg(paths, "paths")("Search paths");
 
@@ -89,7 +89,8 @@ namespace {
         // Parse the display type
         params.parameters.type = !ignore_file * ioutils::DisplayType::DISP_FILE +
                                  !ignore_dir * ioutils::DisplayType::DISP_DIR +
-                                 !ignore_symlink * ioutils::DisplayType::DISP_SYMLINK;
+                                 !ignore_symlink * ioutils::DisplayType::DISP_SYMLINK +
+                                 color * ioutils::DisplayType::DISP_COLOR;
 
         // Display input arguments in JSON format if verbose flag is on
         if (params.parameters.verbose) {
@@ -104,8 +105,7 @@ namespace {
         return params;
     }
 
-    template<typename Policy, typename Params>
-    void search(Params &&params) {
+    template <typename Policy, typename Params> void search(Params &&params) {
         using Search = typename ioutils::FileSearch<Policy>;
         Search search(params.pattern, params.parameters);
         search.dfs(params.paths);
@@ -128,7 +128,7 @@ int main(int argc, char *argv[]) {
         } else {
             using Matcher = utils::hyperscan::RegexMatcherInv;
             using Policy = ioutils::RegexPolicy<Matcher, decltype(params.parameters)>;
-            search<Policy>(para);
+            search<Policy>(params);
         }
     }
 

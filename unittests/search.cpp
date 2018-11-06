@@ -6,6 +6,7 @@
 #include "search.hpp"
 #include "search_policies.hpp"
 #include "regex_policies.hpp"
+#include "store_policy.hpp"
 #include "temporary_dir.hpp"
 #include "test_data.hpp"
 #include "filesystem"
