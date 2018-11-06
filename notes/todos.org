@@ -1,9 +1,9 @@
 * TODO Add a benchmark for std::filesystem and boost::filesystem
-* TODO Allow users to display files or folders or both using commanline input argument.
-  + --file: Display matched files only.
-  + --folder: Display matched folder only.
-  + --symlink: Display matched symlink only.
 * TODO Allow users to save results in different formats
   + JSON
   + XML
-** TODO Submit a proposal to CppCon-2019
+* TODO Submit a proposal to CppCon-2019
+* TODO Support color output
+  + dir:
+  + symlink:
+  + file:
