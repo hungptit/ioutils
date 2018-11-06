@@ -2,26 +2,21 @@
 
 #include "filesystem.hpp"
 #include "fmt/format.h"
+#include "resources.hpp"
 #include "utils/regex_matchers.hpp"
 #include <string>
 
 namespace ioutils {
-    enum DisplayType : uint8_t {
-        DISP_NONE = 0,
-        DISP_FILE = 1,
-        DISP_DIR = 2,
-        DISP_SYMLINK = 4,
-        DISP_EXECUTABLE = 8
-    };
-
     template <typename Matcher, typename Params> class RegexPolicy {
       public:
-        RegexPolicy(const std::string &pattern, const Params &params)
-            : buffer(), matcher(pattern, params.regex_mode), parameters(params) {
+        RegexPolicy(const std::string &pattern, Params &&params)
+            : buffer(), matcher(pattern, params.regex_mode),
+              parameters(std::forward<Params>(params)) {
             buffer.reserve(1023);
             display_file = params.type & DisplayType::DISP_FILE;
             display_dir = params.type & DisplayType::DISP_DIR;
             display_symlink = params.type & DisplayType::DISP_SYMLINK;
+            fmt::print("==> type: {}", params.type);
         }
 
       protected:

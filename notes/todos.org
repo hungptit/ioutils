@@ -1,10 +1,9 @@
-* TODO Add a benchmark for locate and mlocate command using boost source folder.
+* TODO Add a benchmark for std::filesystem and boost::filesystem
 * TODO Allow users to display files or folders or both using commanline input argument.
   + --file: Display matched files only.
   + --folder: Display matched folder only.
+  + --symlink: Display matched symlink only.
 * TODO Allow users to save results in different formats
   + JSON
   + XML
-* TODO Finish the slides for ioutils presentation.
 ** TODO Submit a proposal to CppCon-2019
-

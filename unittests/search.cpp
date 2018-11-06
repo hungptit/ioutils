@@ -8,6 +8,7 @@
 #include "regex_policies.hpp"
 #include "temporary_dir.hpp"
 #include "test_data.hpp"
+#include "filesystem"
 
 #include "fmt/format.h"
 
@@ -15,7 +16,8 @@
 #include "catch/catch.hpp"
 using Catch::Matchers::Equals;
 
-using namespace boost;
+using namespace std;
+// using namespace boost;
 
 TEST_CASE("Valid dir", "basic") {
     CHECK(!ioutils::filesystem::is_valid_dir(".git"));
@@ -51,13 +53,13 @@ TEST_CASE("Utility function", "basic") {
     SECTION("Search for files using DFS algorithm and print results") {
         ioutils::FileSearch<ioutils::ConsolePolicy> search;
         fmt::print("DFS - ConsolePolicy:\n");
-        search.dfs({p});
+        search.dfs(std::vector<std::string>{p});
     }
 
     SECTION("Search for files in a given folder using DFS algorithm and store results") {
         ioutils::FileSearch<ioutils::StorePolicy> search;
         fmt::print("DFS - StorePolicy:\n");
-        search.dfs({p});
+        search.dfs(std::vector<std::string> {p});
         CHECK(search.get_files().size() == 12);
         for (auto item : search.get_files()) {
             fmt::print("{}\n", item);
@@ -67,13 +69,13 @@ TEST_CASE("Utility function", "basic") {
     SECTION("Search for files in a given folder and return a list of files") {
         ioutils::FileSearch<ioutils::ConsolePolicy> search;
         fmt::print("BFS - ConsolePolicy:\n");
-        search.bfs({p});
+        search.bfs(std::vector<std::string> {p});
     }
 
     SECTION("Search for files in a given folder using BFS algorithm and store results") {
         ioutils::FileSearch<ioutils::StorePolicy> search;
         fmt::print("BFS - StorePolicy:\n");
-        search.bfs({p});
+        search.bfs(std::vector<std::string> {p});
         CHECK(search.get_files().size() == 12);
     }
 }
@@ -89,7 +91,7 @@ TEST_CASE("Search with regex", "basic") {
     using Search = typename ioutils::FileSearch<Policy>;
     int mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH);
     Search search("cpp$", mode);
-    search.dfs({p});
+    search.dfs(std::vector<std::string>{p});
     for (auto afile : search.get_files()) {
         fmt::print("{}\n", afile);
     }
