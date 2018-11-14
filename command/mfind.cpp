@@ -7,8 +7,6 @@
 #include "utilities.hpp"
 #include "utils/matchers.hpp"
 #include "utils/regex_matchers.hpp"
-
-// System headers
 #include <dirent.h>
 
 namespace {
@@ -45,18 +43,30 @@ namespace {
         bool ignore_symlink = false;
         bool color = false;
 
-        auto cli = clara::Help(help) |
-                   clara::Opt(params.parameters.verbose)["-v"]["--verbose"](
-                       "Display verbose information") |
-                   clara::Opt(ignore_case)["-i"]["--ignore-case"]("Ignore case") |
-                   clara::Opt(params.parameters.inverse_match)["-u"]["--inverse-match"](
-                       "Select lines that do not match specified pattern.") |
-                   clara::Opt(ignore_file)["--ignore-file"]("Ignore files.") |
-                   clara::Opt(ignore_dir)["--ignore-dir"]("Ignore folders.") |
-                   clara::Opt(ignore_symlink)["--ignore-symlink"]("Ignore symlink.") |
-                   clara::Opt(color)["-c"]["--color"]("Print out color text.") |
-                   clara::Opt(params.pattern, "pattern")["-e"]["--pattern"]("Search pattern.") |
-                   clara::Arg(paths, "paths")("Search paths");
+        bool follow_link = false;
+
+        std::string begin_time, end_time;
+
+        auto cli =
+            clara::Help(help) |
+            clara::Opt(params.parameters.verbose)["-v"]["--verbose"](
+                "Display verbose information") |
+            clara::Opt(ignore_case)["-i"]["--ignore-case"]("Ignore case") |
+            clara::Opt(params.parameters.inverse_match)["-u"]["--inverse-match"](
+                "Select lines that do not match specified pattern.") |
+            clara::Opt(ignore_file)["--ignore-file"]("Ignore files.") |
+            clara::Opt(ignore_dir)["--ignore-dir"]("Ignore folders.") |
+            clara::Opt(ignore_symlink)["--ignore-symlink"]("Ignore symlink.") |
+            clara::Opt(color)["-c"]["--color"]("Print out color text.") |
+            clara::Opt(params.pattern, "pattern")["-e"]["--pattern"]("Search pattern.") |
+
+            // Unsupported options
+            clara::Opt(follow_link, "follow-link")["--follow-link"]("Follow symbolic links.") |
+            clara::Opt(begin_time, "newer")["--newer"]("Follow symbolic links.") |
+            clara::Opt(end_time, "older")["--older"]("Follow symbolic links.") |
+
+            // Required arguments.
+            clara::Arg(paths, "paths")("Search paths");
 
         auto result = cli.parse(clara::Args(argc, argv));
         if (!result) {
