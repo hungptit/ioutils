@@ -30,20 +30,11 @@ namespace {
                    std::tie(rhs.number, rhs.street, rhs.city, rhs.state);
         }
     };
-
-    template <typename Archive = cereal::JSONOutputArchive> void print(Address addr) {
-        std::stringstream ss;
-        {
-            cereal::JSONOutputArchive archive(ss);
-            archive(addr);
-        }
-        fmt::print("{}\n", ss.str());
-    }
 } // namespace
 
 TEST_CASE("Basic tests") {
     Address addr(1, "Foo", "Boo", "Goo");
-    print(addr);
+    ioutils::cereal::print<cereal::JSONOutputArchive>(addr, "Original data");
 
     std::string data_file = "data.json";
 
@@ -55,10 +46,10 @@ TEST_CASE("Basic tests") {
     }
 
     // Deserialize data from a file
-    using Policy = typename ioutils::Cereal<cereal::JSONInputArchive, Address>;
+    using Policy = typename ioutils::cereal::ReadPolicy<cereal::JSONInputArchive, Address>;
     ioutils::MMapReader<Policy> reader;
     reader(data_file.data());
-    print(reader.results);
+    ioutils::cereal::print<cereal::JSONOutputArchive>(reader.results, "Read data");
 
     bool isok = reader.results == addr;
     CHECK(isok);
