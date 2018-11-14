@@ -2,6 +2,7 @@
 
 #include "fmt/format.h"
 #include <string>
+#include "filesystem.hpp"
 
 namespace ioutils {
     template <typename Params> class SimplePolicy {
