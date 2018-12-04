@@ -4,7 +4,7 @@
 
 namespace ioutils {
     const std::string get_unique_string() {
-        utils::CharGenerator gen;
+        utils::RandomStringGenerator gen;
         constexpr size_t len = 16;
         return gen(len);
     }

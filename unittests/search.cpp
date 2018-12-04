@@ -9,7 +9,7 @@
 #include "store_policy.hpp"
 #include "temporary_dir.hpp"
 #include "test_data.hpp"
-#include "filesystem"
+#include "filesystem.hpp"
 
 #include "fmt/format.h"
 
