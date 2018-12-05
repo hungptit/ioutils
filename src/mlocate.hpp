@@ -6,6 +6,8 @@
 #include <set>
 #include <string>
 #include <unordered_set>
+#include <sstream>
+#include "cereal/archives/json.hpp"
 
 namespace ioutils {
     namespace mlocate {
