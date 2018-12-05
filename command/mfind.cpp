@@ -8,6 +8,7 @@
 #include "utils/matchers.hpp"
 #include "utils/regex_matchers.hpp"
 #include <dirent.h>
+#include "cereal/archives/json.hpp"
 
 namespace {
     struct SearchParams {
