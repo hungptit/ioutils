@@ -4,10 +4,9 @@
 #include "search.hpp"
 #include <ostream>
 #include <set>
+#include <sstream>
 #include <string>
 #include <unordered_set>
-#include <sstream>
-#include "cereal/archives/json.hpp"
 
 namespace ioutils {
     namespace mlocate {
@@ -58,27 +57,11 @@ namespace ioutils {
 
     } // namespace mlocate
 
-    template <typename OArchive, typename T> std::string save(T &&data) {
-        std::stringstream os;
-        {
-            OArchive oar(os);
-            oar(CEREAL_NVP(data));
-        }
-        return os.str();
-    }
-
-    template <typename IArchive, typename T> T load(std::string &&buffer) {
-        std::stringstream is(buffer);
-        IArchive iar(is);
-        T data;
-        iar(data);
-        return data;
-    }
-
-    template <typename Matcher, typename Params> class LocatePolicy {
+    template <typename Matcher> class LocatePolicy {
       public:
-        LocatePolicy(const Params &args)
-            : matcher(args.pattern, args.parameters.mode), params(args) {}
+        template <typename T>
+        LocatePolicy(T &&args)
+            : matcher(args.pattern, args.parameters.mode), prefix(args.parameters.prefix) {}
 
         void process(const char *begin, const size_t len) {
             constexpr char EOL = '\n';
@@ -94,17 +77,17 @@ namespace ioutils {
 
       private:
         Matcher matcher;
-        Params params;
+        std::string prefix;
         void process_line(const char *begin, const size_t len) {
             if (matcher.is_matched(begin, len)) {
-                fmt::print("{0}{1}", params.parameters.prefix, std::string(begin, len));
+                fmt::print("{0}{1}", prefix, std::string(begin, len));
             }
         }
     };
 
-    template <typename Params> class PrintAllPolicy {
+    class PrintAllPolicy {
       public:
-        PrintAllPolicy(const Params &args) : params(args) {}
+        template <typename Params> PrintAllPolicy(Params &&args) : prefix(args.parameters.prefix) {}
         void process(const char *begin, const size_t len) {
             constexpr char EOL = '\n';
             const char *start = begin;
@@ -118,9 +101,9 @@ namespace ioutils {
         }
 
       private:
-        Params params;
+        std::string prefix;
         void process_line(const char *begin, const size_t len) {
-            fmt::print("{0}{1}", params.parameters.prefix, std::string(begin, len));
+            fmt::print("{0}{1}", prefix, std::string(begin, len));
         }
     };
 } // namespace ioutils

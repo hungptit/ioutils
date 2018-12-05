@@ -11,8 +11,10 @@ namespace ioutils {
     constexpr size_t READ_TRUNK_SIZE = 1 << 17; // This is an optimum trunk size.
     template <typename Policy, size_t BUFFER_SIZE = READ_TRUNK_SIZE>
     struct FileReader : public Policy {
-        FileReader() : Policy() {}
-        FileReader(const char *pattern) : Policy(pattern) {}
+        // FileReader() : Policy() {}
+
+        template <typename... Args>
+        FileReader(Args... args) : Policy(std::forward<Args>(args)...) {}
 
         void operator()(const char *datafile) {
             char read_buffer[BUFFER_SIZE + 1];
@@ -50,8 +52,9 @@ namespace ioutils {
     template <typename Policy> struct MMapReader : public Policy {
         MMapReader() : Policy() {}
 
-        template <typename Params>
-        MMapReader(Params &&params) : Policy(std::forward<Params>(params)) {}
+        template <typename... Args>
+        MMapReader(Args... args) : Policy(std::forward<Args>(args)...) {}
+
         void operator()(const char *datafile) {
             // Open data file for reading
             int fd = open(datafile, O_RDONLY);

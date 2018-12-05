@@ -6,6 +6,7 @@
 #include "utils/matchers.hpp"
 #include "utils/regex_matchers.hpp"
 #include <string>
+#include "cereal/archives/json.hpp"
 
 namespace {
     struct SearchParams {
@@ -96,7 +97,7 @@ namespace {
     }
 
     template <typename Matcher, typename Params> void locate(Params &&params) {
-        using GrepAlg = ioutils::MMapReader<ioutils::LocatePolicy<Matcher, Params>>;
+        using GrepAlg = ioutils::MMapReader<ioutils::LocatePolicy<Matcher>>;
         GrepAlg grep(params);
         for (auto db : params.databases) {
             grep(db.data());
@@ -108,7 +109,7 @@ int main(int argc, char *argv[]) {
     auto params = parse_input_arguments(argc, argv);
     for (auto db : params.databases) {
         if (params.pattern.empty()) {
-            using GrepAlg = ioutils::MMapReader<ioutils::PrintAllPolicy<decltype(params)>>;
+            using GrepAlg = ioutils::MMapReader<ioutils::PrintAllPolicy>;
             GrepAlg grep(params);
             for (auto db : params.databases) {
                 grep(db.data());
