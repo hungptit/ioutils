@@ -13,10 +13,6 @@
 #include <unistd.h>
 #include <vector>
 
-#include "cereal/archives/binary.hpp"
-#include "cereal/archives/json.hpp"
-#include "cereal/archives/portable_binary.hpp"
-#include "cereal/archives/xml.hpp"
 #include "cereal/types/deque.hpp"
 #include "cereal/types/string.hpp"
 #include "cereal/types/vector.hpp"

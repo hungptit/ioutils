@@ -4,6 +4,7 @@
 #include "linestats.hpp"
 #include "reader.hpp"
 #include <string>
+#include "cereal/archives/json.hpp"
 
 namespace {
     struct InputParams {
