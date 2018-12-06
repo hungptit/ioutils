@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include "cereal/archives/json.hpp"
 
 namespace {
     struct InputParams {
