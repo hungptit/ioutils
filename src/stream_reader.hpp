@@ -5,8 +5,13 @@
 namespace ioutils {
     template <typename Policy, size_t BUFFER_SIZE = 1 << 16>
     struct StreamReader : public Policy {
+
         template <typename... Args>
         StreamReader(Args... args) : Policy(std::forward<Args>(args)...) {}
+
+        /**
+         * For stdin use STDIN_FILENO
+         */
         void operator()(int fd) {
             char read_buffer[BUFFER_SIZE + 1];
             while (true) {
