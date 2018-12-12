@@ -11,16 +11,17 @@ namespace ioutils {
     constexpr size_t READ_TRUNK_SIZE = 1 << 17; // This is an optimum trunk size.
     template <typename Policy, size_t BUFFER_SIZE = READ_TRUNK_SIZE>
     struct FileReader : public Policy {
-        FileReader() : Policy() {}
-        FileReader(const char *pattern) : Policy(pattern) {}
+        template <typename... Args>
+        FileReader(Args... args) : Policy(std::forward<Args>(args)...) {}
 
         void operator()(const char *datafile) {
-            char read_buffer[BUFFER_SIZE + 1];
+            char read_buffer[BUFFER_SIZE];
             int fd = ::open(datafile, O_RDONLY | O_NOCTTY);
 
             // Check that we can open a given file.
             if (fd < 0) {
-                fprintf(stderr, "Cannot open file: '%s'\n", datafile);
+                fprintf(stderr, "Cannot open file: '%s'. Error: %s\n", datafile,
+                        strerror(errno));
                 return;
             }
 
@@ -33,7 +34,8 @@ namespace ioutils {
             for (size_t blk = 0; blk < block_count; ++blk) {
                 long nbytes = ::read(fd, read_buffer, BUFFER_SIZE);
                 if (nbytes < 0) {
-                    fprintf(stderr, "Cannot read from file '%s'", datafile);
+                    fprintf(stderr, "Cannot read from file '%s'. Error: %s\n", datafile,
+                            strerror(errno));
                     break;
                 };
 
@@ -50,8 +52,9 @@ namespace ioutils {
     template <typename Policy> struct MMapReader : public Policy {
         MMapReader() : Policy() {}
 
-        template <typename Params>
-        MMapReader(Params &&params) : Policy(std::forward<Params>(params)) {}
+        template <typename... Args>
+        MMapReader(Args... args) : Policy(std::forward<Args>(args)...) {}
+
         void operator()(const char *datafile) {
             // Open data file for reading
             int fd = open(datafile, O_RDONLY);
