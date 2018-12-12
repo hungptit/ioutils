@@ -1,5 +1,5 @@
 #include "fmt/format.h"
-#include "stream_reader.hpp"
+#include "stream.hpp"
 
 namespace {
     // A simple policy which prints out the input data.
