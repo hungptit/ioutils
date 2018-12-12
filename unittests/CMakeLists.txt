@@ -107,7 +107,7 @@ foreach (src_file ${COMMAND_SRC_FILES})
   ADD_TEST(${src_file} ./${src_file})
 endforeach (src_file)
 
-set(COMMAND_SRC_FILES search)
+set(COMMAND_SRC_FILES search read_stdin)
 foreach (src_file ${COMMAND_SRC_FILES})
   ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
   TARGET_LINK_LIBRARIES(${src_file} ${LIB_HS} ${LIB_HS_RUNTIME} ${Boost_LIBRARIES} -lpthread -lm -lc -ldl)
