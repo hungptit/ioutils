@@ -48,7 +48,7 @@ namespace ioutils {
         }
     };
 
-    // A breader that use memory mapped approach.
+    // A reader that use memory mapped approach.
     template <typename Policy> struct MMapReader : public Policy {
         MMapReader() : Policy() {}
 
