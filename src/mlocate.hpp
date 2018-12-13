@@ -4,6 +4,7 @@
 #include "search.hpp"
 #include <ostream>
 #include <set>
+#include <sstream>
 #include <string>
 #include <unordered_set>
 
@@ -46,7 +47,7 @@ namespace ioutils {
             void process_symlink(const std::string &parent, const char *stem) {
                 process_file(parent, stem);
             }
-            
+
             void process_dir(const std::string) const {}
 
             container_type data;
@@ -54,29 +55,55 @@ namespace ioutils {
             static constexpr int MODE_MASK = 0xfff;
         };
 
-        // Write search data to database.
-        struct MlocateDBWriter {};
-
-        // Read mlocate database
-        struct MlocateDBReader {};
-
     } // namespace mlocate
 
-    template <typename OArchive, typename T> std::string save(T &&data) {
-        std::stringstream os;
-        {
-            OArchive oar(os);
-            oar(CEREAL_NVP(data));
+    template <typename Matcher> class LocatePolicy {
+      public:
+        template <typename T>
+        LocatePolicy(T &&args)
+            : matcher(args.pattern, args.parameters.mode), prefix(args.parameters.prefix) {}
+
+        void process(const char *begin, const size_t len) {
+            constexpr char EOL = '\n';
+            const char *start = begin;
+            const char *end = begin + len;
+            const char *ptr = begin;
+            while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
+                process_line(start, ptr - start + 1);
+                start = ++ptr;
+                if (start == end) break;
+            }
         }
-        return os.str();
-    }
 
-    template <typename IArchive, typename T> T load(std::string &&buffer) {
-        std::stringstream is(buffer);
-        IArchive iar(is);
-        T data;
-        iar(data);
-        return data;
-    }
+      private:
+        Matcher matcher;
+        std::string prefix;
+        void process_line(const char *begin, const size_t len) {
+            if (matcher.is_matched(begin, len)) {
+                fmt::print("{0}{1}", prefix, std::string(begin, len));
+            }
+        }
+    };
 
+    class PrintAllPolicy {
+      public:
+        template <typename Params> PrintAllPolicy(Params &&args) : prefix(args.parameters.prefix) {}
+        void process(const char *begin, const size_t len) {
+            constexpr char EOL = '\n';
+            const char *start = begin;
+            const char *end = begin + len;
+            const char *ptr = begin;
+            while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
+                process_line(start, ptr - start + 1);
+                start = ++ptr;
+                if (start == end) break;
+            }
+        }
+
+      private:
+        std::string prefix;
+        void process_line(const char *begin, const size_t len) {
+            fmt::print("{0}{1}", prefix, std::string(begin, len));
+        }
+    };
 } // namespace ioutils

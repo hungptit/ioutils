@@ -16,7 +16,7 @@ ioutils is a small and very fast file system library for Linux and Unix environm
 
 # What is the different between mfind and find and/or fd?
 
-ioutils is written as a library and mfind is its command line utility. This library is built using generic programming concepts and the Policy Based Design pattern is heavily used through out the code base. This approach helps to
+ioutils is written as a library and mfind is its command line utility. This library is built using generic programming concepts and this approach helps to
 
 * Create a flexible and reusable algorithms without sacrificing the performance.
 
@@ -24,11 +24,11 @@ ioutils is written as a library and mfind is its command line utility. This libr
 
 * One side effect of heavily template code is the binary size of [mfind](https://github.com/hungptit/ioutils/blob/master/command/mfind.cpp) is significantly larger than that of [find](https://www.gnu.org/software/findutils/) or [fd](https://github.com/sharkdp/fd).
 
-Below are key factors that make mfind fast:
+Below are key factors that make mfind very fast:
 
-1. [mfind](https://github.com/hungptit/ioutils/blob/master/command/mfind.cpp) uses a very fast file traversal algorithms. It is consistently 2x faster than grep in all of my tests.
+1. Uses a very fast file traversal algorithms. It is consistently 2x faster than grep in all of our performance benchmark in both Linux and MacOS.
 
-2. [mfind](https://github.com/hungptit/ioutils/blob/master/command/mfind.cpp) uses [hyperscan](https://github.com/intel/hyperscan "hyperscan") as the main expression engine. According to [previous performance studies](https://rust-leipzig.github.io/regex/2017/03/28/comparison-of-regex-engines/) hyperscan is the fastest C/C++ regular expression engine.
+2. Use an optimized regular expression engine i.e [hyperscan](https://github.com/intel/hyperscan "hyperscan") and blazing fast text matching algorithms.
 
 3. Core algorithms are written in modern C++. Final algorithms code are generated at compile time using specified algorithms and policies and this helps [mfind](https://github.com/hungptit/ioutils/blob/master/command/mfind.cpp) to fully take advantage of the modern C++ compiler and architecture.
 
@@ -82,7 +82,7 @@ sys     0m0.121s
 *Note: mfind does support caseless matching using ignore-case flag.*
 
 ## Search for files that do not match the given pattern ##
-mfind does allow users to search for files that do not match a given option by turn on the invert-match flag. Below is an example
+mfind does allow users to search for files that do not match a given option by turn on the **inverse-match** flag. Below is an example
 ``` shell
 hdang@dev115 ~/w/i/command> ./mfind . -e '(o|bin|cmake|make|txt|internal|includecache|tmp|out)$|cache|CMakeFiles' -u
 ./linestats.cpp
@@ -100,14 +100,14 @@ hdang@dev115 ~/w/i/command> ./mfind . -e '(o|bin|cmake|make|txt|internal|include
 ```
 
 ## Build file information database ##
-Before using mlocate command we do need to build the file information database for our interrested folders.  Below command will build file information database for boost, hyperscan, tbb, and seastar packages. 
+Before using mlocate command we do need to build the file information database for our interrested folders.  Below command will build file information database for boost, hyperscan, tbb, and seastar packages.
 
 ``` shell
 mupdatedb boost/ hyperscan/ tbb/ rocksdb/ seastar/ -v
 ```
 ## Locate files using regular expression ##
 
-Assume we have already built the file information database using mupdatedb command then we can use mlocate to look for files that match our desired pattern. 
+Assume we have already built the file information database using mupdatedb command then we can use mlocate to look for files that match our desired pattern.
 
 This example will seach for all files with h and hh extensions
 
@@ -115,10 +115,10 @@ This example will seach for all files with h and hh extensions
 mlocate '/\wfuture.(h|hh)$'
 ```
 
-Or we can display all files in our database using *.* pattern
+Or we can display all files in our database by executing **mlocate** command
 
 ``` shell
-mlocate '.'
+mlocate
 ```
 
 # Benchmark results

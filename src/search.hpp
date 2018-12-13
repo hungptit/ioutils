@@ -18,10 +18,6 @@
 #include "utils/regex_matchers.hpp"
 
 // cereal
-#include "cereal/archives/binary.hpp"
-#include "cereal/archives/json.hpp"
-#include "cereal/archives/portable_binary.hpp"
-#include "cereal/archives/xml.hpp"
 #include "cereal/types/array.hpp"
 #include "cereal/types/chrono.hpp"
 #include "cereal/types/deque.hpp"
@@ -37,13 +33,14 @@ namespace ioutils {
 
         // Filtering files using given patterns.
         template <typename T>
-        explicit FileSearch(const std::string &pattern, T && params) : Policy(pattern, params), folders() {}
+        explicit FileSearch(const std::string &pattern, T &&params)
+            : Policy(pattern, std::move<T>(params)), folders() {}
 
         // Filtering files using given extensions.
         explicit FileSearch(const std::vector<std::string> &extensions)
             : Policy(extensions), folders() {}
 
-        void dfs(const std::vector<std::string> &p) {
+        template <typename Container> void dfs(Container &&p) {
             for (auto item : p) {
                 int fd = ::open(item.data(), O_RDONLY);
                 if (fd > -1) folders.emplace_back(Path{fd, item});
@@ -57,7 +54,7 @@ namespace ioutils {
             }
         }
 
-        void bfs(const std::vector<std::string> &p) {
+        template <typename Container> void bfs(Container &&p) {
             for (auto item : p) {
                 int fd = ::open(item.data(), O_RDONLY);
                 if (fd > -1) folders.emplace_back(Path{fd, item});
