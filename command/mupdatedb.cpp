@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
     for (auto item : data) {
         fmt::format_to(buffer, "{0}\n", item.path);
     }
-    if (params.verbose) fmt::print("buffer size: {}\n", buffer.size());
+    if (params.verbose) fmt::print("Database size: {}\n", buffer.size());
     ioutils::write(buffer.data(), buffer.size(), params.database.data());
 
     return EXIT_SUCCESS;

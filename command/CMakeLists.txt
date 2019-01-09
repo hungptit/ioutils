@@ -34,7 +34,8 @@ include(CXXFeatureCheck)
 
 set (CMAKE_BUILD_TYPE Release)
 add_cxx_compiler_flag(-O3)
-add_cxx_compiler_flag(-march=native)
+add_cxx_compiler_flag(-mavx2)
+# add_cxx_compiler_flag(-march=native)
 add_cxx_compiler_flag(-std=c++14)
 add_cxx_compiler_flag(-Wall)
 add_cxx_compiler_flag(-flto)
@@ -52,6 +53,8 @@ endif()
 
 add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
 add_cxx_compiler_flag(-DCEREAL_RAPIDJSON_HAS_CXX11_RVALUE_REFS)
+
+add_cxx_compiler_flag(-static)	# Use static glibc libraries
 
 ENABLE_TESTING()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
