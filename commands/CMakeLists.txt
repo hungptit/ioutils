@@ -54,7 +54,8 @@ endif()
 add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
 add_cxx_compiler_flag(-DCEREAL_RAPIDJSON_HAS_CXX11_RVALUE_REFS)
 
-add_cxx_compiler_flag(-static)	# Use static glibc libraries
+# Build using static libraries
+add_cxx_compiler_flag(-static)
 
 ENABLE_TESTING()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
