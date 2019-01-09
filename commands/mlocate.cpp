@@ -3,12 +3,17 @@
 #include "filesystem.hpp"
 #include "fmt/format.h"
 #include "ioutils.hpp"
+#include "utils/copyright.hpp"
 #include "utils/matchers.hpp"
 #include "utils/regex_matchers.hpp"
 #include <string>
 #include "cereal/archives/json.hpp"
 
 namespace {
+    void copyright() {
+        fmt::print("{}\n", "mlocate version 0.1.0");
+        fmt::print("{}\n", "Hung Dang <hungptit@gmail.com>");
+    }
     struct SearchParams {
         bool ignore_case = false;   // Ignore case distinctions
         bool inverse_match = false; // Select non-matching lines
@@ -61,6 +66,7 @@ namespace {
         if (help) {
             std::ostringstream oss;
             oss << cli;
+            copyright();
             fmt::print("{}", oss.str());
             exit(EXIT_SUCCESS);
         }

@@ -5,12 +5,18 @@
 #include "search_policies.hpp"
 #include "simple_policy.hpp"
 #include "utilities.hpp"
+#include "utils/copyright.hpp"
 #include "utils/matchers.hpp"
 #include "utils/regex_matchers.hpp"
 #include <dirent.h>
 #include "cereal/archives/json.hpp"
 
 namespace {
+    void copyright() {
+        fmt::print("{}\n", "mfind version 0.1.0");
+        fmt::print("{}\n", "Hung Dang <hungptit@gmail.com>");
+    }
+
     struct SearchParams {
         bool inverse_match = false;                 // Select non-matching lines
         bool verbose = false;                       // Display verbose information.
@@ -79,6 +85,7 @@ namespace {
         if (help) {
             std::ostringstream oss;
             oss << cli;
+            copyright();
             fmt::print("{}", oss.str());
             exit(EXIT_SUCCESS);
         }
