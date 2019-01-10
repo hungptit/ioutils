@@ -33,12 +33,8 @@ namespace ioutils {
 
         // Filtering files using given patterns.
         template <typename T>
-        explicit FileSearch(const std::string &pattern, T &&params)
-            : Policy(pattern, std::move<T>(params)), folders() {}
-
-        // Filtering files using given extensions.
-        explicit FileSearch(const std::vector<std::string> &extensions)
-            : Policy(extensions), folders() {}
+        FileSearch(T &&params)
+            : Policy(std::forward<T>(params)), folders() {}
 
         template <typename Container> void dfs(Container &&p) {
             for (auto item : p) {

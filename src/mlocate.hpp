@@ -6,7 +6,6 @@
 #include <set>
 #include <sstream>
 #include <string>
-#include <unordered_set>
 
 namespace ioutils {
     namespace mlocate {

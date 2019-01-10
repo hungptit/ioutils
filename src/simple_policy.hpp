@@ -1,16 +1,13 @@
 #pragma once
 
+#include "filesystem.hpp"
 #include "fmt/format.h"
 #include <string>
-#include "filesystem.hpp"
 
 namespace ioutils {
-    template <typename Params> class SimplePolicy {
+    class SimplePolicy {
       public:
-        explicit SimplePolicy(Params &&params) { init(params.type); }
-
-        // Make sure this policy has the same intreface as that of regex_policy.
-        explicit SimplePolicy(const std::string &, Params &&params) { init(params.type); }
+        template <typename Params> SimplePolicy(Params &&params) { init(params.type); }
 
       protected:
         bool display_dir;
