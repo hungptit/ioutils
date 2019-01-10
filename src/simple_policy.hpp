@@ -7,20 +7,16 @@
 namespace ioutils {
     class SimplePolicy {
       public:
-        template <typename Params> SimplePolicy(Params &&params) { init(params.type); }
+        template <typename Params>
+        SimplePolicy(Params &&params)
+            : display_dir(!params.ignore_dir()), display_file(!params.ignore_file()),
+              display_symlink(!params.ignore_symlink()), color(params.color()) {}
 
       protected:
         bool display_dir;
         bool display_file;
         bool display_symlink;
         bool color;
-
-        void init(int type) {
-            display_file = type & DisplayType::DISP_FILE;
-            display_dir = type & DisplayType::DISP_DIR;
-            display_symlink = type & DisplayType::DISP_SYMLINK;
-            color = type & DisplayType::DISP_COLOR;
-        }
 
         bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
 

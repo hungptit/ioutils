@@ -7,16 +7,14 @@
 #include <string>
 
 namespace ioutils {
-    template <typename Matcher, typename Params> class RegexPolicy {
+    template <typename Matcher> class RegexPolicy {
       public:
-        RegexPolicy(const std::string &pattern, Params &&params)
-            : buffer(), matcher(pattern, params.regex_mode),
-              parameters(std::forward<Params>(params)) {
+        template <typename Params>
+        RegexPolicy(Params &&params)
+            : buffer(), matcher(params.path_regex, params.regex_mode),
+              display_file(!params.ignore_file()), display_dir(!params.ignore_dir()),
+              display_symlink(!params.ignore_symlink()), color(params.color()) {
             buffer.reserve(1023);
-            display_file = (params.type & DisplayType::DISP_FILE) > 0;
-            display_dir = (params.type & DisplayType::DISP_DIR) > 0;
-            display_symlink = (params.type & DisplayType::DISP_SYMLINK) > 0;
-            color = (params.type & DisplayType::DISP_COLOR) > 0;
         }
 
       protected:
@@ -59,7 +57,6 @@ namespace ioutils {
 
         std::string buffer;
         Matcher matcher;
-        Params parameters;
 
         // Display functionality related flags.
         bool display_file;
