@@ -41,6 +41,7 @@ namespace {
 
     InputParams parse_input_arguments(int argc, char *argv[]) {
         InputParams params;
+        
         bool help = false;
         auto cli =
             clara::Help(help) |
@@ -70,7 +71,7 @@ namespace {
             fmt::print("{}", oss.str());
             exit(EXIT_SUCCESS);
         }
-
+       
         if (params.databases.empty()) {
             auto default_db = std::getenv("MLOCATE_DB");
             if (default_db == nullptr) {

@@ -2,10 +2,13 @@
 
 #include "search_params.hpp"
 
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 namespace ioutils {
     namespace search {
-        template <typename Policy> struct PathExpansion {
-
+        struct PathExpansion {
             void opperator(const std::string &pattern) {
                 // Find the root path
 
@@ -32,11 +35,14 @@ namespace ioutils {
             std::string current_path;
             const char *ptr = begin;
             const char *pos = begin;
-                
+            std::vector<int> fds;
+
             // Search '/' from left to right
-            while ((ptr = memchr(ptr, FWD_SLASH, end - ptr))) {
+            struct stat info;
+            while ((ptr = (const char*)memchr(ptr, FWD_SLASH, end - ptr))) {
                 current_path.append(pos, ptr - pos);
-                if (false) {
+                int errcode = stat(current_path.data(), &info);
+                if (errcode) {
                     current_path.resize(pos - begin);
                     break; // Exit the loop if the current path is invalid.
                 }
@@ -46,7 +52,7 @@ namespace ioutils {
             if (current_path.empty()) {
                 current_path.append(".");
             }
-                
+
             // Update pattern
             if (pos < end) {
                 params.path_regex.append(pos, end - pos);

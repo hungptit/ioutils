@@ -6,8 +6,8 @@
 
 #include "search.hpp"
 #include "search_policies.hpp"
-#include "store_policy.hpp"
-#include "simple_policy.hpp"
+#include "simple_store_policy.hpp"
+#include "simple_search_policy.hpp"
 
 void test_search_dfs(const char *path) {
     int fd = ::open(path, O_RDONLY);
@@ -65,7 +65,7 @@ BENCHMARK(boost, fd, number_of_samples, number_of_operations) {
 }
 
 BENCHMARK(boost, mfind_to_console, number_of_samples, number_of_operations) {
-    test("../command/mfind ", "../../3p/src");
+    test("mfind ", "../../3p/src");
 }
 
 // Find all files in the kernel source code.
@@ -78,7 +78,7 @@ BENCHMARK(linux_kernels, fd, number_of_samples, number_of_operations) {
 }
 
 BENCHMARK(linux_kernels, mfind_to_console, number_of_samples, number_of_operations) {
-    test("../command/mfind ", "/usr/src/");
+    test("mfind ", "/usr/src/");
 }
 
 // Find all files using a regex that does not match any results
@@ -91,7 +91,7 @@ BENCHMARK(boost_regex, fd, number_of_samples, number_of_operations) {
 }
 
 BENCHMARK(boost_regex, mfind_to_console, number_of_samples, number_of_operations) {
-    test_mfind_regex("../command/mfind ", pattern1, " ../../3p/src/");
+    test_mfind_regex("mfind ", pattern1, " ../../3p/src/");
 }
 
 // Find all files using a regex that matches some files.

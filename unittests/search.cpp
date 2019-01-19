@@ -2,14 +2,16 @@
 #include <iostream>
 #include <string>
 
+#include "filesystem.hpp"
 #include "fmt/format.h"
-#include "search.hpp"
-#include "search_policies.hpp"
 #include "regex_policies.hpp"
-#include "store_policy.hpp"
+#include "regex_store_policies.hpp"
+#include "search.hpp"
+#include "search_params.hpp"
+#include "search_policies.hpp"
+#include "simple_store_policy.hpp"
 #include "temporary_dir.hpp"
 #include "test_data.hpp"
-#include "filesystem.hpp"
 
 #include "fmt/format.h"
 
@@ -58,26 +60,69 @@ TEST_CASE("Utility function", "basic") {
     }
 
     SECTION("Search for files in a given folder using DFS algorithm and store results") {
-        ioutils::FileSearch<ioutils::StorePolicy> search;
-        fmt::print("DFS - StorePolicy:\n");
-        search.dfs(std::vector<std::string> {p});
-        CHECK(search.get_files().size() == 12);
-        for (auto item : search.get_files()) {
-            fmt::print("{}\n", item);
+        SECTION("Ignore dir") {
+            ioutils::search::Params params;
+            params.flag |= ioutils::search::IGNORE_DIR;
+            ioutils::FileSearch<ioutils::StorePolicy> search(params);
+            search.dfs(std::vector<std::string>{p});
+            CHECK(search.get_paths().size() == 13);
+            for (auto item : search.get_paths()) {
+                fmt::print("{}\n", item);
+            }
+        }
+
+        SECTION("Ignore files") {
+            ioutils::search::Params params;
+            params.flag |= ioutils::search::IGNORE_DIR;
+            params.flag |= ioutils::search::IGNORE_FILE;
+            ioutils::FileSearch<ioutils::StorePolicy> search(params);
+            search.dfs(std::vector<std::string>{p});
+            CHECK(search.get_paths().size() == 1); // Should not see anything.
+            for (auto item : search.get_paths()) {
+                fmt::print("{}\n", item);
+            }
+        }
+
+        SECTION("Ignore files") {
+            ioutils::search::Params params;
+            params.flag |= ioutils::search::IGNORE_DIR;
+            params.flag |= ioutils::search::IGNORE_FILE;
+            params.flag |= ioutils::search::IGNORE_SYMLINK;
+            ioutils::FileSearch<ioutils::StorePolicy> search(params);
+            search.dfs(std::vector<std::string>{p});
+            CHECK(search.get_paths().size() == 0); // Should not see anything.
+            for (auto item : search.get_paths()) {
+                fmt::print("{}\n", item);
+            }
+        }
+
+        SECTION("Include all") {
+            ioutils::search::Params params;
+            ioutils::FileSearch<ioutils::StorePolicy> search(params);
+            fmt::print("DFS - StorePolicy:\n");
+            search.dfs(std::vector<std::string>{p});
+            CHECK(search.get_paths().size() == 19);
+            for (auto item : search.get_paths()) {
+                fmt::print("{}\n", item);
+            }
         }
     }
 
     SECTION("Search for files in a given folder and return a list of files") {
         ioutils::FileSearch<ioutils::ConsolePolicy> search;
         fmt::print("BFS - ConsolePolicy:\n");
-        search.bfs(std::vector<std::string> {p});
+        search.bfs(std::vector<std::string>{p});
     }
 
     SECTION("Search for files in a given folder using BFS algorithm and store results") {
-        ioutils::FileSearch<ioutils::StorePolicy> search;
+        ioutils::search::Params params;
+        ioutils::FileSearch<ioutils::StorePolicy> search(params);
         fmt::print("BFS - StorePolicy:\n");
-        search.bfs(std::vector<std::string> {p});
-        CHECK(search.get_files().size() == 12);
+        search.bfs(std::vector<std::string>{p});
+        CHECK(search.get_paths().size() == 19);
+        for (auto p : search.get_paths()) {
+            fmt::print("{}\n", p);
+        }
     }
 }
 
@@ -90,11 +135,13 @@ TEST_CASE("Search with regex", "basic") {
     using Matcher = utils::hyperscan::RegexMatcher;
     using Policy = ioutils::RegexStorePolicy<Matcher>;
     using Search = typename ioutils::FileSearch<Policy>;
-    int mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH);
-    Search search("cpp$", mode);
+    ioutils::search::Params params;
+    params.flag |= ioutils::search::IGNORE_SYMLINK;
+    params.path_regex = "[.]cpp";
+    Search search(params);
     search.dfs(std::vector<std::string>{p});
-    for (auto afile : search.get_files()) {
-        fmt::print("{}\n", afile);
+    for (auto p : search.get_paths()) {
+        fmt::print("{}\n", p);
     }
-    CHECK(search.get_files().size() == 3);
+    CHECK(search.get_paths().size() == 3);
 }

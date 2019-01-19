@@ -1,6 +1,9 @@
 #pragma once
 
 #include "cereal/archives/json.hpp"
+#include "cereal/types/vector.hpp"
+#include "cereal/types/string.hpp"
+#include "clara.hpp"
 #include "fmt/format.h"
 #include "hs/hs.h"
 #include "utilities.hpp"
@@ -18,7 +21,11 @@ namespace ioutils {
             FOLLOW_SYMLINK = 1 << 6,
         };
 
-        struct SearchParams {
+        struct Params {
+            Params()
+                : flag(0), regex_mode(HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH), path_regex(),
+                  paths() {}
+
             int flag;
             int regex_mode;
             std::string path_regex;
@@ -40,8 +47,8 @@ namespace ioutils {
             }
         };
 
-        SearchParams parse_input_arguments(int argc, char *argv[]) {
-            SearchParams params;
+        Params parse_input_arguments(int argc, char *argv[]) {
+            Params params;
             std::vector<std::string> paths;
             bool help = false;
             bool verbose = false;

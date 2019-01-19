@@ -64,43 +64,4 @@ namespace ioutils {
         bool display_symlink;
         bool color;
     };
-
-    template <typename Matcher> class RegexStorePolicy {
-      public:
-        RegexStorePolicy(const std::string &pattern,
-                         const int mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH))
-            : buffer(), matcher(pattern, mode) {
-            buffer.reserve(1023);
-        }
-
-        const std::vector<std::string> &get_files() const { return files; }
-
-      protected:
-        bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
-
-        void process_file(const std::string &parent, const char *stem) {
-            if (!store_file) return;
-            buffer = parent + "/" + stem;
-            if (matcher.is_matched(buffer.data(), buffer.size())) {
-                files.push_back(buffer);
-            }
-        }
-
-        void process_symlink(const std::string &parent, const char *stem) {
-            if (!store_symlink) return;
-            buffer = parent + "/" + stem;
-            if (matcher.is_matched(buffer.data(), buffer.size())) {
-                files.push_back(buffer);
-            }
-        }
-
-        void process_dir(const std::string &p) {}
-
-        std::string buffer;
-        Matcher matcher;
-        std::vector<std::string> files;
-
-        static constexpr bool store_file = true;
-        static constexpr bool store_symlink = true;
-    };
 } // namespace ioutils
