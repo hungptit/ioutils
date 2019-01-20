@@ -29,7 +29,8 @@ namespace ioutils {
     template <typename Policy> class FileSearch : public Policy {
       public:
         // Basic search functionality.
-        explicit FileSearch() : folders() {}
+        template <typename... Args>
+        FileSearch(Args... args) : Policy(std::forward<Args>(args)...), folders() {}
 
         // Filtering files using given patterns.
         template <typename T>

@@ -10,6 +10,6 @@ namespace ioutils {
         using Reader = MMapReader<AppendPolicy<std::string>>;
         Reader reader;
         reader(afile);
-        return reader.data();
+        return reader.get_data();
     }
 } // namespace ioutils

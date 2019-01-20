@@ -30,7 +30,7 @@ namespace ioutils {
             fstat(fd, &buf);
 
             // Read data into a read buffer
-            size_t block_count = (buf.st_size / BUFFER_SIZE) + (buf.st_size % BUFFER_SIZE != 0);
+            const size_t block_count = (buf.st_size / BUFFER_SIZE) + (buf.st_size % BUFFER_SIZE != 0);
             for (size_t blk = 0; blk < block_count; ++blk) {
                 long nbytes = ::read(fd, read_buffer, BUFFER_SIZE);
                 if (nbytes < 0) {
@@ -42,6 +42,8 @@ namespace ioutils {
                 // Apply a given policy to read_buffer.
                 Policy::process(read_buffer, nbytes);
             }
+
+            Policy::finalize(); // Clear policy's states.
 
             // Close our file.
             ::close(fd);

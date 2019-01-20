@@ -9,22 +9,6 @@
 #include "simple_store_policy.hpp"
 #include "simple_search_policy.hpp"
 
-void test_search_dfs(const char *path) {
-    int fd = ::open(path, O_RDONLY);
-    if (fd < 0) throw "Cannot open test folder";
-    std::vector<std::string> p{path};
-    ioutils::FileSearch<ioutils::StorePolicy> search;
-    search.dfs(p);
-}
-
-void test_search_bfs(const char *path) {
-    int fd = ::open(path, O_RDONLY);
-    if (fd < 0) throw "Cannot open a test folder!";
-    std::vector<std::string> p{path};
-    ioutils::FileSearch<ioutils::StorePolicy> search;
-    search.bfs(p);
-}
-
 constexpr int number_of_samples = 10;
 constexpr int number_of_operations = 1;
 
@@ -93,13 +77,3 @@ BENCHMARK(boost_regex, fd, number_of_samples, number_of_operations) {
 BENCHMARK(boost_regex, mfind_to_console, number_of_samples, number_of_operations) {
     test_mfind_regex("mfind ", pattern1, " ../../3p/src/");
 }
-
-// Find all files using a regex that matches some files.
-
-// BENCHMARK(boost, mfind_dfs_store, number_of_samples, number_of_operations) {
-//     test_search_dfs("../../3p/src/boost/");
-// }
-
-// BENCHMARK(boost, mfind_bfs_store, number_of_samples, number_of_operations) {
-//     test_search_bfs("../../3p/src/boost/");
-// }

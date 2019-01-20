@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include "fmt/format.h"
+#include <string>
 
 namespace ioutils {
     namespace experiments {
@@ -14,7 +14,7 @@ namespace ioutils {
         };
 
         template <typename Policy> struct LineStats_std : public Policy {
-            explicit LineStats_std() : Policy() {}
+            LineStats_std() : Policy() {}
             void process(const char *buffer, size_t len) {
                 for (size_t idx = 0; idx < len; ++idx) {
                     if (buffer[idx] == EOL) {
@@ -22,10 +22,11 @@ namespace ioutils {
                     }
                 }
             }
+            void finalize() const {}
         };
 
         template <typename Policy> struct LineStats : public Policy {
-            explicit LineStats() : Policy() {}
+            LineStats() : Policy() {}
             void process(const char *buffer, size_t len) {
                 const char *end = buffer + len;
                 const char *ptr = buffer;
@@ -34,6 +35,7 @@ namespace ioutils {
                     ++ptr;
                 }
             }
+            void finalize() const {}
         };
     } // namespace experiments
 
