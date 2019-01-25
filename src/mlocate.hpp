@@ -43,6 +43,24 @@ namespace ioutils {
                 data.emplace_back(info);
             }
 
+            void process_file(const std::string &parent) {
+                ioutils::Stats info;
+                info.path = parent;
+
+                // Skip if we cannot get information of a given file
+                if (stat(info.path.data(), &statbuf)) return;
+
+                // Update information
+                info.st_mode = statbuf.st_mode;
+                info.st_size = statbuf.st_size;
+                info.last_access_time = statbuf.st_atime;
+                info.modification_time = statbuf.st_mtime;
+                info.status_change_time = statbuf.st_ctime;
+
+                // Update data
+                data.emplace_back(info);
+            }
+
             void process_symlink(const std::string &parent, const char *stem) {
                 process_file(parent, stem);
             }
@@ -86,7 +104,8 @@ namespace ioutils {
 
     class PrintAllPolicy {
       public:
-        template <typename Params> PrintAllPolicy(Params &&args) : prefix(args.parameters.prefix) {}
+        template <typename Params>
+        PrintAllPolicy(Params &&args) : prefix(args.parameters.prefix) {}
         void process(const char *begin, const size_t len) {
             constexpr char EOL = '\n';
             const char *start = begin;

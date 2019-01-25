@@ -30,6 +30,13 @@ namespace ioutils {
             }
         }
 
+        void process_file(const std::string &parent) {
+            if (!store_file) return;
+            if (matcher.is_matched(parent.data(), parent.size())) {
+                paths.push_back(parent);
+            }
+        }
+
         void process_symlink(const std::string &parent, const char *stem) {
             if (!store_symlink) return;
             buffer = parent + "/" + stem;

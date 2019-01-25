@@ -30,6 +30,16 @@ namespace ioutils {
             }
         }
 
+        void process_file(const std::string &parent) const {
+            if (display_file) {
+                if (!color) {
+                    fmt::print("{0}\n", parent);
+                } else {
+                    fmt::print("\033[1;39m{0}\033[0m\n", parent);
+                }
+            }
+        }
+
         void process_symlink(const std::string &parent, const char *stem) const {
             if (display_symlink) {
                 if (!color) {

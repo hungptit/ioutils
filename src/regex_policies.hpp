@@ -32,6 +32,17 @@ namespace ioutils {
             }
         }
 
+        void process_file(const std::string &parent) {
+            if (!display_file) return;
+            if (matcher.is_matched(parent.data(), parent.size())) {
+                if (!color) {
+                    fmt::print("{}\n", parent);
+                } else {
+                    fmt::print("\033[1;39m{}\033[0m\n", parent);
+                }
+            }
+        }
+
         void process_symlink(const std::string &parent, const char *stem) {
             if (!display_symlink) return;
             buffer = parent + "/" + stem;

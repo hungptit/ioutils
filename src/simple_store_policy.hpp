@@ -29,6 +29,12 @@ namespace ioutils {
             }
         }
 
+        void process_file(const std::string &parent) {
+            if (store_file) {
+                paths.emplace_back(parent);
+            }
+        }
+
         void process_symlink(const std::string &parent, const char *stem) {
             if (store_symlink) {
                 paths.emplace_back(parent + SEP + stem);

@@ -34,8 +34,7 @@ namespace ioutils {
 
         // Filtering files using given patterns.
         template <typename T>
-        FileSearch(T &&params)
-            : Policy(std::forward<T>(params)), folders() {}
+        FileSearch(T &&params) : Policy(std::forward<T>(params)), folders() {}
 
         template <typename Container> void dfs(Container &&p) {
             for (auto item : p) {
@@ -69,7 +68,6 @@ namespace ioutils {
         void visit(Path &dir) {
             struct stat props;
             const int fd = dir.fd;
-
             int retval = fstat(fd, &props);
             if (retval < 0) return;
 
@@ -106,7 +104,7 @@ namespace ioutils {
                 }
                 (void)closedir(dirp);
             } else if (ioutils::filesystem::is_regular_file(props.st_mode)) {
-                Policy::process_file(dir.path, nullptr);
+                Policy::process_file(dir.path);
                 ::close(fd);
             } else {
                 throw "We should not be here!";
