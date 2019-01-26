@@ -88,9 +88,12 @@ namespace ioutils {
             while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
                 process_line(start, ptr - start + 1);
                 start = ++ptr;
-                if (start == end) break;
             }
         }
+
+      protected:
+        void set_filename(const char *) {}
+        void finalize() {}
 
       private:
         Matcher matcher;
@@ -114,9 +117,12 @@ namespace ioutils {
             while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
                 process_line(start, ptr - start + 1);
                 start = ++ptr;
-                if (start == end) break;
             }
         }
+
+      protected:
+        void set_filename(const char *) {}
+        void finalize() {}
 
       private:
         std::string prefix;
