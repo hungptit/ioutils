@@ -10,6 +10,8 @@ namespace ioutils {
             void print() const { fmt::print("Number of lines: {}\n", lines); }
 
           protected:
+            void finalize() const {}
+            void set_filename(const char *) {}
             size_t lines = 0;
         };
 
@@ -22,7 +24,6 @@ namespace ioutils {
                     }
                 }
             }
-            void finalize() const {}
         };
 
         template <typename Policy> struct LineStats : public Policy {

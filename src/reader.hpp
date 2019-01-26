@@ -13,11 +13,10 @@ namespace ioutils {
     struct FileReader : public Policy {
         template <typename... Args>
         FileReader(Args... args) : Policy(std::forward<Args>(args)...) {}
-        const char *current_file;
 
         void operator()(const char *datafile) {
             // Cache the file name
-            current_file = datafile;
+            Policy::set_filename(datafile);
 
             // Read data by trunks
             char read_buffer[BUFFER_SIZE];
@@ -64,11 +63,9 @@ namespace ioutils {
         template <typename... Args>
         MMapReader(Args... args) : Policy(std::forward<Args>(args)...) {}
 
-        const char *current_file;
-
         void operator()(const char *datafile) {
-            // Cache the file name
-            current_file = datafile;
+            // Cache the file name.
+            Policy::set_filename(datafile);
 
             // Open data file for reading
             int fd = open(datafile, O_RDONLY);

@@ -8,6 +8,7 @@ namespace ioutils {
             data.emplace_back(std::string(buffer, len));
         }
         void finalize() {}
+        void set_filename(const char*){}
         Container get_data() { return std::move(data); }
 
       private:
@@ -19,6 +20,7 @@ namespace ioutils {
         void process(const char *buffer, const size_t len) { data.append(buffer, len); }
         const std::string &get_data() { return data; }
         void finalize() {}
+        void set_filename(const char*){}
         void clear() { data.clear(); }
 
       private:
