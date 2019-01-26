@@ -45,7 +45,7 @@ namespace ioutils {
             }
         }
 
-        void process_dir(const std::string &p) {}
+        void process_dir(const std::string &) {}
 
         std::string buffer;
         Matcher matcher;

@@ -32,10 +32,11 @@ include(CXXFeatureCheck)
 # set(CMAKE_CXX_COMPILER "clang++")
 # add_cxx_compiler_flag(-stdlib=libc++)
 
-set(CMAKE_BUILD_TYPE Debug)
+# set(CMAKE_BUILD_TYPE Debug)
 
-# set (CMAKE_BUILD_TYPE Release)
-# add_cxx_compiler_flag(-O3)
+set (CMAKE_BUILD_TYPE Release)
+add_cxx_compiler_flag(-O3)
+# add_cxx_compiler_flag(-march=native)
 
 # Enable avx2 flag if specified.
 if (USE_AVX2)
@@ -45,11 +46,7 @@ else()
   add_cxx_compiler_flag(-msse2)
 endif()
 
-set (CMAKE_BUILD_TYPE Release)
-add_cxx_compiler_flag(-O3)
-add_cxx_compiler_flag(-mavx2)
-# add_cxx_compiler_flag(-march=native)
-
+# Enable other flags
 add_cxx_compiler_flag(-std=c++14)
 add_cxx_compiler_flag(-Wall)
 add_cxx_compiler_flag(-flto)
@@ -68,7 +65,7 @@ endif()
 add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
 add_cxx_compiler_flag(-DCEREAL_RAPIDJSON_HAS_CXX11_RVALUE_REFS)
 
-# Build using static libraries
+# Build using static libraries to reduce dependency.
 add_cxx_compiler_flag(-static)
 
 ENABLE_TESTING()

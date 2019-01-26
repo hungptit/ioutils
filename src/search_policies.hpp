@@ -14,7 +14,7 @@ namespace ioutils {
         explicit ExtensionFilter(const std::vector<std::string> &exts) : extensions(exts) {}
 
       protected:
-        bool is_valid_file(const std::string &path) { return true; }
+        bool is_valid_file(const std::string &) { return true; }
         std::vector<std::string> extensions;
     };
 
@@ -23,7 +23,7 @@ namespace ioutils {
         explicit GroupFilter(const int id) : user_id(id) {}
 
       protected:
-        bool is_valid_file(const std::string &fname) { return true; }
+        bool is_valid_file(const std::string &) { return true; }
         int user_id;
     };
 
