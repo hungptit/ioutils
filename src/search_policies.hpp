@@ -36,13 +36,13 @@ namespace ioutils {
             fmt::print("{0}/{1}\n", parent, stem);
         }
 
+        void process_file(const std::string &parent) const { fmt::print("{0}/{1}\n", parent); }
+
         void process_symlink(const std::string &parent, const char *stem) const {
             fmt::print("{0}/{1}\n", parent, stem);
         }
 
         void process_dir(const std::string &p) const { fmt::print("{}\n", p); }
     };
-
-
 
 } // namespace ioutils

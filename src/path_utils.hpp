@@ -1,24 +1,24 @@
 #pragma once
-#include <string>
+
+#include "search_params.hpp"
 
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <tuple>
 #include <unistd.h>
 
 namespace ioutils {
-    void remove_trailing_slash(std::string &s) {
-        constexpr char SLASH = '/';
-        while (!s.empty()) {
-            if (s.back() == SLASH) {
-                s.pop_back();
-            } else {
-                break;
-            }
-        }
-    }
-
     namespace search {
+        struct PathExpansion {
+            void opperator(const std::string &pattern) {
+                // Find the root path
+
+                // Search for all files using found root path and patterns
+            }
+
+            std::string buffer;
+            std::vector<std::string> paths;
+        };
+
         // Find all paths/files that match the given expansion. For
         // example, foo/*.cpp will match all cpp file in the given
         // folders.
@@ -28,22 +28,18 @@ namespace ioutils {
         // Algorithm:
         // 1. Will move from left to right using '/' as a marker and will stop if the current
         // path is invalid.
-
-        /**
-           Situations that we need to handle:
-           1. A given path is valid and do not have any slash.
-           2. A given path is valid and do have slash.
-           3. A given path is 
-        **/
-        auto decompose(const char *begin, const char *end) {
+        auto get_root_path(const char *begin, const char *end) {
+            Params params;
             constexpr char FWD_SLASH = '/';
-            std::string current_path, pattern;
+            std::string root_path, pattern;
+            std::string current_path;
             const char *ptr = begin;
             const char *pos = begin;
+            std::vector<int> fds;
 
             // Search '/' from left to right
             struct stat info;
-            while ((ptr = (const char *)memchr(ptr, FWD_SLASH, end - ptr))) {
+            while ((ptr = (const char*)memchr(ptr, FWD_SLASH, end - ptr))) {
                 current_path.append(pos, ptr - pos);
                 int errcode = stat(current_path.data(), &info);
                 if (errcode) {
@@ -57,13 +53,15 @@ namespace ioutils {
                 current_path.append(".");
             }
 
-            if (end > pos) {
-                pattern.append(pos, end - pos);
+            // Update pattern
+            if (pos < end) {
+                params.path_regex.append(pos, end - pos);
             }
-            
 
+            // Update paths.
+            params.paths.emplace_back(current_path);
 
-            return std::tie(current_path, pattern);
+            return params;
         }
 
     } // namespace search

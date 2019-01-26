@@ -15,6 +15,10 @@ namespace ioutils {
         FileReader(Args... args) : Policy(std::forward<Args>(args)...) {}
 
         void operator()(const char *datafile) {
+            // Cache the file name
+            Policy::set_filename(datafile);
+
+            // Read data by trunks
             char read_buffer[BUFFER_SIZE];
             int fd = ::open(datafile, O_RDONLY | O_NOCTTY);
 
@@ -30,7 +34,8 @@ namespace ioutils {
             fstat(fd, &buf);
 
             // Read data into a read buffer
-            size_t block_count = (buf.st_size / BUFFER_SIZE) + (buf.st_size % BUFFER_SIZE != 0);
+            const size_t block_count =
+                (buf.st_size / BUFFER_SIZE) + (buf.st_size % BUFFER_SIZE != 0);
             for (size_t blk = 0; blk < block_count; ++blk) {
                 long nbytes = ::read(fd, read_buffer, BUFFER_SIZE);
                 if (nbytes < 0) {
@@ -43,12 +48,15 @@ namespace ioutils {
                 Policy::process(read_buffer, nbytes);
             }
 
+            Policy::finalize(); // Clear policy's states.
+
             // Close our file.
             ::close(fd);
         }
     };
 
-    // A reader that use memory mapped approach.
+    // A reader that use memory mapped approach. This approach is slower than streaming approach
+    // in general.
     template <typename Policy> struct MMapReader : public Policy {
         MMapReader() : Policy() {}
 
@@ -56,6 +64,9 @@ namespace ioutils {
         MMapReader(Args... args) : Policy(std::forward<Args>(args)...) {}
 
         void operator()(const char *datafile) {
+            // Cache the file name.
+            Policy::set_filename(datafile);
+
             // Open data file for reading
             int fd = open(datafile, O_RDONLY);
             if (fd == -1) {

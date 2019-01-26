@@ -7,3 +7,4 @@
   + dir:
   + symlink:
   + file:
+* TODO Refactor mfind so we can use it in other project such as fastgrep.

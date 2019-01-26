@@ -15,6 +15,6 @@ int main() {
     constexpr size_t BUFLEN = 16;
     using Reader = ioutils::StreamReader<Policy, BUFLEN>;
     Reader reader;
-    reader(STDIN_FILENO);
+    // reader(STDIN_FILENO);
     return EXIT_SUCCESS;
 }

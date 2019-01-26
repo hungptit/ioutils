@@ -89,6 +89,7 @@ namespace {
     // Read from file in chunks
     struct AppendPolicy {
         void process(const char *buffer, const size_t len) { data.append(buffer, len); }
+        void finalize(){}       // Do not need to do anything for the append only policy.
         std::string data;
     };
 

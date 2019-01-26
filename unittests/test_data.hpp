@@ -27,6 +27,13 @@ namespace {
             }
         }
 
+        void create_symlink(const path &p, const path &symlink, const bool verbose = false) {
+            boost::filesystem::create_symlink(p, symlink);
+            if (verbose) {
+                if (verbose) std::cout << symlink.string() << " is linked" << std::endl;
+            }
+        }
+
         path create_dir(const path &rootFolder, const path &aPath) {
             auto fullPath = rootFolder / aPath;
             boost::filesystem::create_directories(fullPath);
@@ -56,6 +63,7 @@ namespace {
             create_file(srcFolder / path("foo.m"), verbose);
             create_file(srcFolder / path("foo.mat"), verbose);
             create_file(srcFolder / path("foo.p"), verbose);
+            create_symlink(srcFolder / path("test.cpp"), srcFolder / path("foo.link.cpp"), verbose);
 
             auto binFolder = create_dir(temporary_dir.get_path(), "bin");
             create_file(binFolder / path("test"), verbose);

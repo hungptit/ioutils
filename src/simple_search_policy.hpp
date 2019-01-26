@@ -1,29 +1,22 @@
 #pragma once
 
+#include "filesystem.hpp"
 #include "fmt/format.h"
 #include <string>
-#include "filesystem.hpp"
 
 namespace ioutils {
-    template <typename Params> class SimplePolicy {
+    class SimplePolicy {
       public:
-        explicit SimplePolicy(Params &&params) { init(params.type); }
-
-        // Make sure this policy has the same intreface as that of regex_policy.
-        explicit SimplePolicy(const std::string &, Params &&params) { init(params.type); }
+        template <typename Params>
+        SimplePolicy(Params &&params)
+            : display_dir(!params.ignore_dir()), display_file(!params.ignore_file()),
+              display_symlink(!params.ignore_symlink()), color(params.color()) {}
 
       protected:
         bool display_dir;
         bool display_file;
         bool display_symlink;
         bool color;
-
-        void init(int type) {
-            display_file = type & DisplayType::DISP_FILE;
-            display_dir = type & DisplayType::DISP_DIR;
-            display_symlink = type & DisplayType::DISP_SYMLINK;
-            color = type & DisplayType::DISP_COLOR;
-        }
 
         bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
 
@@ -33,6 +26,16 @@ namespace ioutils {
                     fmt::print("{0}/{1}\n", parent, stem);
                 } else {
                     fmt::print("\033[1;39m{0}/{1}\033[0m\n", parent, stem);
+                }
+            }
+        }
+
+        void process_file(const std::string &parent) const {
+            if (display_file) {
+                if (!color) {
+                    fmt::print("{0}\n", parent);
+                } else {
+                    fmt::print("\033[1;39m{0}\033[0m\n", parent);
                 }
             }
         }
