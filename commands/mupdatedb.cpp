@@ -1,3 +1,4 @@
+#include "cereal/archives/json.hpp"
 #include "clara.hpp"
 #include "fmt/format.h"
 #include "mlocate.hpp"
@@ -8,7 +9,6 @@
 #include <set>
 #include <string>
 #include <vector>
-#include "cereal/archives/json.hpp"
 
 namespace {
     struct InputParams {

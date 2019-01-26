@@ -34,15 +34,18 @@ namespace ioutils {
             file_size += end - begin;
         }
 
+        void finalize() {}
+
+        void set_filename(const char *) {}
+
         void print() const {
-            fmt::print("Number of bytes: {}\n", file_size);
             fmt::print("Number of lines: {}\n", lines);
             fmt::print("Max line length: {}\n", max_len);
             fmt::print("Min line lenght: {}\n", min_len);
             fmt::print("File size: {}\n", file_size);
         }
 
-    private:
+      private:
         size_t file_size = 0;
         size_t lines = 0;
         size_t max_len = std::numeric_limits<size_t>::min();

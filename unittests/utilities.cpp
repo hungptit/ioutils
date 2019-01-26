@@ -23,9 +23,9 @@ TEST_CASE("Path related functions", "basic") {
 }
 
 TEST_CASE("Console", "basic") {
-    ioutils::Console console;
+    ioutils::Writer console;
     std::string s1("Hello");
     std::string s2(" world!\n");
-    console.print(s1.data(), s1.size());
-    console.print(s2.data(), s2.size());
+    console.write(s1.data(), s1.size());
+    console.write(s2.data(), s2.size());
 }

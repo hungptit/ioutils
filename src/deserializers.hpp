@@ -13,6 +13,10 @@ namespace ioutils {
                 Archive is(ss);
                 is(results);
             }
+
+            void finalize(){}
+            void set_filename(const char*){}
+            
             T results; // Stored deserialized results.
         };
 

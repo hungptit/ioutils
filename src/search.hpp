@@ -29,16 +29,12 @@ namespace ioutils {
     template <typename Policy> class FileSearch : public Policy {
       public:
         // Basic search functionality.
-        explicit FileSearch() : folders() {}
+        template <typename... Args>
+        FileSearch(Args... args) : Policy(std::forward<Args>(args)...), folders() {}
 
         // Filtering files using given patterns.
         template <typename T>
-        explicit FileSearch(const std::string &pattern, T &&params)
-            : Policy(pattern, std::move<T>(params)), folders() {}
-
-        // Filtering files using given extensions.
-        explicit FileSearch(const std::vector<std::string> &extensions)
-            : Policy(extensions), folders() {}
+        FileSearch(T &&params) : Policy(std::forward<T>(params)), folders() {}
 
         template <typename Container> void dfs(Container &&p) {
             for (auto item : p) {
@@ -72,7 +68,6 @@ namespace ioutils {
         void visit(Path &dir) {
             struct stat props;
             const int fd = dir.fd;
-
             int retval = fstat(fd, &props);
             if (retval < 0) return;
 
@@ -109,7 +104,7 @@ namespace ioutils {
                 }
                 (void)closedir(dirp);
             } else if (ioutils::filesystem::is_regular_file(props.st_mode)) {
-                Policy::process_file(dir.path, nullptr);
+                Policy::process_file(dir.path);
                 ::close(fd);
             } else {
                 throw "We should not be here!";

@@ -113,5 +113,4 @@ namespace ioutils {
         int fd; // The current path file descriptor
         std::string path;
     };
-
 } // namespace ioutils

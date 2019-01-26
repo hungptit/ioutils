@@ -7,16 +7,14 @@
 #include <string>
 
 namespace ioutils {
-    template <typename Matcher, typename Params> class RegexPolicy {
+    template <typename Matcher> class RegexPolicy {
       public:
-        RegexPolicy(const std::string &pattern, Params &&params)
-            : buffer(), matcher(pattern, params.regex_mode),
-              parameters(std::forward<Params>(params)) {
+        template <typename Params>
+        RegexPolicy(Params &&params)
+            : buffer(), matcher(params.path_regex, params.regex_mode),
+              display_file(!params.ignore_file()), display_dir(!params.ignore_dir()),
+              display_symlink(!params.ignore_symlink()), color(params.color()) {
             buffer.reserve(1023);
-            display_file = (params.type & DisplayType::DISP_FILE) > 0;
-            display_dir = (params.type & DisplayType::DISP_DIR) > 0;
-            display_symlink = (params.type & DisplayType::DISP_SYMLINK) > 0;
-            color = (params.type & DisplayType::DISP_COLOR) > 0;
         }
 
       protected:
@@ -30,6 +28,17 @@ namespace ioutils {
                     fmt::print("{}\n", buffer);
                 } else {
                     fmt::print("\033[1;39m{}\033[0m\n", buffer);
+                }
+            }
+        }
+
+        void process_file(const std::string &parent) {
+            if (!display_file) return;
+            if (matcher.is_matched(parent.data(), parent.size())) {
+                if (!color) {
+                    fmt::print("{}\n", parent);
+                } else {
+                    fmt::print("\033[1;39m{}\033[0m\n", parent);
                 }
             }
         }
@@ -59,51 +68,11 @@ namespace ioutils {
 
         std::string buffer;
         Matcher matcher;
-        Params parameters;
 
         // Display functionality related flags.
         bool display_file;
         bool display_dir;
         bool display_symlink;
         bool color;
-    };
-
-    template <typename Matcher> class RegexStorePolicy {
-      public:
-        RegexStorePolicy(const std::string &pattern,
-                         const int mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH))
-            : buffer(), matcher(pattern, mode) {
-            buffer.reserve(1023);
-        }
-
-        const std::vector<std::string> &get_files() const { return files; }
-
-      protected:
-        bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
-
-        void process_file(const std::string &parent, const char *stem) {
-            if (!store_file) return;
-            buffer = parent + "/" + stem;
-            if (matcher.is_matched(buffer.data(), buffer.size())) {
-                files.push_back(buffer);
-            }
-        }
-
-        void process_symlink(const std::string &parent, const char *stem) {
-            if (!store_symlink) return;
-            buffer = parent + "/" + stem;
-            if (matcher.is_matched(buffer.data(), buffer.size())) {
-                files.push_back(buffer);
-            }
-        }
-
-        void process_dir(const std::string &p) {}
-
-        std::string buffer;
-        Matcher matcher;
-        std::vector<std::string> files;
-
-        static constexpr bool store_file = true;
-        static constexpr bool store_symlink = true;
     };
 } // namespace ioutils
