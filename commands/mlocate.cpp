@@ -3,7 +3,6 @@
 #include "filesystem.hpp"
 #include "fmt/format.h"
 #include "ioutils.hpp"
-#include "utils/copyright.hpp"
 #include "utils/matchers.hpp"
 #include "utils/regex_matchers.hpp"
 #include <string>

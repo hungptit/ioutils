@@ -7,7 +7,6 @@
 #include "search_policies.hpp"
 #include "simple_search_policy.hpp"
 #include "utilities.hpp"
-#include "utils/copyright.hpp"
 #include "utils/matchers.hpp"
 #include "utils/regex_matchers.hpp"
 #include <dirent.h>

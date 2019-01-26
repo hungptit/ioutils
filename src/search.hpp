@@ -91,13 +91,11 @@ namespace ioutils {
                             Policy::process_file(dir.path, info->d_name);
                             break;
                         case DT_LNK: {
-                            // We only store symlink path.
                             Policy::process_symlink(dir.path, info->d_name);
                             break;
                         }
-
                         default:
-                            // We only care about directories and regular files.
+                            // We only care about directories, symlinks and regular files.
                             break;
                         }
                     }
