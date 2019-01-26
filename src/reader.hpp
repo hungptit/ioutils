@@ -13,8 +13,13 @@ namespace ioutils {
     struct FileReader : public Policy {
         template <typename... Args>
         FileReader(Args... args) : Policy(std::forward<Args>(args)...) {}
+        const char *current_file;
 
         void operator()(const char *datafile) {
+            // Cache the file name
+            current_file = datafile;
+
+            // Read data by trunks
             char read_buffer[BUFFER_SIZE];
             int fd = ::open(datafile, O_RDONLY | O_NOCTTY);
 
@@ -30,7 +35,8 @@ namespace ioutils {
             fstat(fd, &buf);
 
             // Read data into a read buffer
-            const size_t block_count = (buf.st_size / BUFFER_SIZE) + (buf.st_size % BUFFER_SIZE != 0);
+            const size_t block_count =
+                (buf.st_size / BUFFER_SIZE) + (buf.st_size % BUFFER_SIZE != 0);
             for (size_t blk = 0; blk < block_count; ++blk) {
                 long nbytes = ::read(fd, read_buffer, BUFFER_SIZE);
                 if (nbytes < 0) {
