@@ -56,14 +56,20 @@ namespace ioutils {
         }
     };
 
-    // A reader that use memory mapped approach.
+    // A reader that use memory mapped approach. This approach is slower than streaming approach
+    // in general.
     template <typename Policy> struct MMapReader : public Policy {
         MMapReader() : Policy() {}
 
         template <typename... Args>
         MMapReader(Args... args) : Policy(std::forward<Args>(args)...) {}
 
+        const char *current_file;
+
         void operator()(const char *datafile) {
+            // Cache the file name
+            current_file = datafile;
+
             // Open data file for reading
             int fd = open(datafile, O_RDONLY);
             if (fd == -1) {
