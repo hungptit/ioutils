@@ -2,9 +2,9 @@
 * TODO Allow users to save results in different formats
   + JSON
   + XML
-* TODO Submit a proposal to CppCon-2019
+* TODO Submit a proposal to CppCon?
 * TODO Support color output
   + dir:
   + symlink:
   + file:
-* TODO Refactor mfind so we can use it in other project such as fastgrep.
+* TODO Refactor mlocate to support more options and improve the performance.
