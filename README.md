@@ -7,32 +7,26 @@ ioutils is a small and very fast file system library for Linux and Unix environm
 * Very fast file read algorithms.
 
 * Very fast file traversal algorithms.
-
+  
 * A small set of high performance file related functions and classes.
 
 * The mfind command line utility is faster than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands. Our performance benchmark shows that mfind is consistently 2x faster than [GNU find](https://www.gnu.org/software/findutils/) in most tests and 20%-100% faster than [fd](https://github.com/sharkdp/fd).
 
-* The mlocate command is at least 80% faster than that of GNU locate command.
+* The mlocate command is 15x faster than that of [GNU locate](https://www.gnu.org/software/findutils/) command.
 
-# What is the different between mfind and find and/or fd?
+## What is the different between ioutils and other similar open source projects such as [GNU findutils](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd)?##
 
-ioutils is written as a library and mfind is its command line utility. This library is built using generic programming concepts and this approach helps to
+* ioutils is written as a library so we can easily reuse it in other projects.
 
-* Create a flexible and reusable algorithms without sacrificing the performance.
+* Core algorithms are created using policy-based design so we can have flexible and reusable algorithms without sacrificing the performance i.e all classes are generated at the compile time.
 
-* Reduce the number of test cases from O(MN) to O(M + N), where M is the number of algorithms and N is the number of policies or behaviors.
-
-* One side effect of heavily template code is the binary size of [mfind](https://github.com/hungptit/ioutils/blob/master/command/mfind.cpp) is significantly larger than that of [find](https://www.gnu.org/software/findutils/) or [fd](https://github.com/sharkdp/fd).
-
-Below are key factors that make mfind very fast:
-
-1. Uses a very fast file traversal algorithms. It is consistently 2x faster than grep in all of our performance benchmark in both Linux and MacOS.
-
-2. Use an optimized regular expression engine i.e [hyperscan](https://github.com/intel/hyperscan "hyperscan") and blazing fast text matching algorithms.
-
-3. Core algorithms are written in modern C++. Final algorithms code are generated at compile time using specified algorithms and policies and this helps [mfind](https://github.com/hungptit/ioutils/blob/master/command/mfind.cpp) to fully take advantage of the modern C++ compiler and architecture.
+* Can reduce the number of test cases from O(MN) to O(M + N), where M is the number of algorithms and N is the number of policies or behaviors.
 
 # Usage #
+
+## Precompiled binaries ##
+
+**All precompiled binaries for Linux and MacOS can be downloaded from** [**this github repostory**](https://github.com/hungptit/tools). 
 
 ## Search for all files in given folders ##
 
@@ -55,7 +49,6 @@ hungptit@hungptit ~/working/ioutils/command $ ./mfind ../src/
 ../src/search_regex.hpp
 ../src/temporary_dir.hpp
 ../src/regex_policies.hpp
-
 ```
 
 ## Search for files that match specified regular expression pattern ##
@@ -125,63 +118,65 @@ mlocate
 
 ## Test environments ##
 
-* CPU: Intel Core i7 920
-* Memory: 24 GB
-* Hard drive: Fast SSD drive and the partition is formatted using ext4.
-* OS: Gentoo Linux kernel 4.17.1 with glibc-2.27 and gcc-7.3
+* CPU: Core I7 2200 MHz
+* Memory: 16 GB
+* Hard drive: Fast SSD drive.
+* OS: Darwin Kernel Version 18.2.0
 
 ## Test data ##
 
 * [boost libraries](https://www.boost.org/) source code which has more than 50K source code and object files.
 * Linux kernel source code with more than 78K files.
 
+## What do we benchmark? ##
+
+* We use [Celero](https://github.com/DigitalInBlue/Celero) to benchmark all test functions.
+* All commands i.e find, mfind, and fd are executed using std::system function and the output will be piped to a temporary files. We need to pipe to a file instead of /dev/null to avoid any short circuit optimization.
+  
 ## Results ##
+
+### Locate files ###
+
+**Summary**
+* mlocate is about 15x faster thatm GNU locate.
+* The performance benchmark results are consistent in both MacOS and Linux environments.
+
+``` shell
+./locate_benchmark
+Celero
+Timer resolution: 0.001000 us
+-----------------------------------------------------------------------------------------------------------------------------------------------
+     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
+-----------------------------------------------------------------------------------------------------------------------------------------------
+regex           | gnu_locate      |               0 |              10 |               1 |         1.00000 |    353027.00000 |            2.83 |
+regex           | mlocate         |               0 |              10 |               1 |         0.06850 |     24182.00000 |           41.35 |
+Complete.
+```
 
 ### Search for files in boost library source code ###
 
+#### Search for all files ####
+
+**Summary**
+* mfind is about 2x faster than both GNU find and fd
+
 ``` shell
-hungptit@hungptit ~/working/ioutils/benchmark $ ./mfind -g boost
+./mfind -g big_folder
 Celero
 Timer resolution: 0.001000 us
 -----------------------------------------------------------------------------------------------------------------------------------------------
      Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
 -----------------------------------------------------------------------------------------------------------------------------------------------
-boost           | gnu_find        |            Null |              10 |               1 |         1.00000 |    146265.00000 |            6.84 |
-boost           | fd              |            Null |              10 |               1 |         0.87407 |    127846.00000 |            7.82 |
-boost           | mfind_to_consol |            Null |              10 |               1 |         0.51545 |     75392.00000 |           13.26 |
+big_folder      | gnu_find        |               0 |              10 |               1 |         1.00000 |    620226.00000 |            1.61 |
+big_folder      | fd              |               0 |              10 |               1 |         0.80375 |    498507.00000 |            2.01 |
+big_folder      | mfind_to_consol |               0 |              10 |               1 |         0.40347 |    250241.00000 |            4.00 |
 Complete.
 ```
 
-### Search for files in Linux kernel source code ###
+#### Search for files using given pattern ####
+**Summary**
+* Regular expression benchmark results are depended of given search patterns since all test commands use different regular expression engine. In the benchmark below we will find source code files that match this pattern **'/\w+options.c(p)*$'** in the boost library source code. Note that the benchmark results below might be biased since I have not found any good way to test both **find** and **fd** commands.
 
 ``` shell
-hungptit@hungptit ~/working/ioutils/benchmark $ ./mfind -g linux_kernel
-Celero
-Timer resolution: 0.001000 us
------------------------------------------------------------------------------------------------------------------------------------------------
-Group           |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
------------------------------------------------------------------------------------------------------------------------------------------------
-linux_kernel    | gnu_find        |            Null |              10 |               1 |         1.00000 |    139244.00000 |            7.18 |
-linux_kernel    | fd              |            Null |              10 |               1 |         1.23248 |    171616.00000 |            5.83 |
-linux_kernel    | mfind_to_consol |            Null |              10 |               1 |         0.69987 |     97453.00000 |           10.26 |
-Complete.
-```
 
-### Search for file using a given pattern ###
-
-Regular expression benchmark results are depended of given search patterns since all test commands use different regular expression engine. In the benchmark below we will find source code files that match this pattern **'/\w+options.c(p)*$'** in the boost library source code. Note that the benchmark results below might be biased since I have not found any good way to test both **find** and **fd** commands.
-
-``` shell
-hungptit@hungptit ~/working/ioutils/benchmark $ ./mfind -g boost_regex
-Celero
-Timer resolution: 0.001000 us
------------------------------------------------------------------------------------------------------------------------------------------------
-     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
-     -----------------------------------------------------------------------------------------------------------------------------------------------
-     boost_regex     | gnu_find        |            Null |              10 |               1 |         1.00000 |    152122.00000 |            6.57 |
-     boost_regex     | fd              |            Null |              10 |               1 |         1.06981 |    162741.00000 |            6.14 |
-     boost_regex     | mfind_to_consol |            Null |              10 |               1 |         0.52748 |     80241.00000 |           12.46 |
-     Complete.
-     hungptit@hungptit ~/working/ioutils/benchmark $ ./mfind -g boost
-Celero
 ```

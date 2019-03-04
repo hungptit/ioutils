@@ -11,7 +11,7 @@
 namespace {
     void copyright() {
         fmt::print("{}\n", "mlocate version 0.1.0");
-        fmt::print("{}\n", "Hung Dang <hungptit@gmail.com>");
+        fmt::print("{}\n", "Copyright Hung Dang <hungptit at gmail dot com>");
     }
     struct SearchParams {
         bool ignore_case = false;   // Ignore case distinctions
@@ -66,8 +66,8 @@ namespace {
         if (help) {
             std::ostringstream oss;
             oss << cli;
-            copyright();
             fmt::print("{}", oss.str());
+            copyright();
             exit(EXIT_SUCCESS);
         }
        

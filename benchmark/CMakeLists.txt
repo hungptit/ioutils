@@ -97,7 +97,7 @@ include_directories ("${EXTERNAL_DIR}/include")
 # Compile again the latest version of ioutils.
 include_directories ("${ROOT_DIR}/src")
 
-set(COMMAND_SRC_FILES read_data mfind)
+set(COMMAND_SRC_FILES read_data mfind locate_benchmark)
 foreach (src_file ${COMMAND_SRC_FILES})
   ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
   TARGET_LINK_LIBRARIES(${src_file} ${LIB_CELERO} ${Boost_LIBRARIES})
