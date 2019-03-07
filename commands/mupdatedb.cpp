@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
     auto params = parse_input_arguments(argc, argv);
     using Search = typename ioutils::FileSearch<ioutils::mlocate::Policy>;
     Search search;
-    search.dfs(params.paths);
+    search.traverse(params.paths);
 
     // Serialize data to a string then save it to a file.
     fmt::memory_buffer buffer;

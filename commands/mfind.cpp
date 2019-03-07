@@ -1,4 +1,3 @@
-#include "cereal/archives/json.hpp"
 #include "clara.hpp"
 #include "fmt/format.h"
 #include "search_params.hpp"
@@ -14,22 +13,22 @@
 namespace {
     template <typename Params> void search(Params &&params) {
         // Search for files based on given constraints.
-        if (params.path_regex.empty()) {
+        if (params.regex.empty()) {
             using Policy = ioutils::SimplePolicy;
             ioutils::FileSearch<Policy> search(params);
-            search.dfs(params.paths);
+            search.traverse(params.paths);
         } else {
             // Find desired files and folders
-            if (!params.inverse_match()) {
+            if (!params.invert_match()) {
                 using Matcher = utils::hyperscan::RegexMatcher;
                 using Policy = ioutils::RegexPolicy<Matcher>;
                 ioutils::FileSearch<Policy> search(params);
-                search.dfs(params.paths);
+                search.traverse(params.paths);
             } else {
                 using Matcher = utils::hyperscan::RegexMatcherInv;
                 using Policy = ioutils::RegexPolicy<Matcher>;
                 ioutils::FileSearch<Policy> search(params);
-                search.dfs(params.paths);
+                search.traverse(params.paths);
             }
         }
     }

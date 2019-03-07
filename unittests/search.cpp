@@ -137,7 +137,7 @@ TEST_CASE("Search with regex", "basic") {
     using Search = typename ioutils::FileSearch<Policy>;
     ioutils::search::Params params;
     params.flag |= ioutils::search::IGNORE_SYMLINK;
-    params.path_regex = "[.]cpp";
+    params.regex = "[.]cpp";
     Search search(params);
     search.dfs(std::vector<std::string>{p});
     for (auto p : search.get_paths()) {

@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <deque>
 #include <dirent.h>
 #include <fcntl.h>
 #include <string>
@@ -17,35 +16,39 @@
 #include "fmt/format.h"
 #include "utils/regex_matchers.hpp"
 
-// cereal
-#include "cereal/types/array.hpp"
-#include "cereal/types/chrono.hpp"
-#include "cereal/types/deque.hpp"
-#include "cereal/types/string.hpp"
-#include "cereal/types/vector.hpp"
-
 namespace ioutils {
     // A class which has DFS and BFS file traversal algorithms.
     template <typename Policy> class FileSearch : public Policy {
       public:
         // Basic search functionality.
         template <typename... Args>
-        FileSearch(Args... args) : Policy(std::forward<Args>(args)...), folders() {}
+        FileSearch(Args... args) : Policy(std::forward<Args>(args)...), current(), next() {}
 
         // Filtering files using given patterns.
         template <typename T>
-        FileSearch(T &&params) : Policy(std::forward<T>(params)), folders() {}
+        FileSearch(T &&params) : Policy(std::forward<T>(params)), current(), next() {
+            use_dfs = params.dfs();
+            level = params.level;
+        }
+
+        template <typename Container> void traverse(Container &&p) {
+            if (!use_dfs) {
+                bfs(std::forward<Container>(p));
+            } else {
+                dfs(std::forward<Container>(p));
+            }
+        }
 
         template <typename Container> void dfs(Container &&p) {
             for (auto item : p) {
                 int fd = ::open(item.data(), O_RDONLY);
-                if (fd > -1) folders.emplace_back(Path{fd, item});
+                if (fd > -1) next.emplace_back(Path{fd, item});
             }
 
             // Search for files and folders using DFS traversal.
-            while (!folders.empty()) {
-                auto parent = folders.back();
-                folders.pop_back();
+            while (!next.empty()) {
+                auto parent = next.back();
+                next.pop_back();
                 visit(parent);
             }
         }
@@ -53,14 +56,21 @@ namespace ioutils {
         template <typename Container> void bfs(Container &&p) {
             for (auto item : p) {
                 int fd = ::open(item.data(), O_RDONLY);
-                if (fd > -1) folders.emplace_back(Path{fd, item});
+                if (fd > -1) next.emplace_back(Path{fd, item});
             }
 
             // Search for files and folders using DFS traversal.
-            while (!folders.empty()) {
-                auto parent = folders.front();
-                folders.pop_front();
-                visit(parent);
+            int current_level = 0;
+            while (!next.empty()) {
+                std::swap(current, next);
+                next.clear();
+                for (auto current_path : current) {
+                    visit(current_path);
+                }
+                ++current_level;
+                if ((level > -1) && (current_level > level)) {
+                    break; // Stop if we have traverse to the desired depth.
+                }
             }
         }
 
@@ -83,7 +93,7 @@ namespace ioutils {
                                 int current_dir_fd = ::open(p.data(), O_RDONLY);
                                 if (current_dir_fd >= 0) {
                                     Policy::process_dir(p);
-                                    folders.emplace_back(Path{current_dir_fd, std::move(p)});
+                                    next.emplace_back(Path{current_dir_fd, std::move(p)});
                                 }
                             }
                             break;
@@ -109,7 +119,10 @@ namespace ioutils {
             }
         }
 
-        std::deque<Path> folders;
+        std::vector<Path> current;
+        std::vector<Path> next;
+        bool use_dfs = true;
+        int level = -1;
         static constexpr char SEP = '/';
     };
 } // namespace ioutils

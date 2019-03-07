@@ -28,10 +28,10 @@ include(CheckCXXCompilerFlag)
 include(AddCXXCompilerFlag)
 include(CXXFeatureCheck)
 
-# set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Debug)
 
-set (CMAKE_BUILD_TYPE Release)
-add_cxx_compiler_flag(-O3)
+# set (CMAKE_BUILD_TYPE Release)
+# add_cxx_compiler_flag(-O3)
 
 # Enable avx2 flag if specified.
 if (USE_AVX2)
