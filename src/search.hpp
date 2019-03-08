@@ -27,6 +27,8 @@ namespace ioutils {
         // Filtering files using given patterns.
         template <typename T>
         FileSearch(T &&params) : Policy(std::forward<T>(params)), current(), next() {
+            current.reserve(512);
+            next.reserve(512);
             use_dfs = params.dfs();
             level = params.level;
         }

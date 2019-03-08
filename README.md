@@ -7,7 +7,7 @@ ioutils is a small and very fast file system library for Linux and Unix environm
 * Very fast file read algorithms.
 
 * Very fast file traversal algorithms.
-  
+
 * A small set of high performance file related functions and classes.
 
 * The mfind command line utility is faster than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands. Our performance benchmark shows that mfind is consistently 2x faster than [GNU find](https://www.gnu.org/software/findutils/) in most tests and 20%-100% faster than [fd](https://github.com/sharkdp/fd).
@@ -26,7 +26,7 @@ ioutils is a small and very fast file system library for Linux and Unix environm
 
 ## Precompiled binaries ##
 
-**All precompiled binaries for Linux and MacOS can be downloaded from** [**this github repostory**](https://github.com/hungptit/tools). 
+**All precompiled binaries for Linux and MacOS can be downloaded from** [**this github repostory**](https://github.com/hungptit/tools).
 
 ## Search for all files in given folders ##
 
@@ -73,6 +73,31 @@ sys     0m0.121s
 ```
 
 *Note: mfind does support caseless matching using ignore-case flag.*
+
+## Use --level to control the level of exploration i.e BFS depth ##
+
+``` shell
+hdang@ATH020224 ~/w/i/commands> mfind ../ --level 1 -e '[.]cpp$'
+../benchmark/read_data.cpp
+../benchmark/mfind.cpp
+../benchmark/file_read.cpp
+../benchmark/fileio.cpp
+../benchmark/filesystem.cpp
+../benchmark/test_read.cpp
+../benchmark/locate_benchmark.cpp
+../unittests/tempdir.cpp
+../unittests/read_data.cpp
+../unittests/deserializers.cpp
+../unittests/utilities.cpp
+../unittests/read_stdin.cpp
+../unittests/search.cpp
+../unittests/writer.cpp
+../commands/mupdatedb.cpp
+../commands/mwc.cpp
+../commands/mfind.cpp
+../commands/mlocate.cpp
+../commands/linestats.cpp
+```
 
 ## Search for files that do not match the given pattern ##
 mfind does allow users to search for files that do not match a given option by turn on the **inverse-match** flag. Below is an example
@@ -126,13 +151,12 @@ mlocate
 ## Test data ##
 
 * [boost libraries](https://www.boost.org/) source code which has more than 50K source code and object files.
-* Linux kernel source code with more than 78K files.
 
 ## What do we benchmark? ##
 
 * We use [Celero](https://github.com/DigitalInBlue/Celero) to benchmark all test functions.
-* All commands i.e find, mfind, and fd are executed using std::system function and the output will be piped to a temporary files. We need to pipe to a file instead of /dev/null to avoid any short circuit optimization.
-  
+* All commands i.e find, mfind, and fd are executed using std::system function and the output is piped to a temporary file. We need to pipe to a file instead of **/dev/null** to avoid any short circuit optimization.
+
 ## Results ##
 
 ### Locate files ###
@@ -157,8 +181,8 @@ Complete.
 
 #### Search for all files ####
 
-**Summary**
-* mfind is about 2x faster than both GNU find and fd
+**mfind** is about 2x faster than both **GNU find** and **fd** in this performance benchmark. Note that both **mfind** and **fd** skip the **.git** folder, however, GNU find does not.
+* fd performance is similar to that of GNU find.
 
 ``` shell
 ./mfind -g big_folder
@@ -167,16 +191,28 @@ Timer resolution: 0.001000 us
 -----------------------------------------------------------------------------------------------------------------------------------------------
      Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
 -----------------------------------------------------------------------------------------------------------------------------------------------
-big_folder      | gnu_find        |               0 |              10 |               1 |         1.00000 |    620226.00000 |            1.61 |
-big_folder      | fd              |               0 |              10 |               1 |         0.80375 |    498507.00000 |            2.01 |
-big_folder      | mfind_to_consol |               0 |              10 |               1 |         0.40347 |    250241.00000 |            4.00 |
+big_folder      | gnu_find        |               0 |              10 |               1 |         1.00000 |    492828.00000 |            2.03 |
+big_folder      | fd              |               0 |              10 |               1 |         1.00553 |    495551.00000 |            2.02 |
+big_folder      | mfind_default   |               0 |              10 |               1 |         0.53460 |    263467.00000 |            3.80 |
+big_folder      | mfind_dfs       |               0 |              10 |               1 |         0.52191 |    257211.00000 |            3.89 |
 Complete.
 ```
 
 #### Search for files using given pattern ####
-**Summary**
-* Regular expression benchmark results are depended of given search patterns since all test commands use different regular expression engine. In the benchmark below we will find source code files that match this pattern **'/\w+options.c(p)*$'** in the boost library source code. Note that the benchmark results below might be biased since I have not found any good way to test both **find** and **fd** commands.
+Regular expression benchmark results are depended of given search patterns since all test commands use different regular expression engine. In the benchmark below we will find source code files that match this pattern **'/\w+options.c(p)*$'** in the boost library source code. Note that the benchmark results below might be biased since I have not found any good way to test both **find** and **fd** commands.
+
+Again mfind is the fastest command in this benchmark. The results are consistent with the find all performance benchmark. The performance results are affected by the host operating systems and I/O speed, however, I get consistent results in all tested platforms.
 
 ``` shell
-
+./mfind -g big_folder_regex
+Celero
+Timer resolution: 0.001000 us
+-----------------------------------------------------------------------------------------------------------------------------------------------
+     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
+-----------------------------------------------------------------------------------------------------------------------------------------------
+big_folder_rege | gnu_find        |               0 |              10 |               1 |         1.00000 |    481115.00000 |            2.08 |
+big_folder_rege | fd              |               0 |              10 |               1 |         0.89113 |    428734.00000 |            2.33 |
+big_folder_rege | mfind_default   |               0 |              10 |               1 |         0.54405 |    261750.00000 |            3.82 |
+big_folder_rege | mfind_dfs       |               0 |              10 |               1 |         0.53777 |    258728.00000 |            3.87 |
+Complete.
 ```

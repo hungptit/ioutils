@@ -9,7 +9,7 @@
 #include "simple_search_policy.hpp"
 #include "simple_store_policy.hpp"
 
-constexpr int number_of_samples = 10;
+constexpr int number_of_samples = 20;
 constexpr int number_of_operations = 1;
 
 int test(const std::string &command, const std::string &path) {
