@@ -11,7 +11,7 @@
 namespace {
     void copyright() {
         fmt::print("{}\n", "mlocate version 0.1.0");
-        fmt::print("{}\n", "Hung Dang <hungptit@gmail.com>");
+        fmt::print("{}\n", "Copyright Hung Dang <hungptit at gmail dot com>");
     }
 
     // TODO: Use an int value to store all flags.
@@ -71,8 +71,8 @@ namespace {
         if (help) {
             std::ostringstream oss;
             oss << cli;
-            copyright();
             fmt::print("{}", oss.str());
+            copyright();
             exit(EXIT_SUCCESS);
         }
 

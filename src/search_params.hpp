@@ -1,8 +1,5 @@
 #pragma once
 
-#include "cereal/archives/json.hpp"
-#include "cereal/types/vector.hpp"
-#include "cereal/types/string.hpp"
 #include "clara.hpp"
 #include "fmt/format.h"
 #include "hs/hs.h"
@@ -12,38 +9,82 @@
 namespace ioutils {
     namespace search {
         enum PARAMS : uint32_t {
-            VERBOSE = 1,
-            INVERSE_MATCH = 1 << 1,
-            COLOR = 1 << 2,
-            IGNORE_FILE = 1 << 3,
-            IGNORE_DIR = 1 << 4,
-            IGNORE_SYMLINK = 1 << 5,
-            FOLLOW_SYMLINK = 1 << 6,
+            VERBOSE = 1,             // Display verbose information.
+            INVERT_MATCH = 1 << 1,   // Display paths that do not match given pattern.
+            COLOR = 1 << 2,          // Display color text.
+            IGNORE_FILE = 1 << 3,    // Skip files.
+            IGNORE_DIR = 1 << 4,     // Skip directories.
+            IGNORE_SYMLINK = 1 << 5, // Skip symlinks.
+            FOLLOW_SYMLINK = 1 << 6, // Dive into to the symlink.
+            DFS = 1 << 7,            // Use DFS for file traversal.
         };
 
         struct Params {
+            static constexpr int EXPLORE_ALL = -1;
             Params()
-                : flag(0), regex_mode(HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH), path_regex(),
-                  paths() {}
+                : flags(0), regex_mode(HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH), level(EXPLORE_ALL),
+                  regex(), paths() {}
 
-            int flag;
+            int flags;
             int regex_mode;
-            std::string path_regex;
+            int level;
+            std::string regex;
             std::vector<std::string> paths;
 
-            bool verbose() { return (flag & PARAMS::VERBOSE) > 0; }
-            bool inverse_match() { return (flag & PARAMS::INVERSE_MATCH) > 0; }
-            bool color() { return (flag & PARAMS::COLOR) > 0; }
+            bool verbose() { return (flags & PARAMS::VERBOSE) > 0; }
+            bool invert_match() { return (flags & PARAMS::INVERT_MATCH) > 0; }
+            bool color() { return (flags & PARAMS::COLOR) > 0; }
 
-            bool ignore_file() { return (flag & PARAMS::IGNORE_FILE) > 0; }
-            bool ignore_dir() { return (flag & PARAMS::IGNORE_DIR) > 0; }
-            bool ignore_symlink() { return (flag & PARAMS::IGNORE_SYMLINK) > 0; }
+            bool ignore_file() { return (flags & PARAMS::IGNORE_FILE) > 0; }
+            bool ignore_dir() { return (flags & PARAMS::IGNORE_DIR) > 0; }
+            bool ignore_symlink() { return (flags & PARAMS::IGNORE_SYMLINK) > 0; }
 
-            bool follow_symlink() { return (flag & PARAMS::FOLLOW_SYMLINK) > 0; }
+            bool follow_symlink() { return (flags & PARAMS::FOLLOW_SYMLINK) > 0; }
 
-            template <typename Archive> void serialize(Archive &ar) {
-                ar(CEREAL_NVP(flag), CEREAL_NVP(regex_mode), CEREAL_NVP(path_regex),
-                   CEREAL_NVP(paths));
+            bool dfs() { return (flags & DFS) > 0; }
+
+            void print() {
+                if (color()) {
+                    fmt::print("\033[1;34mverbose: \033[1;32m{}\n", verbose());
+                    fmt::print("\033[1;34minvert-match: \033[1;32m{}\n", invert_match());
+                    fmt::print("\033[1;34mcolor: \033[1;32m{}\n", color());
+                    fmt::print("\033[1;34mignore-file: \033[1;32m{}\n", ignore_file());
+                    fmt::print("\033[1;34mignore-dir: \033[1;32m{}\n", ignore_dir());
+                    fmt::print("\033[1;34mignore-symlink: \033[1;32m{}\n", ignore_symlink());
+                    fmt::print("\033[1;34mfollow-symlink: \033[1;32m{}\n", follow_symlink());
+                    fmt::print("\033[1;34mdfs: \033[1;32m{}\n", dfs());
+                    fmt::print("\033[1;34mlevel: \033[1;32m{}\n", level);
+                    fmt::print("\033[1;34mregex: \033[1;32m\"{}\"\n", regex);
+                    fmt::print("\033[1;34mpath: \033[1;32m[");
+                    if (!paths.empty()) {
+                        size_t idx = 0;
+                        fmt::print("\"{}\"", paths[idx++]);
+                        for (; idx < paths.size(); ++idx) {
+                            fmt::print(",\"{}\"", paths[idx++]);
+                        }
+                    }
+                    fmt::print("]\033[0m\n");
+                } else {
+                    fmt::print("verbose: {}\n", verbose());
+                    fmt::print("invert-match: {}\n", invert_match());
+                    fmt::print("color: {}\n", color());
+                    fmt::print("ignore-file: {}\n", ignore_file());
+                    fmt::print("ignore-dir: {}\n", ignore_dir());
+                    fmt::print("ignore-symlink: {}\n", ignore_symlink());
+                    fmt::print("follow-symlink: {}\n", follow_symlink());
+                    fmt::print("dfs: {}\n", dfs());
+                    fmt::print("level: {}\n", level);
+                    fmt::print("regex: \"{}\"\n", regex);
+                    fmt::print("path: [");
+                    if (!paths.empty()) {
+                        size_t idx = 0;
+                        fmt::print("\"{}\"", paths[idx++]);
+                        for (; idx < paths.size(); ++idx) {
+                            fmt::print(",\"{}\"", paths[idx++]);
+                        }
+                    }
+                    fmt::print("]\n");
+                }
             }
         };
 
@@ -59,28 +100,33 @@ namespace ioutils {
             bool follow_link = false;
             bool color = false;
             bool inverse_match = false;
+            bool dfs = false;
+            bool bfs = true;
 
             std::string begin_time, end_time;
 
             auto cli = clara::Help(help) |
                        clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information") |
                        clara::Opt(ignore_case)["-i"]["--ignore-case"]("Ignore case") |
-                       clara::Opt(inverse_match)["--inverse-match"](
+                       clara::Opt(inverse_match)["--invert-match"](
                            "Display paths that do not match a given path regex.") |
                        clara::Opt(ignore_file)["--ignore-file"]("Ignore files.") |
                        clara::Opt(ignore_dir)["--ignore-dir"]("Ignore folders.") |
                        clara::Opt(ignore_symlink)["--ignore-symlink"]("Ignore symlink.") |
                        clara::Opt(color)["-c"]["--color"]("Print out color text.") |
-                       clara::Opt(params.path_regex,
+                       clara::Opt(dfs)["--dfs"]("Use DFS for traversing.") |
+                       clara::Opt(bfs)["--bfs"]("Use BFS for traversing.") |
+                       clara::Opt(params.regex,
                                   "path-regex")["-e"]["--path-regex"]("Search pattern.") |
 
                        // Unsupported options
-                       clara::Opt(follow_link,
-                                  "follow-link")["--follow-link"]("Follow symbolic links.") |
+                       clara::Opt(params.level, "level")["--level"]("The search depth.") |
+                       clara::Opt(follow_link, "follow-link")["--follow-link"](
+                           "Follow symbolic links. (WIP)") |
                        clara::Opt(begin_time, "newer")["--newer"](
-                           "Display paths that are newer than a given timestamp.") |
+                           "Display paths that are newer than a given timestamp. (WIP)") |
                        clara::Opt(end_time, "older")["--older"](
-                           "Display paths that are older than a given timestamp.") |
+                           "Display paths that are older than a given timestamp. (WIP)") |
 
                        // Required arguments.
                        clara::Arg(paths, "paths")("Search paths");
@@ -116,18 +162,15 @@ namespace ioutils {
                 HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH | (ignore_case ? HS_FLAG_CASELESS : 0);
 
             // Parse the display type
-            params.flag = ignore_file * PARAMS::IGNORE_FILE | ignore_dir * PARAMS::IGNORE_DIR |
+            dfs = dfs ? true : !bfs;
+            params.flags = ignore_file * PARAMS::IGNORE_FILE | ignore_dir * PARAMS::IGNORE_DIR |
                           ignore_symlink * PARAMS::IGNORE_SYMLINK | color * PARAMS::COLOR |
-                          verbose * PARAMS::VERBOSE | inverse_match * PARAMS::INVERSE_MATCH;
+                          verbose * PARAMS::VERBOSE | inverse_match * PARAMS::INVERT_MATCH |
+                          dfs * PARAMS::DFS;
 
             // Display input arguments in JSON format if verbose flag is on
             if (params.verbose()) {
-                std::stringstream ss;
-                {
-                    cereal::JSONOutputArchive ar(ss);
-                    ar(cereal::make_nvp("Input arguments", params));
-                }
-                fmt::print("{}\n", ss.str());
+                params.print();
             }
 
             return params;

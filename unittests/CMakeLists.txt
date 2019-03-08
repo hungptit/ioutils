@@ -28,10 +28,10 @@ include(CheckCXXCompilerFlag)
 include(AddCXXCompilerFlag)
 include(CXXFeatureCheck)
 
-# set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Debug)
 
-set (CMAKE_BUILD_TYPE Release)
-add_cxx_compiler_flag(-O3)
+# set (CMAKE_BUILD_TYPE Release)
+# add_cxx_compiler_flag(-O3)
 
 # Enable avx2 flag if specified.
 if (USE_AVX2)
@@ -61,6 +61,7 @@ add_cxx_compiler_flag(-Wshorten-64-to-32)
 add_cxx_compiler_flag(-Wfloat-equal)
 add_cxx_compiler_flag(-Wint-to-void-pointer-cast)
 
+add_cxx_compiler_flag(-fsanitize=address)
 add_cxx_compiler_flag(-fstrict-aliasing)
 if (HAVE_CXX_FLAG_FSTRICT_ALIASING)
   add_cxx_compiler_flag(-Wstrict-aliasing)

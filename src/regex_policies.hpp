@@ -11,7 +11,7 @@ namespace ioutils {
       public:
         template <typename Params>
         RegexPolicy(Params &&params)
-            : buffer(), matcher(params.path_regex, params.regex_mode),
+            : buffer(), matcher(params.regex, params.regex_mode),
               display_file(!params.ignore_file()), display_dir(!params.ignore_dir()),
               display_symlink(!params.ignore_symlink()), color(params.color()) {
             buffer.reserve(1023);
