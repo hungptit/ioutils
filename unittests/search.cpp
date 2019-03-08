@@ -56,15 +56,15 @@ TEST_CASE("Utility function", "basic") {
     SECTION("Search for files using DFS algorithm and print results") {
         ioutils::FileSearch<ioutils::ConsolePolicy> search;
         fmt::print("DFS - ConsolePolicy:\n");
-        search.dfs(std::vector<std::string>{p});
+        search.traverse(std::vector<std::string>{p});
     }
 
     SECTION("Search for files in a given folder using DFS algorithm and store results") {
         SECTION("Ignore dir") {
             ioutils::search::Params params;
-            params.flag |= ioutils::search::IGNORE_DIR;
+            params.flags |= ioutils::search::IGNORE_DIR;
             ioutils::FileSearch<ioutils::StorePolicy> search(params);
-            search.dfs(std::vector<std::string>{p});
+            search.traverse(std::vector<std::string>{p});
             CHECK(search.get_paths().size() == 13);
             for (auto item : search.get_paths()) {
                 fmt::print("{}\n", item);
@@ -73,10 +73,10 @@ TEST_CASE("Utility function", "basic") {
 
         SECTION("Ignore files") {
             ioutils::search::Params params;
-            params.flag |= ioutils::search::IGNORE_DIR;
-            params.flag |= ioutils::search::IGNORE_FILE;
+            params.flags |= ioutils::search::IGNORE_DIR;
+            params.flags |= ioutils::search::IGNORE_FILE;
             ioutils::FileSearch<ioutils::StorePolicy> search(params);
-            search.dfs(std::vector<std::string>{p});
+            search.traverse(std::vector<std::string>{p});
             CHECK(search.get_paths().size() == 1); // Should not see anything.
             for (auto item : search.get_paths()) {
                 fmt::print("{}\n", item);
@@ -85,11 +85,11 @@ TEST_CASE("Utility function", "basic") {
 
         SECTION("Ignore files") {
             ioutils::search::Params params;
-            params.flag |= ioutils::search::IGNORE_DIR;
-            params.flag |= ioutils::search::IGNORE_FILE;
-            params.flag |= ioutils::search::IGNORE_SYMLINK;
+            params.flags |= ioutils::search::IGNORE_DIR;
+            params.flags |= ioutils::search::IGNORE_FILE;
+            params.flags |= ioutils::search::IGNORE_SYMLINK;
             ioutils::FileSearch<ioutils::StorePolicy> search(params);
-            search.dfs(std::vector<std::string>{p});
+            search.traverse(std::vector<std::string>{p});
             CHECK(search.get_paths().size() == 0); // Should not see anything.
             for (auto item : search.get_paths()) {
                 fmt::print("{}\n", item);
@@ -98,10 +98,23 @@ TEST_CASE("Utility function", "basic") {
 
         SECTION("Include all") {
             ioutils::search::Params params;
+            params.flags = ioutils::search::DFS;
             ioutils::FileSearch<ioutils::StorePolicy> search(params);
             fmt::print("DFS - StorePolicy:\n");
-            search.dfs(std::vector<std::string>{p});
+            search.traverse(std::vector<std::string>{p});
             CHECK(search.get_paths().size() == 19);
+            for (auto item : search.get_paths()) {
+                fmt::print("{}\n", item);
+            }
+        }
+        
+        SECTION("Include all with the given level") {
+            ioutils::search::Params params;
+            params.level = 0;
+            ioutils::FileSearch<ioutils::StorePolicy> search(params);
+            fmt::print("DFS - StorePolicy:\n");
+            search.traverse(std::vector<std::string>{p});
+            CHECK(search.get_paths().size() == 7);
             for (auto item : search.get_paths()) {
                 fmt::print("{}\n", item);
             }
@@ -136,10 +149,10 @@ TEST_CASE("Search with regex", "basic") {
     using Policy = ioutils::RegexStorePolicy<Matcher>;
     using Search = typename ioutils::FileSearch<Policy>;
     ioutils::search::Params params;
-    params.flag |= ioutils::search::IGNORE_SYMLINK;
+    params.flags |= ioutils::search::IGNORE_SYMLINK;
     params.regex = "[.]cpp";
     Search search(params);
-    search.dfs(std::vector<std::string>{p});
+    search.traverse(std::vector<std::string>{p});
     for (auto p : search.get_paths()) {
         fmt::print("{}\n", p);
     }

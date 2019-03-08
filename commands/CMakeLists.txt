@@ -22,7 +22,7 @@ message("-- Version: ${VERSION}")
 set(GENERIC_LIB_VERSION ${VERSION})
 string(SUBSTRING ${VERSION} 0 1 GENERIC_LIB_SOVERSION)
 
-option(USE_AVX2 "Support AVX2" ON)
+option(USE_AVX2 "Support AVX2" OFF)
 
 include(CheckCXXCompilerFlag)
 include(AddCXXCompilerFlag)
@@ -40,7 +40,7 @@ add_cxx_compiler_flag(-O3)
 
 # Enable avx2 flag if specified.
 if (USE_AVX2)
-  add_cxx_compiler_flag(-DUSE_AVX2)
+  add_cxx_compiler_flag(-DUTILS_USE_AVX2)
   add_cxx_compiler_flag(-mavx2)
 else()
   add_cxx_compiler_flag(-msse2)

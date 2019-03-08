@@ -22,26 +22,26 @@ namespace ioutils {
         struct Params {
             static constexpr int EXPLORE_ALL = -1;
             Params()
-                : flag(0), regex_mode(HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH), level(EXPLORE_ALL),
+                : flags(0), regex_mode(HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH), level(EXPLORE_ALL),
                   regex(), paths() {}
 
-            int flag;
+            int flags;
             int regex_mode;
             int level;
             std::string regex;
             std::vector<std::string> paths;
 
-            bool verbose() { return (flag & PARAMS::VERBOSE) > 0; }
-            bool invert_match() { return (flag & PARAMS::INVERT_MATCH) > 0; }
-            bool color() { return (flag & PARAMS::COLOR) > 0; }
+            bool verbose() { return (flags & PARAMS::VERBOSE) > 0; }
+            bool invert_match() { return (flags & PARAMS::INVERT_MATCH) > 0; }
+            bool color() { return (flags & PARAMS::COLOR) > 0; }
 
-            bool ignore_file() { return (flag & PARAMS::IGNORE_FILE) > 0; }
-            bool ignore_dir() { return (flag & PARAMS::IGNORE_DIR) > 0; }
-            bool ignore_symlink() { return (flag & PARAMS::IGNORE_SYMLINK) > 0; }
+            bool ignore_file() { return (flags & PARAMS::IGNORE_FILE) > 0; }
+            bool ignore_dir() { return (flags & PARAMS::IGNORE_DIR) > 0; }
+            bool ignore_symlink() { return (flags & PARAMS::IGNORE_SYMLINK) > 0; }
 
-            bool follow_symlink() { return (flag & PARAMS::FOLLOW_SYMLINK) > 0; }
+            bool follow_symlink() { return (flags & PARAMS::FOLLOW_SYMLINK) > 0; }
 
-            bool dfs() { return (flag & DFS) > 0; }
+            bool dfs() { return (flags & DFS) > 0; }
 
             void print() {
                 if (color()) {
@@ -163,7 +163,7 @@ namespace ioutils {
 
             // Parse the display type
             dfs = dfs ? true : !bfs;
-            params.flag = ignore_file * PARAMS::IGNORE_FILE | ignore_dir * PARAMS::IGNORE_DIR |
+            params.flags = ignore_file * PARAMS::IGNORE_FILE | ignore_dir * PARAMS::IGNORE_DIR |
                           ignore_symlink * PARAMS::IGNORE_SYMLINK | color * PARAMS::COLOR |
                           verbose * PARAMS::VERBOSE | inverse_match * PARAMS::INVERT_MATCH |
                           dfs * PARAMS::DFS;

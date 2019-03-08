@@ -1,4 +1,5 @@
 #include "mlocate.hpp"
+#include "cereal/archives/json.hpp"
 #include "clara.hpp"
 #include "filesystem.hpp"
 #include "fmt/format.h"
@@ -6,13 +7,17 @@
 #include "utils/matchers.hpp"
 #include "utils/regex_matchers.hpp"
 #include <string>
-#include "cereal/archives/json.hpp"
 
 namespace {
     void copyright() {
         fmt::print("{}\n", "mlocate version 0.1.0");
         fmt::print("{}\n", "Copyright Hung Dang <hungptit at gmail dot com>");
     }
+
+    // TODO: Use an int value to store all flags.
+    // TODO: Need a better help messages.
+    // TODO: Need to have a benchmark for again locale/mlocate.
+    // TODO: Support multiple databases?
     struct SearchParams {
         bool ignore_case = false;   // Ignore case distinctions
         bool inverse_match = false; // Select non-matching lines
@@ -40,7 +45,7 @@ namespace {
 
     InputParams parse_input_arguments(int argc, char *argv[]) {
         InputParams params;
-        
+
         bool help = false;
         auto cli =
             clara::Help(help) |
@@ -70,7 +75,7 @@ namespace {
             copyright();
             exit(EXIT_SUCCESS);
         }
-       
+
         if (params.databases.empty()) {
             auto default_db = std::getenv("MLOCATE_DB");
             if (default_db == nullptr) {
