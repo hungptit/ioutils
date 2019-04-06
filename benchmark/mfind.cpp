@@ -41,7 +41,7 @@ CELERO_MAIN
 
 // Find all files in the boost source code
 BASELINE(big_folder, gnu_find, number_of_samples, number_of_operations) {
-    test("gfind ", "../../3p/src/boost");
+    test("find ", "../../3p/src/boost");
 }
 
 BENCHMARK(big_folder, fd, number_of_samples, number_of_operations) {
@@ -58,7 +58,7 @@ BENCHMARK(big_folder, mfind_dfs, number_of_samples, number_of_operations) {
 
 // Find all files using a regex that does not match any results
 BASELINE(big_folder_regex, gnu_find, number_of_samples, number_of_operations) {
-    test_find_regex("gfind ", pattern1, " ../../3p/src/boost");
+    test_find_regex("find ", pattern1, " ../../3p/src/boost");
 }
 
 BENCHMARK(big_folder_regex, fd, number_of_samples, number_of_operations) {
