@@ -10,17 +10,15 @@ ioutils is a small and very fast file system library for Linux and Unix environm
 
 * A small set of high performance file related functions and classes.
 
-* The mfind command line utility is faster than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands. Our performance benchmark shows that mfind is consistently 2x faster than [GNU find](https://www.gnu.org/software/findutils/) in most tests and 20%-100% faster than [fd](https://github.com/sharkdp/fd).
+* The mfind command line utility is faster than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands. Our performance benchmark shows that mfind is 2x faster than both [GNU find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd).
 
-* The mlocate command is 15x faster than that of [GNU locate](https://www.gnu.org/software/findutils/) command.
+* The mlocate command is 10x faster than [GNU locate](https://www.gnu.org/software/findutils/) command.
 
 ## What is the different between ioutils and other similar open source projects such as [GNU findutils](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd)?##
 
-* ioutils is written as a library so we can easily reuse it in other projects.
+* ioutils is written as a library so we can easily reuse it in other projects, for example ioutils is used in [fastgrep](https://github.com/hungptit/fastgrep).
 
 * Core algorithms are created using policy-based design so we can have flexible and reusable algorithms without sacrificing the performance i.e all classes are generated at the compile time.
-
-* Can reduce the number of test cases from O(MN) to O(M + N), where M is the number of algorithms and N is the number of policies or behaviors.
 
 # Usage #
 
@@ -162,7 +160,7 @@ mlocate
 ### Locate files ###
 
 **Summary**
-* mlocate is about 15x faster thatm GNU locate.
+* mlocate is about 10x faster that GNU locate.
 * The performance benchmark results are consistent in both MacOS and Linux environments.
 
 ``` shell
@@ -172,10 +170,17 @@ Timer resolution: 0.001000 us
 -----------------------------------------------------------------------------------------------------------------------------------------------
      Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
 -----------------------------------------------------------------------------------------------------------------------------------------------
-regex           | gnu_locate      |               0 |              10 |               1 |         1.00000 |    353027.00000 |            2.83 |
-regex           | mlocate         |               0 |              10 |               1 |         0.06850 |     24182.00000 |           41.35 |
+regex           | gnu_locate      |               0 |              10 |               1 |         1.00000 |    649078.00000 |            1.54 |
+regex           | mlocate         |               0 |              10 |               1 |         0.05385 |     34953.00000 |           28.61 |
 Complete.
 ```
+
+**Analysis**
+mlocate is significantly faster than GNU locate because:
+* mlocate uses an efficient algorithm to read the file information from the indexed database.
+* mupdatedb stores the file information in an efficient structure which allows mlocate to quickly find the desired item with the minimum number of cache misses.
+* mlocate uses the best regular expression matching algorithm.
+* All algorithm code are generated at compile time that give compiler chance to inline functions.
 
 ### Search for files in boost library source code ###
 
@@ -191,10 +196,10 @@ Timer resolution: 0.001000 us
 -----------------------------------------------------------------------------------------------------------------------------------------------
      Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
 -----------------------------------------------------------------------------------------------------------------------------------------------
-big_folder      | gnu_find        |               0 |              10 |               1 |         1.00000 |    492828.00000 |            2.03 |
-big_folder      | fd              |               0 |              10 |               1 |         1.00553 |    495551.00000 |            2.02 |
-big_folder      | mfind_default   |               0 |              10 |               1 |         0.53460 |    263467.00000 |            3.80 |
-big_folder      | mfind_dfs       |               0 |              10 |               1 |         0.52191 |    257211.00000 |            3.89 |
+big_folder      | gnu_find        |               0 |              20 |               1 |         1.00000 |    459913.00000 |            2.17 |
+big_folder      | fd              |               0 |              20 |               1 |         1.15129 |    529492.00000 |            1.89 |
+big_folder      | mfind_default   |               0 |              20 |               1 |         0.54146 |    249023.00000 |            4.02 |
+big_folder      | mfind_dfs       |               0 |              20 |               1 |         0.53657 |    246776.00000 |            4.05 |
 Complete.
 ```
 
@@ -210,9 +215,15 @@ Timer resolution: 0.001000 us
 -----------------------------------------------------------------------------------------------------------------------------------------------
      Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
 -----------------------------------------------------------------------------------------------------------------------------------------------
-big_folder_rege | gnu_find        |               0 |              10 |               1 |         1.00000 |    481115.00000 |            2.08 |
-big_folder_rege | fd              |               0 |              10 |               1 |         0.89113 |    428734.00000 |            2.33 |
-big_folder_rege | mfind_default   |               0 |              10 |               1 |         0.54405 |    261750.00000 |            3.82 |
-big_folder_rege | mfind_dfs       |               0 |              10 |               1 |         0.53777 |    258728.00000 |            3.87 |
+big_folder_rege | gnu_find        |               0 |              20 |               1 |         1.00000 |    457421.00000 |            2.19 |
+big_folder_rege | fd              |               0 |              20 |               1 |         0.98565 |    450856.00000 |            2.22 |
+big_folder_rege | mfind_default   |               0 |              20 |               1 |         0.55385 |    253342.00000 |            3.95 |
+big_folder_rege | mfind_dfs       |               0 |              20 |               1 |         0.54060 |    247281.00000 |            4.04 |
 Complete.
 ```
+
+**Analysis**
+* mfind is faster than GNU find and fd because below reasons:
+1. Require less system calls to explore paths.
+2. Use cache friendly file traversal algorithms.
+3. Use [the best regular expression matching algorithm](https://branchfree.org/2019/02/28/paper-hyperscan-a-fast-multi-pattern-regex-matcher-for-modern-cpus/).

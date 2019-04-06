@@ -1,5 +1,4 @@
 #include "mlocate.hpp"
-#include "cereal/archives/json.hpp"
 #include "clara.hpp"
 #include "filesystem.hpp"
 #include "fmt/format.h"
@@ -10,56 +9,69 @@
 
 namespace {
     void copyright() {
-        fmt::print("{}\n", "mlocate version 0.1.0");
-        fmt::print("{}\n", "Copyright Hung Dang <hungptit at gmail dot com>");
+        fmt::print("\n{}\n", "mlocate version 0.2.0");
+        fmt::print("{}\n", "Copyright by Hung Dang <hungptit at gmail dot com>");
     }
 
-    // TODO: Use an int value to store all flags.
-    // TODO: Need a better help messages.
-    // TODO: Need to have a benchmark for again locale/mlocate.
-    // TODO: Support multiple databases?
-    struct SearchParams {
-        bool ignore_case = false;   // Ignore case distinctions
-        bool inverse_match = false; // Select non-matching lines
-        bool exact_match = false;   // Use exact matching algorithms.
-        bool verbose = false;       // Display verbose information.
-        bool info = false;
-        int mode;           // Regex mode
-        std::string prefix; // Root folder prefix
-
-        template <typename Archive> void serialize(Archive &ar) {
-            ar(CEREAL_NVP(ignore_case), CEREAL_NVP(inverse_match), CEREAL_NVP(exact_match),
-               CEREAL_NVP(verbose), CEREAL_NVP(info), CEREAL_NVP(prefix));
-        }
+    enum PARAMS : uint32_t {
+        VERBOSE = 1,
+        COLOR = 1 << 1,
+        INVERT_MATCH = 1 << 2,
+        EXACT_MATCH = 1 << 3,
+        IGNORE_CASE = 1 << 4,
+        INFO = 1 << 5,
+        COUNT = 1 << 6,
     };
 
     struct InputParams {
-        std::string pattern;                // Input patterns
-        std::vector<std::string> databases; // Input databases
-        SearchParams parameters;
+        int flags;
+        int regex_mode;
+        std::string prefix;                 // Prefix of displayed path
+        std::string pattern;                // A search pattern
+        std::vector<std::string> databases; // A file information database
 
-        template <typename Archive> void serialize(Archive &ar) {
-            ar(CEREAL_NVP(pattern), CEREAL_NVP(databases), CEREAL_NVP(parameters));
+        bool verbose() const { return (flags & VERBOSE) > 0; }
+        bool info() const { return (flags & INFO) > 0; }
+        bool invert_match() const { return (flags & INVERT_MATCH) > 0; }
+        bool exact_match() const { return (flags & EXACT_MATCH) > 0; }
+        bool ignore_case() const { return (flags & IGNORE_CASE) > 0; }
+
+        void print() const {
+            fmt::print("verbose: {}\n", verbose());
+            fmt::print("info: {}\n", info());
+            fmt::print("invert-match: {}\n", invert_match());
+            fmt::print("exact-match: {}\n", exact_match());
+            fmt::print("ignore-case: {}\n", ignore_case());
+            fmt::print("regex-mode: {}\n", regex_mode);
+
+            fmt::print("Search pattern: '{}'\n", pattern);
+            fmt::print("path prefix: '{}'\n", prefix);
+            fmt::print("File information databases: [\"{}\"]\n", fmt::join(databases, "\",\""));
         }
     };
 
     InputParams parse_input_arguments(int argc, char *argv[]) {
         InputParams params;
 
+        bool version = false;
         bool help = false;
-        auto cli =
-            clara::Help(help) |
-            clara::Opt(params.databases,
-                       "database")["-d"]["--database"]("The file information database.") |
-            clara::Opt(params.parameters.verbose)["-v"]["--verbose"](
-                "Display verbose information") |
-            clara::Opt(params.parameters.ignore_case)["-i"]["--ignore-case"]("Ignore case.") |
-            clara::Opt(params.parameters.inverse_match)["-u"]["--inverse-match"](
-                "Display lines that do not match given pattern.") |
-            clara::Opt(params.parameters.exact_match)["-x"]["--exact-match"](
-                "Use exact match algorithm") |
-            clara::Opt(params.parameters.prefix, "prefix")["--prefix"]("Path prefix.") |
-            clara::Arg(params.pattern, "pattern")("Search pattern");
+        bool verbose = false;
+        bool invert_match = false;
+        bool ignore_case = false;
+        bool exact_match = false;
+        bool regex_match = false;
+        bool timer = false;
+
+        auto cli = clara::Help(help) | clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information") |
+                   clara::Opt(timer, "timer")["--timer"]("Display the execution runtime.") |
+                   clara::Opt(version)["--version"]("Display the version of mlocate.") |
+                   clara::Opt(ignore_case)["-i"]["--ignore-case"]("Ignore case.") |
+                   clara::Opt(invert_match)["-u"]["--invert-match"]("Display lines that do not match given pattern.") |
+                   clara::Opt(regex_match)["-r"]["--regex"]("Use regular expression matching algorithm") |
+                   clara::Opt(exact_match)["-x"]["--exact-match"]("Use exact match algorithm") |
+                   clara::Opt(params.prefix, "prefix")["--prefix"]("Path prefix.") |
+                   clara::Opt(params.databases, "database")["-d"]["--database"]("The file information database.") |
+                   clara::Arg(params.pattern, "pattern")("Search pattern");
 
         auto result = cli.parse(clara::Args(argc, argv));
         if (!result) {
@@ -87,28 +99,29 @@ namespace {
 
         // If user does not specify prefix then fallback to the
         // MLOCATE_PREFIX environment variable.
-        if (params.parameters.prefix.empty()) {
+        if (params.prefix.empty()) {
             auto const default_prefix = std::getenv("MLOCATE_PREFIX");
-            if (default_prefix) {
-                params.parameters.prefix = std::string(default_prefix);
+            if (default_prefix != nullptr) {
+                params.prefix = std::string(default_prefix);
             }
         }
 
+        // Update flags and regex_mode
+        exact_match = regex_match ? !regex_match : exact_match;
+        params.flags = verbose * VERBOSE | invert_match * INVERT_MATCH | exact_match * EXACT_MATCH |
+                       ignore_case * IGNORE_CASE;
+        params.regex_mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH) | (params.ignore_case() ? HS_FLAG_CASELESS : 0);
+        
         // Display input arguments in JSON format if verbose flag is on
-        if (params.parameters.verbose) {
-            std::stringstream ss;
-            {
-                cereal::JSONOutputArchive ar(ss);
-                ar(cereal::make_nvp("Input arguments", params));
-            }
-            fmt::print("{}\n", ss.str());
+        if (params.verbose()) {
+            params.print();
         }
 
         return params;
     }
 
     template <typename Matcher, typename Params> void locate(Params &&params) {
-        using GrepAlg = ioutils::MMapReader<ioutils::LocatePolicy<Matcher>>;
+        using GrepAlg = ioutils::FileReader<ioutils::LocateStreamPolicy<Matcher>>;
         GrepAlg grep(params);
         for (auto db : params.databases) {
             grep(db.data());
@@ -120,18 +133,13 @@ int main(int argc, char *argv[]) {
     auto params = parse_input_arguments(argc, argv);
     for (auto db : params.databases) {
         if (params.pattern.empty()) {
-            using GrepAlg = ioutils::MMapReader<ioutils::PrintAllPolicy>;
+            using GrepAlg = ioutils::FileReader<ioutils::PrintAllPolicy>;
             GrepAlg grep(params);
             for (auto db : params.databases) {
                 grep(db.data());
             }
         } else {
-            params.parameters.mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH);
-            if (params.parameters.ignore_case) {
-                params.parameters.mode |= HS_FLAG_CASELESS;
-            }
-
-            if (!params.parameters.inverse_match) {
+            if (!params.invert_match()) {
                 using Matcher = utils::hyperscan::RegexMatcher;
                 locate<Matcher>(params);
             } else {

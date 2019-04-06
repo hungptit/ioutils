@@ -1,4 +1,3 @@
-#include "cereal/archives/json.hpp"
 #include "clara.hpp"
 #include "fmt/format.h"
 #include "mlocate.hpp"
@@ -17,8 +16,11 @@ namespace {
         bool stats = 0;
         bool verbose = 0;
 
-        template <typename Archive> void serialize(Archive &ar) {
-            ar(CEREAL_NVP(paths), CEREAL_NVP(database), CEREAL_NVP(verbose));
+        void print() const {
+            fmt::print("Search paths: [\"{}\"]\n", fmt::join(paths, "\",\""));
+            fmt::print("Database: {}\n", database);
+            fmt::print("statistics: {}\n", stats);
+            fmt::print("verbose: {}\n", verbose);
         }
     };
 
@@ -26,12 +28,10 @@ namespace {
         InputParams params;
         std::vector<std::string> paths;
         bool help = false;
-        auto cli =
-            clara::Help(help) |
-            clara::Opt(params.database,
-                       "database")["-d"]["--database"]("The file information database.") |
-            clara::Opt(params.verbose)["-v"]["--verbose"]("Display verbose information") |
-            clara::Arg(paths, "paths")("Search paths.");
+        auto cli = clara::Help(help) |
+                   clara::Opt(params.database, "database")["-d"]["--database"]("The file information database.") |
+                   clara::Opt(params.verbose)["-v"]["--verbose"]("Display verbose information") |
+                   clara::Arg(paths, "paths")("Search paths.");
 
         auto result = cli.parse(clara::Args(argc, argv));
         if (!result) {
@@ -66,12 +66,7 @@ namespace {
 
         // Display input arguments in JSON format if verbose flag is on
         if (params.verbose) {
-            std::stringstream ss;
-            {
-                cereal::JSONOutputArchive ar(ss);
-                ar(cereal::make_nvp("Input arguments", params));
-            }
-            fmt::print("{}\n", ss.str());
+            params.print();
         }
 
         return params;

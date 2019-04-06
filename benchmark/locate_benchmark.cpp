@@ -39,5 +39,5 @@ BASELINE(regex, gnu_locate, number_of_samples, number_of_operations) {
 }
 
 BENCHMARK(regex, mlocate, number_of_samples, number_of_operations) {
-    test("mlocate -d .database ", pattern1);
+    test("../commands/mlocate -d .database ", pattern1);
 }
