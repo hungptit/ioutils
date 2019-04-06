@@ -1,6 +1,6 @@
-[I]#!/bin/bash
+#!/bin/bash
 set -e
-search_path="/Users/hdang/working/3p/src/"
+search_path="${HOME}/working/3p/src/"
 
 # Create an indexed database for mlocate
 mlocate_db=".database"
