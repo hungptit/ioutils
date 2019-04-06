@@ -11,6 +11,9 @@ namespace ioutils {
     // the maximum/minimum length of lines.
     class FileStats {
       public:
+        template<typename Params> FileStats(Params && params) {
+            
+        }
         void process(const char *begin, const size_t len) {
             // Count the number of lines
             const char *ptr = begin;
@@ -41,7 +44,7 @@ namespace ioutils {
         void print() const {
             fmt::print("Number of lines: {}\n", lines);
             fmt::print("Max line length: {}\n", max_len);
-            fmt::print("Min line lenght: {}\n", min_len);
+            fmt::print("Min line length: {}\n", min_len);
             fmt::print("File size: {}\n", file_size);
         }
 
