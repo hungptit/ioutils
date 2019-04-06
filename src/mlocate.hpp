@@ -16,15 +16,12 @@ namespace ioutils {
 
             void print() const {
                 for (auto const &item : data) {
-                    fmt::print("{0:b} {1:>10} {2}\n", item.st_mode & MODE_MASK, item.st_size,
-                               item.path);
+                    fmt::print("{0:b} {1:>10} {2}\n", item.st_mode & MODE_MASK, item.st_size, item.path);
                 }
             }
 
           protected:
-            bool is_valid_dir(const char *dname) const {
-                return filesystem::is_valid_dir(dname);
-            }
+            bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
             void process_file(const std::string &parent, const char *stem) {
                 ioutils::Stats info;
                 info.path = parent + "/" + stem;
@@ -61,9 +58,7 @@ namespace ioutils {
                 data.emplace_back(info);
             }
 
-            void process_symlink(const std::string &parent, const char *stem) {
-                process_file(parent, stem);
-            }
+            void process_symlink(const std::string &parent, const char *stem) { process_file(parent, stem); }
 
             void process_dir(const std::string) const {}
 
@@ -74,41 +69,61 @@ namespace ioutils {
 
     } // namespace mlocate
 
-    template <typename Matcher> class LocatePolicy {
+    template <typename Matcher> class LocateStreamPolicy {
       public:
-        template <typename T>
-        LocatePolicy(T &&args)
-            : matcher(args.pattern, args.parameters.mode), prefix(args.parameters.prefix) {}
-
+        template <typename Params>
+        LocateStreamPolicy(Params &&params) : matcher(params.pattern, params.regex_mode), linebuf() {}
         void process(const char *begin, const size_t len) {
-            constexpr char EOL = '\n';
             const char *start = begin;
             const char *end = begin + len;
             const char *ptr = begin;
             while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
-                process_line(start, ptr - start + 1);
+                if (linebuf.empty()) {
+                    process_line(start, ptr - start + 1);
+                } else {
+                    linebuf.append(start, ptr - start + 1);
+                    process_line(linebuf.data(), linebuf.size());
+                    linebuf.clear();
+                }
+
+                // Update parameters
                 start = ++ptr;
+
+                // Stop if we reach the end of the buffer.
+                if (ptr >= end) break;
+            }
+
+            // Update the line buffer with leftover data.
+            if (ptr == nullptr) {
+                linebuf.append(start, end - start);
             }
         }
 
       protected:
-        void set_filename(const char *) {}
-        void finalize() {}
-
-      private:
         Matcher matcher;
-        std::string prefix;
-        void process_line(const char *begin, const size_t len) {
+        std::string linebuf;
+        const char *file = nullptr;
+        static constexpr char EOL = '\n';
+
+        virtual void process_line(const char *begin, const size_t len) {
             if (matcher.is_matched(begin, len)) {
-                fmt::print("{0}{1}", prefix, std::string(begin, len));
+                fmt::print("{}\n", std::string(begin, len - 1));
             }
+        }
+
+        // Note: Override this function to make FileReader happy. We do not care about the database name in mlocate.
+        void set_filename(const char *) {}
+
+        // Process text data in the linebuf.
+        void finalize() {
+            process_line(linebuf.data(), linebuf.size());
+            linebuf.clear();
         }
     };
 
     class PrintAllPolicy {
       public:
-        template <typename Params>
-        PrintAllPolicy(Params &&args) : prefix(args.parameters.prefix) {}
+        template <typename Params> PrintAllPolicy(Params &&args) : prefix(args.prefix) {}
         void process(const char *begin, const size_t len) {
             constexpr char EOL = '\n';
             const char *start = begin;

@@ -41,8 +41,11 @@ namespace ioutils {
             }
         }
 
+        /**
+         * TODO: Support the maximum exploration depth. 
+         */
         template <typename Container> void dfs(Container &&p) {
-            for (auto item : p) {
+            for (auto const & item : p) {
                 int fd = ::open(item.data(), O_RDONLY);
                 if (fd > -1) next.emplace_back(Path{fd, item});
             }
@@ -55,29 +58,32 @@ namespace ioutils {
             }
         }
 
+        /**
+         * Traverse given paths using bread-first search algorithm.
+         */
         template <typename Container> void bfs(Container &&p) {
-            for (auto item : p) {
+            for (auto const & item : p) {
                 int fd = ::open(item.data(), O_RDONLY);
-                if (fd > -1) next.emplace_back(Path{fd, item});
+                if (fd > -1) current.emplace_back(Path{fd, item});
             }
 
-            // Search for files and folders using DFS traversal.
+            // Search for files and folders using BFS traversal.
             int current_level = 0;
-            while (!next.empty()) {
-                std::swap(current, next);
+            while (!current.empty()) {
                 next.clear();
-                for (auto current_path : current) {
+                for (auto const & current_path : current) {
                     visit(current_path);
                 }
                 ++current_level;
                 if ((level > -1) && (current_level > level)) {
                     break; // Stop if we have traverse to the desired depth.
                 }
+                std::swap(current, next);
             }
         }
 
       private:
-        void visit(Path &dir) {
+        void visit(const Path &dir) {
             struct stat props;
             const int fd = dir.fd;
             int retval = fstat(fd, &props);
@@ -117,7 +123,7 @@ namespace ioutils {
                 Policy::process_file(dir.path);
                 ::close(fd);
             } else {
-                throw "We should not be here!";
+                throw std::runtime_error("We should not be here!");
             }
         }
 
