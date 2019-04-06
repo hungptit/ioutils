@@ -10,17 +10,15 @@ ioutils is a small and very fast file system library for Linux and Unix environm
 
 * A small set of high performance file related functions and classes.
 
-* The mfind command line utility is faster than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands. Our performance benchmark shows that mfind is consistently 2x faster than [GNU find](https://www.gnu.org/software/findutils/) in most tests and 20%-100% faster than [fd](https://github.com/sharkdp/fd).
+* The mfind command line utility is faster than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands. Our performance benchmark shows that mfind is 2x faster than both [GNU find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd).
 
-* The mlocate command is 15x faster than that of [GNU locate](https://www.gnu.org/software/findutils/) command.
+* The mlocate command is 10x faster than [GNU locate](https://www.gnu.org/software/findutils/) command.
 
 ## What is the different between ioutils and other similar open source projects such as [GNU findutils](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd)?##
 
-* ioutils is written as a library so we can easily reuse it in other projects.
+* ioutils is written as a library so we can easily reuse it in other projects, for example ioutils is used in [fastgrep](https://github.com/hungptit/fastgrep).
 
 * Core algorithms are created using policy-based design so we can have flexible and reusable algorithms without sacrificing the performance i.e all classes are generated at the compile time.
-
-* Can reduce the number of test cases from O(MN) to O(M + N), where M is the number of algorithms and N is the number of policies or behaviors.
 
 # Usage #
 
@@ -162,7 +160,7 @@ mlocate
 ### Locate files ###
 
 **Summary**
-* mlocate is about 15x faster that GNU locate.
+* mlocate is about 10x faster that GNU locate.
 * The performance benchmark results are consistent in both MacOS and Linux environments.
 
 ``` shell
@@ -182,7 +180,7 @@ mlocate is significantly faster than GNU locate because:
 * mlocate uses an efficient algorithm to read the file information from the indexed database.
 * mupdatedb stores the file information in an efficient structure which allows mlocate to quickly find the desired item with the minimum number of cache misses.
 * mlocate uses the best regular expression matching algorithm.
-* All algorithm code are generated at compile time that give compiler chance to inline functions. 
+* All algorithm code are generated at compile time that give compiler chance to inline functions.
 
 ### Search for files in boost library source code ###
 
@@ -226,6 +224,6 @@ Complete.
 
 **Analysis**
 * mfind is faster than GNU find and fd because below reasons:
-1. Use less system calls to explore paths.
+1. Require less system calls to explore paths.
 2. Use cache friendly file traversal algorithms.
 3. Use [the best regular expression matching algorithm](https://branchfree.org/2019/02/28/paper-hyperscan-a-fast-multi-pattern-regex-matcher-for-modern-cpus/).
