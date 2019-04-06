@@ -17,7 +17,7 @@ namespace {
         bool verbose = 0;
 
         void print() const {
-            fmt::print("Search paths: [{}]\n", fmt::join(paths, ","));
+            fmt::print("Search paths: [\"{}\"]\n", fmt::join(paths, "\",\""));
             fmt::print("Database: {}\n", database);
             fmt::print("statistics: {}\n", stats);
             fmt::print("verbose: {}\n", verbose);

@@ -46,7 +46,7 @@ namespace {
 
             fmt::print("Search pattern: '{}'\n", pattern);
             fmt::print("path prefix: '{}'\n", prefix);
-            fmt::print("File information databases: '[{}]'\n", fmt::join(databases, ","));
+            fmt::print("File information databases: [\"{}\"]\n", fmt::join(databases, "\",\""));
         }
     };
 
