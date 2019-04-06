@@ -72,7 +72,8 @@ namespace ioutils {
     template <typename Matcher> class LocateStreamPolicy {
       public:
         template <typename Params>
-        LocateStreamPolicy(Params &&params) : matcher(params.pattern, params.regex_mode), linebuf() {}
+        LocateStreamPolicy(Params &&params)
+            : matcher(params.pattern, params.regex_mode), linebuf(), prefix(params.prefix) {}
         void process(const char *begin, const size_t len) {
             const char *start = begin;
             const char *end = begin + len;
@@ -102,12 +103,17 @@ namespace ioutils {
       protected:
         Matcher matcher;
         std::string linebuf;
+        std::string prefix;
         const char *file = nullptr;
         static constexpr char EOL = '\n';
 
         virtual void process_line(const char *begin, const size_t len) {
             if (matcher.is_matched(begin, len)) {
-                fmt::print("{}\n", std::string(begin, len - 1));
+                if (prefix.empty()) {
+                    fmt::print("{}\n", std::string(begin, len - 1));
+                } else {
+                    fmt::print("{}{}\n", prefix, std::string(begin, len - 1));
+                }
             }
         }
 

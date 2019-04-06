@@ -75,7 +75,7 @@ sys     0m0.121s
 ## Use --level to control the level of exploration i.e BFS depth ##
 
 ``` shell
-hdang@ATH020224 ~/w/i/commands> mfind ../ --level 1 -e '[.]cpp$'
+hdang ~/w/i/commands> mfind ../ --level 1 -e '[.]cpp$'
 ../benchmark/read_data.cpp
 ../benchmark/mfind.cpp
 ../benchmark/file_read.cpp
