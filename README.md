@@ -14,7 +14,7 @@ ioutils is a small and very fast file system library for Linux and Unix environm
 
 * The mlocate command is 10x faster than [GNU locate](https://www.gnu.org/software/findutils/) command.
 
-## What is the different between ioutils and other similar open source projects such as [GNU findutils](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd)?##
+**What is the different between ioutils and other similar open source projects such as [GNU findutils](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd)?**
 
 * ioutils is written as a library so we can easily reuse it in other projects, for example ioutils is used in [fastgrep](https://github.com/hungptit/fastgrep).
 
