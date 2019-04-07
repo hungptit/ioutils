@@ -1,11 +1,14 @@
 #pragma once
 
+#include "fdwriter.hpp"
 #include "filesystem.hpp"
 #include "search.hpp"
+#include <fcntl.h>
 #include <ostream>
 #include <set>
 #include <sstream>
 #include <string>
+#include <unistd.h>
 
 namespace ioutils {
     namespace mlocate {
@@ -73,7 +76,7 @@ namespace ioutils {
       public:
         template <typename Params>
         LocateStreamPolicy(Params &&params)
-            : matcher(params.pattern, params.regex_mode), linebuf(), prefix(params.prefix) {}
+            : matcher(params.pattern, params.regex_mode), linebuf(), prefix(params.prefix), console(StreamWriter::STDOUT) {}
         void process(const char *begin, const size_t len) {
             const char *start = begin;
             const char *end = begin + len;
@@ -104,15 +107,16 @@ namespace ioutils {
         Matcher matcher;
         std::string linebuf;
         std::string prefix;
-        const char *file = nullptr;
+        StreamWriter console;
         static constexpr char EOL = '\n';
 
         virtual void process_line(const char *begin, const size_t len) {
             if (matcher.is_matched(begin, len)) {
                 if (prefix.empty()) {
-                    fmt::print("{}\n", std::string(begin, len - 1));
+                    console.write(begin, len);
                 } else {
-                    fmt::print("{}{}\n", prefix, std::string(begin, len - 1));
+                    console.write(prefix.data(), prefix.size());
+                    console.write(begin, len);
                 }
             }
         }
