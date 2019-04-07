@@ -35,7 +35,7 @@ CELERO_MAIN
 
 // Find all files in the boost source code
 BASELINE(regex, gnu_locate, number_of_samples, number_of_operations) {
-    test("locate -d locate.db --regex ", pattern1);
+    test("glocate -d locate.db --regex ", pattern1);
 }
 
 BENCHMARK(regex, mlocate, number_of_samples, number_of_operations) {

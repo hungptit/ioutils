@@ -1,78 +1,48 @@
 #pragma once
 
+#include "fmt/format.h"
 #include <cstring>
 #include <fcntl.h>
 #include <string>
 #include <unistd.h>
 
 namespace ioutils {
-    namespace bash {
-        enum TextStyle : int8_t { NORMAL, BOLD, UNDERLINE };
-        enum Color : int8_t { BLACK, RED, GREEN, YELLOW, BLUE, PURPLE, CYAN, WHITE };
-
-        enum ForegroundColor : int8_t {
-            BLACK_FOREGROUND = 30,
-            RED_FOREGROUND = 31,
-            GREEN_FOREGROUND = 32,
-            YELLOW_FOREGROUND = 33,
-            BLUE_FOREGROUND = 34,
-            PURPLE_FOREGROUND = 35,
-            CYAN_FOREGROUND = 36,
-            WHITE_FOREGROUND = 37,
-        };
-
-        template <typename Style, typename ForegroundColor, typename BackgroundColor>
-        struct TextFormat;
-    } // namespace bash
-
-    // Simple writer.
-    class Writer {
+    class StreamWriter {
       public:
-        Writer() : fildes(STDOUT_FILENO) {} // Write to stdout by default.
-        Writer(int fd) : fildes(fd) {}
+        static constexpr int STDOUT = STDOUT_FILENO;
+        static constexpr int STDERR = STDERR_FILENO;
+        static constexpr size_t BUFFER_SIZE = 1 << 16;
 
-        size_t write(const char *begin, const size_t len) {
-            return ::write(fildes, begin, len);
-        }
+        static StreamWriter stdout() { return StreamWriter(STDOUT); }
+        static StreamWriter stderr() { return StreamWriter(STDERR); }
 
-        size_t write(const std::string &data) { return write(data.data(), data.size()); }
-
-      private:
-        int fildes;
-    };
-
-    // Buffered writer.
-    class BufferedWriter {
-      public:
-        BufferedWriter(const size_t buflen = BUFFER_SIZE) : fildes(STDOUT_FILENO) {
+        StreamWriter(const int fides, const size_t len = BUFFER_SIZE) : fd(fides), buflen(len) {
             buffer.reserve(buflen);
         }
 
-        BufferedWriter(int fd, const size_t buflen = BUFFER_SIZE) : fildes(fd) {
-            buffer.reserve(buflen);
+        ~StreamWriter() {
+            if (!buffer.empty()) {
+                ::write(fd, buffer.data(), buffer.size());
+            }
         }
 
         size_t write(const char *begin, const size_t len) {
             size_t nbytes = len;
-            if (buffer.size() > BUFFER_SIZE) {
-                nbytes = ::write(fildes, begin, len);
+            if ((buffer.size() + len) > BUFFER_SIZE) {
+                nbytes = ::write(fd, buffer.data(), buffer.size());
                 buffer.clear();
             }
-            buffer.append(begin, len);
-
-            return nbytes;
-        }
-
-        // Flush all data in the buffer.
-        size_t flush() {
-            auto nbytes = ::write(fildes, buffer.data(), buffer.size());
-            buffer.clear();
+            if (len < BUFFER_SIZE) {
+                buffer.append(begin, len);
+            } else {
+                nbytes += ::write(fd, begin, len);
+            }
             return nbytes;
         }
 
       private:
-        static constexpr size_t BUFFER_SIZE = 1 << 16;
-        int fildes;
+        const int fd;
+        int buflen;
         std::string buffer;
     };
 } // namespace ioutils
