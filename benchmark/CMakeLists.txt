@@ -11,23 +11,23 @@ set(CMAKE_INSTALL_PREFIX "$ENV{HOME}")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Read the git tags to determine the project version
-# include(GetGitVersion)
-# get_git_version(GIT_VERSION)
+include(GetGitVersion)
+get_git_version(GIT_VERSION)
 
 # Tell the user what versions we are using
-# string(REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" VERSION ${GIT_VERSION})
-# message("-- Version: ${VERSION}")
+string(REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" VERSION ${GIT_VERSION})
+message("-- Version: ${VERSION}")
 
 # The version of the libraries
-# set(GENERIC_LIB_VERSION ${VERSION})
-# string(SUBSTRING ${VERSION} 0 1 GENERIC_LIB_SOVERSION)
+set(GENERIC_LIB_VERSION ${VERSION})
+string(SUBSTRING ${VERSION} 0 1 GENERIC_LIB_SOVERSION)
 
 include(CheckCXXCompilerFlag)
 include(AddCXXCompilerFlag)
 include(CXXFeatureCheck)
 
 # Use libc++  provided by llvm
-# set(CMAKE_CXX_COMPILER "clang++")
+set(CMAKE_CXX_COMPILER "clang++")
 # add_cxx_compiler_flag(-stdlib=libc++)
 
 # set(CMAKE_BUILD_TYPE Debug)
@@ -37,7 +37,7 @@ add_cxx_compiler_flag(-O3)
 add_cxx_compiler_flag(-march=native)
 add_cxx_compiler_flag(-std=c++14)
 add_cxx_compiler_flag(-Wall)
-# add_cxx_compiler_flag(-flto)
+add_cxx_compiler_flag(-flto)
 
 # add_cxx_compiler_flag(-Wextra)
 
@@ -57,19 +57,18 @@ add_cxx_compiler_flag(-Wall)
 # add_cxx_compiler_flag(-Wfloat-equal)
 # add_cxx_compiler_flag(-Wint-to-void-pointer-cast)
 
-# add_cxx_compiler_flag(-fstrict-aliasing)
-# if (HAVE_CXX_FLAG_FSTRICT_ALIASING)
-#   add_cxx_compiler_flag(-Wstrict-aliasing)
-# endif()
-# add_cxx_compiler_flag(-Wthread-safety)
-# if (HAVE_WTHREAD_SAFETY)
-#   add_definitions(-DHAVE_WTHREAD_SAFETY)
-#   cxx_feature_check(THREAD_SAFETY_ATTRIBUTES)
-# endif()
+add_cxx_compiler_flag(-fstrict-aliasing)
+if (HAVE_CXX_FLAG_FSTRICT_ALIASING)
+  add_cxx_compiler_flag(-Wstrict-aliasing)
+endif()
+add_cxx_compiler_flag(-Wthread-safety)
+if (HAVE_WTHREAD_SAFETY)
+  add_definitions(-DHAVE_WTHREAD_SAFETY)
+  cxx_feature_check(THREAD_SAFETY_ATTRIBUTES)
+endif()
 
 add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
 add_cxx_compiler_flag(-DCEREAL_RAPIDJSON_HAS_CXX11_RVALUE_REFS)
-add_cxx_compiler_flag(-flto)
 
 ENABLE_TESTING()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
