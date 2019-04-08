@@ -1,13 +1,4 @@
 #include "celero/Celero.h"
-#include "fmt/format.h"
-#include "ioutils.hpp"
-#include <fstream>
-#include <iostream>
-
-#include "search.hpp"
-#include "search_policies.hpp"
-#include "simple_store_policy.hpp"
-#include "simple_search_policy.hpp"
 
 constexpr int number_of_samples = 10;
 constexpr int number_of_operations = 5;
@@ -35,7 +26,7 @@ CELERO_MAIN
 
 // Find all files in the boost source code
 BASELINE(regex, gnu_locate, number_of_samples, number_of_operations) {
-    test("glocate -d locate.db --regex ", pattern1);
+    test("locate -d locate.db --regex ", pattern1);
 }
 
 BENCHMARK(regex, mlocate, number_of_samples, number_of_operations) {

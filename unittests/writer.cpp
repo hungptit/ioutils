@@ -10,14 +10,14 @@ TEST_CASE("Writer class") {
     std::string s2 = " world!";
     std::string eol = "\n";
     SECTION("Default output") {
-        ioutils::Writer writer;
+        ioutils::StreamWriter writer(ioutils::StreamWriter::STDOUT);
         writer.write(s1.data(), s1.size());
         writer.write(s2.data(), s2.size());
         writer.write(eol.data(), eol.size());
     }
     
     SECTION("Provide file descriptor") {
-        ioutils::Writer writer(STDERR_FILENO);
+        ioutils::StreamWriter writer(ioutils::StreamWriter::STDERR);
         writer.write(s1.data(), s1.size());
         writer.write(s2.data(), s2.size());
         writer.write(eol.data(), eol.size());

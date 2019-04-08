@@ -22,24 +22,24 @@ namespace ioutils {
       protected:
         bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
 
-        void process_file(const std::string &parent, const char *stem) {
+        void process_file(const Path &parent, const char *stem) {
             if (!store_file) return;
-            buffer = parent + "/" + stem;
+            buffer = parent.path + "/" + stem;
             if (matcher.is_matched(buffer.data(), buffer.size())) {
                 paths.push_back(buffer);
             }
         }
 
-        void process_file(const std::string &parent) {
+        void process_file(const Path &parent) {
             if (!store_file) return;
-            if (matcher.is_matched(parent.data(), parent.size())) {
-                paths.push_back(parent);
+            if (matcher.is_matched(parent.path.data(), parent.path.size())) {
+                paths.push_back(parent.path);
             }
         }
 
-        void process_symlink(const std::string &parent, const char *stem) {
+        void process_symlink(const Path &parent, const char *stem) {
             if (!store_symlink) return;
-            buffer = parent + "/" + stem;
+            buffer = parent.path + "/" + stem;
             if (matcher.is_matched(buffer.data(), buffer.size())) {
                 paths.push_back(buffer);
             }

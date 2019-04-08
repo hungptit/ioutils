@@ -23,7 +23,7 @@ TEST_CASE("Path related functions", "basic") {
 }
 
 TEST_CASE("Console", "basic") {
-    ioutils::Writer console;
+    ioutils::StreamWriter console(ioutils::StreamWriter::STDOUT);
     std::string s1("Hello");
     std::string s2(" world!\n");
     console.write(s1.data(), s1.size());

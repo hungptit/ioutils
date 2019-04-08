@@ -1,11 +1,9 @@
+#include "mfind.hpp"
 #include "clara.hpp"
 #include "fmt/format.h"
-#include "search_params.hpp"
-#include "regex_policies.hpp"
 #include "search.hpp"
+#include "search_params.hpp"
 #include "search_policies.hpp"
-#include "simple_search_policy.hpp"
-#include "utilities.hpp"
 #include "utils/matchers.hpp"
 #include "utils/regex_matchers.hpp"
 #include <dirent.h>
@@ -14,19 +12,19 @@ namespace {
     template <typename Params> void search(Params &&params) {
         // Search for files based on given constraints.
         if (params.regex.empty()) {
-            using Policy = ioutils::SimplePolicy;
+            using Policy = ioutils::mfind::SimplePolicy;
             ioutils::FileSearch<Policy> search(params);
             search.traverse(params.paths);
         } else {
             // Find desired files and folders
             if (!params.invert_match()) {
                 using Matcher = utils::hyperscan::RegexMatcher;
-                using Policy = ioutils::RegexPolicy<Matcher>;
+                using Policy = ioutils::mfind::RegexPolicy<Matcher>;
                 ioutils::FileSearch<Policy> search(params);
                 search.traverse(params.paths);
             } else {
                 using Matcher = utils::hyperscan::RegexMatcherInv;
-                using Policy = ioutils::RegexPolicy<Matcher>;
+                using Policy = ioutils::mfind::RegexPolicy<Matcher>;
                 ioutils::FileSearch<Policy> search(params);
                 search.traverse(params.paths);
             }

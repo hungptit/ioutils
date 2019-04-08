@@ -6,7 +6,6 @@
 
 #include "search.hpp"
 #include "search_policies.hpp"
-#include "simple_search_policy.hpp"
 #include "simple_store_policy.hpp"
 
 constexpr int number_of_samples = 20;
@@ -41,7 +40,7 @@ CELERO_MAIN
 
 // Find all files in the boost source code
 BASELINE(big_folder, gnu_find, number_of_samples, number_of_operations) {
-    test("find ", "../../3p/src/boost");
+    test("gfind ", "../../3p/src/boost");
 }
 
 BENCHMARK(big_folder, fd, number_of_samples, number_of_operations) {

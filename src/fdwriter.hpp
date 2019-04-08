@@ -15,16 +15,18 @@ namespace ioutils {
         static StreamWriter stdout() { return StreamWriter(STDOUT); }
         static StreamWriter stderr() { return StreamWriter(STDERR); }
 
-        StreamWriter(const int fides, const size_t len = BUFFER_SIZE) : fd(fides), buflen(len) {
+        StreamWriter(const int fides, const int len = BUFFER_SIZE) : fd(fides), buflen(len) {
             buffer.reserve(buflen);
         }
 
-        StreamWriter(const char *fname, const size_t len = BUFFER_SIZE) {
+        StreamWriter(const char *fname, const int len = BUFFER_SIZE) {
             fd = ::open(fname, O_CREAT | O_WRONLY, S_IRWXU);
             if (fd < 0) {
                 const std::string msg = "Cannot open file " + std::string(fname) + " to write.";
                 throw std::runtime_error(msg);
             }
+            buflen = len;
+            buffer.reserve(buflen);
         }
         
         ~StreamWriter() {
