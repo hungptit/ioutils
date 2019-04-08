@@ -1,5 +1,4 @@
 #pragma once
-
 #include "fmt/format.h"
 #include <cstring>
 #include <fcntl.h>
@@ -20,9 +19,22 @@ namespace ioutils {
             buffer.reserve(buflen);
         }
 
+        StreamWriter(const char *fname, const size_t len = BUFFER_SIZE) {
+            fd = ::open(fname, O_CREAT | O_WRONLY, S_IRWXU);
+            if (fd < 0) {
+                const std::string msg = "Cannot open file " + std::string(fname) + " to write.";
+                throw std::runtime_error(msg);
+            }
+        }
+        
         ~StreamWriter() {
             if (!buffer.empty()) {
                 ::write(fd, buffer.data(), buffer.size());
+            }
+
+            // Close the output file if needed.
+            if (fd > STDERR) {
+                ::close(fd);
             }
         }
 
@@ -40,8 +52,12 @@ namespace ioutils {
             return nbytes;
         }
 
+        void put(const char ch) {
+            buffer.push_back(ch);
+        }
+
       private:
-        const int fd;
+        int fd;
         int buflen;
         std::string buffer;
     };

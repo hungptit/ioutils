@@ -25,9 +25,9 @@ namespace ioutils {
 
           protected:
             bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
-            void process_file(const std::string &parent, const char *stem) {
+            void process_file(const Path &parent, const char *stem) {
                 ioutils::Stats info;
-                info.path = parent + "/" + stem;
+                info.path = parent.path + "/" + stem;
 
                 // Skip if we cannot get information of a given file
                 if (stat(info.path.data(), &statbuf)) return;
@@ -43,9 +43,9 @@ namespace ioutils {
                 data.emplace_back(info);
             }
 
-            void process_file(const std::string &parent) {
+            void process_file(const Path &parent) {
                 ioutils::Stats info;
-                info.path = parent;
+                info.path = parent.path;
 
                 // Skip if we cannot get information of a given file
                 if (stat(info.path.data(), &statbuf)) return;
@@ -61,7 +61,7 @@ namespace ioutils {
                 data.emplace_back(info);
             }
 
-            void process_symlink(const std::string &parent, const char *stem) { process_file(parent, stem); }
+            void process_symlink(const Path &parent, const char *stem) { process_file(parent, stem); }
 
             void process_dir(const std::string) const {}
 
@@ -70,13 +70,43 @@ namespace ioutils {
             static constexpr int MODE_MASK = 0xfff;
         };
 
+        /**
+         * This policy will write the output to the given file.
+         */
+        struct UpdateDBStreamPolicy {
+          public:
+            UpdateDBStreamPolicy() : writer(StreamWriter::STDOUT) {}
+
+            template <typename Params> UpdateDBStreamPolicy(Params &&params) : writer(params.database.data()) {}
+
+          protected:
+            bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
+            void process_file(const Path &parent, const char *stem) {
+                auto path = parent.path + "/" + stem; // TODO: We can do better here.
+                writer.write(path.data(), path.size());
+                writer.put(EOL);
+            }
+
+            void process_file(const Path &parent) {
+                writer.write(parent.path.data(), parent.path.size());
+                writer.put(EOL);
+            }
+
+            void process_symlink(const Path &parent, const char *stem) { process_file(parent, stem); }
+            void process_dir(const std::string) const {}
+
+          private:
+            StreamWriter writer;
+            const char EOL = '\n';
+        };
     } // namespace mlocate
 
     template <typename Matcher> class LocateStreamPolicy {
       public:
         template <typename Params>
         LocateStreamPolicy(Params &&params)
-            : matcher(params.pattern, params.regex_mode), linebuf(), prefix(params.prefix), console(StreamWriter::STDOUT) {}
+            : matcher(params.pattern, params.regex_mode), linebuf(), prefix(params.prefix),
+              console(StreamWriter::STDOUT) {}
         void process(const char *begin, const size_t len) {
             const char *start = begin;
             const char *end = begin + len;

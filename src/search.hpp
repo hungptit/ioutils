@@ -21,14 +21,13 @@ namespace ioutils {
     template <typename Policy> class FileSearch : public Policy {
       public:
         // Basic search functionality.
-        template <typename... Args>
-        FileSearch(Args... args) : Policy(std::forward<Args>(args)...), current(), next() {}
+        template <typename... Args> FileSearch(Args... args) : Policy(std::forward<Args>(args)...), current(), next() {
+            init();
+        }
 
         // Filtering files using given patterns.
-        template <typename T>
-        FileSearch(T &&params) : Policy(std::forward<T>(params)), current(), next() {
-            current.reserve(512);
-            next.reserve(512);
+        template <typename T> FileSearch(T &&params) : Policy(std::forward<T>(params)), current(), next() {
+            init();
             use_dfs = params.dfs();
             level = params.level;
         }
@@ -42,10 +41,10 @@ namespace ioutils {
         }
 
         /**
-         * TODO: Support the maximum exploration depth. 
+         * TODO: Support the maximum exploration depth.
          */
         template <typename Container> void dfs(Container &&p) {
-            for (auto const & item : p) {
+            for (auto const &item : p) {
                 int fd = ::open(item.data(), O_RDONLY);
                 if (fd > -1) next.emplace_back(Path{fd, item});
             }
@@ -62,7 +61,7 @@ namespace ioutils {
          * Traverse given paths using bread-first search algorithm.
          */
         template <typename Container> void bfs(Container &&p) {
-            for (auto const & item : p) {
+            for (auto const &item : p) {
                 int fd = ::open(item.data(), O_RDONLY);
                 if (fd > -1) current.emplace_back(Path{fd, item});
             }
@@ -71,7 +70,7 @@ namespace ioutils {
             int current_level = 0;
             while (!current.empty()) {
                 next.clear();
-                for (auto const & current_path : current) {
+                for (auto const &current_path : current) {
                     visit(current_path);
                 }
                 ++current_level;
@@ -83,6 +82,11 @@ namespace ioutils {
         }
 
       private:
+        void init() {
+            current.reserve(512);
+            next.reserve(512);
+        }
+
         void visit(const Path &dir) {
             struct stat props;
             const int fd = dir.fd;
@@ -106,10 +110,10 @@ namespace ioutils {
                             }
                             break;
                         case DT_REG:
-                            Policy::process_file(dir.path, info->d_name);
+                            Policy::process_file(dir, info->d_name);
                             break;
                         case DT_LNK: {
-                            Policy::process_symlink(dir.path, info->d_name);
+                            Policy::process_symlink(dir, info->d_name);
                             break;
                         }
                         default:
@@ -120,7 +124,7 @@ namespace ioutils {
                 }
                 (void)closedir(dirp);
             } else if (ioutils::filesystem::is_regular_file(props.st_mode)) {
-                Policy::process_file(dir.path);
+                Policy::process_file(dir);
                 ::close(fd);
             } else {
                 throw std::runtime_error("We should not be here!");
