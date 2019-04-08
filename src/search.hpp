@@ -46,7 +46,11 @@ namespace ioutils {
         template <typename Container> void dfs(Container &&p) {
             for (auto const &item : p) {
                 int fd = ::open(item.data(), O_RDONLY);
-                if (fd > -1) next.emplace_back(Path{fd, item});
+                if (fd > -1) {
+                    next.emplace_back(Path{fd, item});
+                } else {
+                    fmt::print(stderr, "Cannot access '{}'\n", item);
+                }
             }
 
             // Search for files and folders using DFS traversal.
@@ -63,7 +67,11 @@ namespace ioutils {
         template <typename Container> void bfs(Container &&p) {
             for (auto const &item : p) {
                 int fd = ::open(item.data(), O_RDONLY);
-                if (fd > -1) current.emplace_back(Path{fd, item});
+                if (fd > -1) {
+                    current.emplace_back(Path{fd, item});
+                } else {
+                    fmt::print(stderr, "Cannot access '{}'\n", item);
+                }
             }
 
             // Search for files and folders using BFS traversal.

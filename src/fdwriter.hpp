@@ -40,18 +40,18 @@ namespace ioutils {
             }
         }
 
-        size_t write(const char *begin, const size_t len) {
-            size_t nbytes = len;
+        void write(const char *begin, const size_t len) {
+            // Flush the buffer it reaches the threshold.
             if ((buffer.size() + len) > BUFFER_SIZE) {
-                nbytes = ::write(fd, buffer.data(), buffer.size());
+                long nbytes = ::write(fd, buffer.data(), buffer.size());
+                if (nbytes < 0) {
+                    throw std::runtime_error("Cannot write to the output file descriptor.");
+                }
                 buffer.clear();
             }
-            if (len < BUFFER_SIZE) {
-                buffer.append(begin, len);
-            } else {
-                nbytes += ::write(fd, begin, len);
-            }
-            return nbytes;
+
+            // Append data to the buffer.
+            buffer.append(begin, len);
         }
 
         void put(const char ch) {
