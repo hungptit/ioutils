@@ -33,7 +33,11 @@ namespace ioutils {
             }
 
             void process_symlink(const Path &parent, const char *stem) { process_file(parent, stem); }
-            void process_dir(const std::string &) const {}
+            
+            void process_dir(const std::string &path) {
+                writer.write(path.data(), path.size());
+                writer.put(EOL);
+            }
 
           private:
             StreamWriter writer;
@@ -122,8 +126,6 @@ namespace ioutils {
       private:
         std::string prefix;
         StreamWriter console;
-        void process_line(const char *begin, const size_t len) {
-            console.write(begin, len);
-        }
+        void process_line(const char *begin, const size_t len) { console.write(begin, len); }
     };
 } // namespace ioutils

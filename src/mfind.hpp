@@ -2,6 +2,7 @@
 
 #include "fdwriter.hpp"
 #include "filesystem.hpp"
+#include "fmt/format.h"
 
 namespace ioutils {
     namespace mfind {
@@ -14,12 +15,17 @@ namespace ioutils {
           public:
             template <typename Params>
             SimplePolicy(Params &&params)
-                : color(params.color()), ignore_dir(params.ignore_dir()), ignore_file(params.ignore_file()),
-                  ignore_symlink(params.ignore_symlink()), writer(StreamWriter::STDOUT) {}
+                : stats(true), color(params.color()), ignore_dir(params.ignore_dir()),
+                  ignore_file(params.ignore_file()), ignore_symlink(params.ignore_symlink()),
+                  writer(StreamWriter::STDOUT) {}
 
             ~SimplePolicy() {
                 if (color) {
                     writer.write(RESET_COLOR.data(), RESET_COLOR.size());
+                }
+
+                if (stats) {
+                    print();
                 }
             }
 
@@ -34,6 +40,7 @@ namespace ioutils {
                 writer.put(SEP);
                 writer.write(stem, strlen(stem));
                 writer.put(EOL);
+                ++number_of_files;
             }
 
             void process_file(const Path &parent) {
@@ -42,6 +49,7 @@ namespace ioutils {
                 }
                 writer.write(parent.path.data(), parent.path.size());
                 writer.put(EOL);
+                ++number_of_files;
             }
 
             void process_symlink(const Path &parent, const char *stem) {
@@ -53,6 +61,7 @@ namespace ioutils {
                 writer.put(SEP);
                 writer.write(stem, strlen(stem));
                 writer.put(EOL);
+                ++number_of_symlinks;
             }
             void process_dir(const std::string &parent) {
                 if (ignore_dir) return;
@@ -61,14 +70,25 @@ namespace ioutils {
                 }
                 writer.write(parent.data(), parent.size());
                 writer.put(EOL);
+                ++number_of_dirs;
+            }
+
+            void print() const {
+                // fmt::print("The number of dirs: {}\n", number_of_dirs);
+                // fmt::print("The number of files: {}\n", number_of_files);
+                // fmt::print("The number of symlinks: {}\n", number_of_symlinks);
             }
 
           private:
+            bool stats;
             bool color;
             bool ignore_dir;
             bool ignore_file;
             bool ignore_symlink;
             StreamWriter writer;
+            int number_of_files = 0;
+            int number_of_dirs = 0;
+            int number_of_symlinks = 0;
             const char EOL = '\n';
             const char SEP = '/';
         };

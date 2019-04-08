@@ -112,8 +112,10 @@ namespace ioutils {
                                 std::string p(dir.path + "/" + info->d_name);
                                 int current_dir_fd = ::open(p.data(), O_RDONLY);
                                 if (current_dir_fd >= 0) {
+                                    next.emplace_back(Path{current_dir_fd, p});
                                     Policy::process_dir(p);
-                                    next.emplace_back(Path{current_dir_fd, std::move(p)});
+                                } else {
+                                    fmt::print(stderr, "Cannot open: '{}'\n", p);
                                 }
                             }
                             break;
