@@ -22,8 +22,7 @@ namespace ioutils {
         struct Params {
             static constexpr int EXPLORE_ALL = -1;
             Params()
-                : flags(0), regex_mode(HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH), level(EXPLORE_ALL),
-                  regex(), paths() {}
+                : flags(0), regex_mode(HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH), level(EXPLORE_ALL), regex(), paths() {}
 
             int flags;
             int regex_mode;
@@ -100,36 +99,33 @@ namespace ioutils {
             bool follow_link = false;
             bool color = false;
             bool inverse_match = false;
-            bool dfs = false;
-            bool bfs = true;
+            bool dfs = true;
+            bool bfs = false;
 
             std::string begin_time, end_time;
 
-            auto cli = clara::Help(help) |
-                       clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information") |
-                       clara::Opt(ignore_case)["-i"]["--ignore-case"]("Ignore case") |
-                       clara::Opt(inverse_match)["--invert-match"](
-                           "Display paths that do not match a given path regex.") |
-                       clara::Opt(ignore_file)["--ignore-file"]("Ignore files.") |
-                       clara::Opt(ignore_dir)["--ignore-dir"]("Ignore folders.") |
-                       clara::Opt(ignore_symlink)["--ignore-symlink"]("Ignore symlink.") |
-                       clara::Opt(color)["-c"]["--color"]("Print out color text.") |
-                       clara::Opt(dfs)["--dfs"]("Use DFS for traversing.") |
-                       clara::Opt(bfs)["--bfs"]("Use BFS for traversing.") |
-                       clara::Opt(params.regex,
-                                  "path-regex")["-e"]["--path-regex"]("Search pattern.") |
+            auto cli =
+                clara::Help(help) | clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information") |
+                clara::Opt(ignore_case)["-i"]["--ignore-case"]("Ignore case") |
+                clara::Opt(inverse_match)["--invert-match"]("Display paths that do not match a given path regex.") |
+                clara::Opt(ignore_file)["--ignore-file"]("Ignore files.") |
+                clara::Opt(ignore_dir)["--ignore-dir"]("Ignore folders.") |
+                clara::Opt(ignore_symlink)["--ignore-symlink"]("Ignore symlink.") |
+                clara::Opt(color)["-c"]["--color"]("Print out color text.") |
+                clara::Opt(dfs)["--dfs"]("Use DFS for traversing.") |
+                clara::Opt(bfs)["--bfs"](
+                    "Use BFS for traversing. Note that BFS algorithm does not work well for large folders.") |
+                clara::Opt(params.regex, "path-regex")["-e"]["--path-regex"]("Search pattern.") |
 
-                       // Unsupported options
-                       clara::Opt(params.level, "level")["--level"]("The search depth.") |
-                       clara::Opt(follow_link, "follow-link")["--follow-link"](
-                           "Follow symbolic links. (WIP)") |
-                       clara::Opt(begin_time, "newer")["--newer"](
-                           "Display paths that are newer than a given timestamp. (WIP)") |
-                       clara::Opt(end_time, "older")["--older"](
-                           "Display paths that are older than a given timestamp. (WIP)") |
+                // Unsupported options
+                clara::Opt(params.level, "level")["--level"]("The search depth.") |
+                clara::Opt(follow_link, "follow-link")["--follow-link"]("Follow symbolic links. (WIP)") |
+                clara::Opt(begin_time,
+                           "newer")["--newer"]("Display paths that are newer than a given timestamp. (WIP)") |
+                clara::Opt(end_time, "older")["--older"]("Display paths that are older than a given timestamp. (WIP)") |
 
-                       // Required arguments.
-                       clara::Arg(paths, "paths")("Search paths");
+                // Required arguments.
+                clara::Arg(paths, "paths")("Search paths");
 
             auto result = cli.parse(clara::Args(argc, argv));
             if (!result) {
@@ -158,15 +154,13 @@ namespace ioutils {
             }
 
             // Init the mode for our regular expression engine.
-            params.regex_mode =
-                HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH | (ignore_case ? HS_FLAG_CASELESS : 0);
+            params.regex_mode = HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH | (ignore_case ? HS_FLAG_CASELESS : 0);
 
             // Parse the display type
             dfs = dfs ? true : !bfs;
             params.flags = ignore_file * PARAMS::IGNORE_FILE | ignore_dir * PARAMS::IGNORE_DIR |
-                          ignore_symlink * PARAMS::IGNORE_SYMLINK | color * PARAMS::COLOR |
-                          verbose * PARAMS::VERBOSE | inverse_match * PARAMS::INVERT_MATCH |
-                          dfs * PARAMS::DFS;
+                           ignore_symlink * PARAMS::IGNORE_SYMLINK | color * PARAMS::COLOR | verbose * PARAMS::VERBOSE |
+                           inverse_match * PARAMS::INVERT_MATCH | dfs * PARAMS::DFS;
 
             // Display input arguments in JSON format if verbose flag is on
             if (params.verbose()) {

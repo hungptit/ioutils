@@ -22,7 +22,7 @@ namespace ioutils {
             bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
             void process_file(const Path &parent, const char *stem) {
                 writer.write(parent.path.data(), parent.path.size());
-                writer.put('/');
+                writer.put(SEP);
                 writer.write(stem, strlen(stem));
                 writer.put(EOL);
             }
@@ -42,6 +42,7 @@ namespace ioutils {
           private:
             StreamWriter writer;
             const char EOL = '\n';
+            const char SEP = '/';
         };
     } // namespace mlocate
 

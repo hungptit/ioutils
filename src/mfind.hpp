@@ -2,7 +2,6 @@
 
 #include "fdwriter.hpp"
 #include "filesystem.hpp"
-#include "fmt/format.h"
 
 namespace ioutils {
     namespace mfind {
@@ -15,17 +14,13 @@ namespace ioutils {
           public:
             template <typename Params>
             SimplePolicy(Params &&params)
-                : stats(true), color(params.color()), ignore_dir(params.ignore_dir()),
+                : color(params.color()), ignore_dir(params.ignore_dir()),
                   ignore_file(params.ignore_file()), ignore_symlink(params.ignore_symlink()),
                   writer(StreamWriter::STDOUT) {}
 
             ~SimplePolicy() {
                 if (color) {
                     writer.write(RESET_COLOR.data(), RESET_COLOR.size());
-                }
-
-                if (stats) {
-                    print();
                 }
             }
 
@@ -44,6 +39,7 @@ namespace ioutils {
             }
 
             void process_file(const Path &parent) {
+                if (ignore_file) return;
                 if (color) {
                     writer.write(FILE_COLOR.data(), FILE_COLOR.size());
                 }
@@ -73,14 +69,7 @@ namespace ioutils {
                 ++number_of_dirs;
             }
 
-            void print() const {
-                // fmt::print("The number of dirs: {}\n", number_of_dirs);
-                // fmt::print("The number of files: {}\n", number_of_files);
-                // fmt::print("The number of symlinks: {}\n", number_of_symlinks);
-            }
-
           private:
-            bool stats;
             bool color;
             bool ignore_dir;
             bool ignore_file;

@@ -18,7 +18,7 @@ namespace {
         bool stats = 0;
         bool verbose = 0;
 
-        bool dfs() { return false; } // Use bfs traversal to explore folders.
+        bool dfs() { return true; } // Use bfs traversal to explore folders.
 
         void print() const {
             fmt::print("Search paths: [\"{}\"]\n", fmt::join(paths, "\",\""));

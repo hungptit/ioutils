@@ -51,8 +51,8 @@ BENCHMARK(big_folder, mfind_default, number_of_samples, number_of_operations) {
     test("../commands/mfind ", "../../3p/src/boost");
 }
 
-BENCHMARK(big_folder, mfind_dfs, number_of_samples, number_of_operations) {
-    test("../commands/mfind --dfs ", "../../3p/src/boost");
+BENCHMARK(big_folder, mfind_bfs, number_of_samples, number_of_operations) {
+    test("../commands/mfind --bfs ", "../../3p/src/boost");
 }
 
 // Find all files using a regex that does not match any results
@@ -68,6 +68,6 @@ BENCHMARK(big_folder_regex, mfind_default, number_of_samples, number_of_operatio
     test_mfind_regex("../commands/mfind ", pattern1, " ../../3p/src/boost");
 }
 
-BENCHMARK(big_folder_regex, mfind_dfs, number_of_samples, number_of_operations) {
-    test_mfind_regex("../commands/mfind --dfs", pattern1, " ../../3p/src/boost");
+BENCHMARK(big_folder_regex, mfind_bfs, number_of_samples, number_of_operations) {
+    test_mfind_regex("../commands/mfind --bfs", pattern1, " ../../3p/src/boost");
 }
