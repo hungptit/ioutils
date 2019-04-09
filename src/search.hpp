@@ -116,6 +116,7 @@ namespace ioutils {
                                     next.emplace_back(Path{current_dir_fd, p});
                                 } else {
                                     fmt::print(stderr, "Cannot open: '{}'\n", p);
+                                    fmt::print(stderr, "Stack size: {}\n", next.size());
                                 }
                             }
                             break;
