@@ -22,6 +22,10 @@ namespace ioutils {
                 if (color) {
                     writer.write(RESET_COLOR.data(), RESET_COLOR.size());
                 }
+				
+				fmt::print(stderr, "Number of folders: {}\n", number_of_dirs);
+				fmt::print(stderr, "Number of files: {}\n", number_of_files);
+				fmt::print(stderr, "Number of symlinks: {}\n", number_of_symlinks);
             }
 
           protected:
