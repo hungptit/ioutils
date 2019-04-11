@@ -1,5 +1,4 @@
 #pragma once
-
 #include "fmt/format.h"
 #include <cstring>
 #include <fcntl.h>
@@ -16,32 +15,51 @@ namespace ioutils {
         static StreamWriter stdout() { return StreamWriter(STDOUT); }
         static StreamWriter stderr() { return StreamWriter(STDERR); }
 
-        StreamWriter(const int fides, const size_t len = BUFFER_SIZE) : fd(fides), buflen(len) {
+        StreamWriter(const int fides, const int len = BUFFER_SIZE) : fd(fides), buflen(len) {
             buffer.reserve(buflen);
         }
 
+        StreamWriter(const char *fname, const int len = BUFFER_SIZE) {
+            fd = ::open(fname, O_CREAT | O_WRONLY, S_IRWXU);
+            if (fd < 0) {
+                const std::string msg = "Cannot open file " + std::string(fname) + " to write.";
+                throw std::runtime_error(msg);
+            }
+            buflen = len;
+            buffer.reserve(buflen);
+        }
+        
         ~StreamWriter() {
             if (!buffer.empty()) {
                 ::write(fd, buffer.data(), buffer.size());
             }
+
+            // Close the output file if needed.
+            if (fd > STDERR) {
+                ::close(fd);
+            }
         }
 
-        size_t write(const char *begin, const size_t len) {
-            size_t nbytes = len;
+        void write(const char *begin, const size_t len) {
+            // Flush the buffer it reaches the threshold.
             if ((buffer.size() + len) > BUFFER_SIZE) {
-                nbytes = ::write(fd, buffer.data(), buffer.size());
+                long nbytes = ::write(fd, buffer.data(), buffer.size());
+                if (nbytes < 0) {
+                    throw std::runtime_error("Cannot write to the output file descriptor.");
+                }
                 buffer.clear();
             }
-            if (len < BUFFER_SIZE) {
-                buffer.append(begin, len);
-            } else {
-                nbytes += ::write(fd, begin, len);
-            }
-            return nbytes;
+
+            // Append data to the buffer.
+            buffer.append(begin, len);
+        }
+
+        void put(const char ch) {
+            buffer.push_back(ch);
         }
 
       private:
-        const int fd;
+        int fd;
         int buflen;
         std::string buffer;
     };

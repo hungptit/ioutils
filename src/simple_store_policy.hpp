@@ -23,21 +23,21 @@ namespace ioutils {
 
         bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
 
-        void process_file(const std::string &parent, const char *stem) {
+        void process_file(const Path &parent, const char *stem) {
             if (store_file) {
-                paths.emplace_back(parent + SEP + stem);
+                paths.emplace_back(parent.path + SEP + stem);
             }
         }
 
-        void process_file(const std::string &parent) {
+        void process_file(const Path &parent) {
             if (store_file) {
-                paths.emplace_back(parent);
+                paths.emplace_back(parent.path);
             }
         }
 
-        void process_symlink(const std::string &parent, const char *stem) {
+        void process_symlink(const Path &parent, const char *stem) {
             if (store_symlink) {
-                paths.emplace_back(parent + SEP + stem);
+                paths.emplace_back(parent.path + SEP + stem);
             }
         }
         void process_dir(const std::string &p) {

@@ -20,34 +20,54 @@ namespace ioutils {
     // A class which has DFS and BFS file traversal algorithms.
     template <typename Policy> class FileSearch : public Policy {
       public:
-        // Basic search functionality.
-        template <typename... Args>
-        FileSearch(Args... args) : Policy(std::forward<Args>(args)...), current(), next() {}
-
         // Filtering files using given patterns.
-        template <typename T>
-        FileSearch(T &&params) : Policy(std::forward<T>(params)), current(), next() {
-            current.reserve(512);
-            next.reserve(512);
+        template <typename T> FileSearch(T &&params) : Policy(std::forward<T>(params)), current(), next() {
+            init();
             use_dfs = params.dfs();
             level = params.level;
         }
 
-        template <typename Container> void traverse(Container &&p) {
-            if (!use_dfs) {
-                bfs(std::forward<Container>(p));
-            } else {
-                dfs(std::forward<Container>(p));
+        void traverse(const std::vector<std::string> &paths) {
+            for (auto p : paths) {
+                if (!use_dfs) {
+                    bfs(p);
+                } else {
+                    dfs(p);
+                }
             }
+
+            // If we cannot visit some folders because of too many open file
+            // problem then revisit them ntries times. This workaround may not
+            // fix all potential issues with this type of problem.
+            // TODO: Figure out why mfind miss files in this folder $P4_HOME/prod/local/5.16/.
+            constexpr int ntries = 3;
+            for (int idx = 0; idx < ntries; ++idx) {
+                if (unvisited_paths.empty()) break;
+                std::vector<std::string> current_paths;
+                std::swap(unvisited_paths, current_paths);
+                unvisited_paths.clear();
+                if (!current_paths.empty()) {
+                    for (auto p : current_paths) {
+                        fmt::print(stderr, "{}\n", p);
+                        dfs(p);
+                    }
+                }
+            }
+
+            if (!unvisited_paths.empty()) {
+                fmt::print(stderr, "Number of unvisited paths: {}\n", unvisited_paths.size());
+            };
         }
 
         /**
-         * TODO: Support the maximum exploration depth. 
+         * TODO: Support the maximum exploration depth.
          */
-        template <typename Container> void dfs(Container &&p) {
-            for (auto const & item : p) {
-                int fd = ::open(item.data(), O_RDONLY);
-                if (fd > -1) next.emplace_back(Path{fd, item});
+        void dfs(const std::string &p) {
+            int fd = ::open(p.data(), O_RDONLY);
+            if (fd > -1) {
+                next.emplace_back(Path{fd, p});
+            } else {
+                fmt::print(stderr, "Cannot access '{}'\n", p);
             }
 
             // Search for files and folders using DFS traversal.
@@ -61,17 +81,19 @@ namespace ioutils {
         /**
          * Traverse given paths using bread-first search algorithm.
          */
-        template <typename Container> void bfs(Container &&p) {
-            for (auto const & item : p) {
-                int fd = ::open(item.data(), O_RDONLY);
-                if (fd > -1) current.emplace_back(Path{fd, item});
+        void bfs(const std::string &p) {
+            int fd = ::open(p.data(), O_RDONLY);
+            if (fd > -1) {
+                current.emplace_back(Path{fd, p});
+            } else {
+                fmt::print(stderr, "Cannot access '{}'\n", p);
             }
 
             // Search for files and folders using BFS traversal.
             int current_level = 0;
             while (!current.empty()) {
                 next.clear();
-                for (auto const & current_path : current) {
+                for (auto const &current_path : current) {
                     visit(current_path);
                 }
                 ++current_level;
@@ -83,14 +105,23 @@ namespace ioutils {
         }
 
       private:
+        void init() {
+            current.reserve(512);
+            next.reserve(512);
+        }
+
         void visit(const Path &dir) {
             struct stat props;
-            const int fd = dir.fd;
-            int retval = fstat(fd, &props);
-            if (retval < 0) return;
+            int retval = fstat(dir.fd, &props);
+            if (retval < 0) {
+                fmt::print(stderr, "Cannot get file information: \"{}\". strerror: \"{}\".\n", dir.path,
+                           strerror(errno));
+                ::close(dir.fd);
+                return;
+            }
 
             if (ioutils::filesystem::is_directory(props.st_mode)) {
-                DIR *dirp = fdopendir(fd);
+                DIR *dirp = fdopendir(dir.fd);
                 if (dirp != nullptr) {
                     struct dirent *info;
                     while ((info = readdir(dirp)) != NULL) {
@@ -98,18 +129,30 @@ namespace ioutils {
                         case DT_DIR:
                             if (Policy::is_valid_dir(info->d_name)) {
                                 std::string p(dir.path + "/" + info->d_name);
+                                Policy::process_dir(p);
                                 int current_dir_fd = ::open(p.data(), O_RDONLY);
                                 if (current_dir_fd >= 0) {
-                                    Policy::process_dir(p);
-                                    next.emplace_back(Path{current_dir_fd, std::move(p)});
+                                    next.emplace_back(Path{current_dir_fd, p});
+                                } else {
+                                    if (errno == EMFILE) {
+                                        /**
+                                         * We we hit too many files open issue
+                                         * then cache the unvisited path then do
+                                         * it later.
+                                         */
+                                        unvisited_paths.emplace_back(p);
+                                    } else {
+                                        fmt::print(stderr, "Cannot open: \"{}\", strerror: \"{}\"\n", p,
+                                                   strerror(errno));
+                                    }
                                 }
                             }
                             break;
                         case DT_REG:
-                            Policy::process_file(dir.path, info->d_name);
+                            Policy::process_file(dir, info->d_name);
                             break;
                         case DT_LNK: {
-                            Policy::process_symlink(dir.path, info->d_name);
+                            Policy::process_symlink(dir, info->d_name);
                             break;
                         }
                         default:
@@ -120,8 +163,8 @@ namespace ioutils {
                 }
                 (void)closedir(dirp);
             } else if (ioutils::filesystem::is_regular_file(props.st_mode)) {
-                Policy::process_file(dir.path);
-                ::close(fd);
+                Policy::process_file(dir);
+                ::close(dir.fd);
             } else {
                 throw std::runtime_error("We should not be here!");
             }
@@ -131,6 +174,7 @@ namespace ioutils {
         std::vector<Path> next;
         bool use_dfs = true;
         int level = -1;
+        std::vector<std::string> unvisited_paths;
         static constexpr char SEP = '/';
     };
 } // namespace ioutils

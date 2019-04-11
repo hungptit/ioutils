@@ -11,10 +11,14 @@
 
 namespace {
     struct InputParams {
+        int flags = 0;
+        int level = -1;
         std::vector<std::string> paths; // Input databases
         std::string database;
         bool stats = 0;
         bool verbose = 0;
+
+        bool dfs() { return true; } // Use bfs traversal to explore folders.
 
         void print() const {
             fmt::print("Search paths: [\"{}\"]\n", fmt::join(paths, "\",\""));
@@ -64,7 +68,7 @@ namespace {
         }
         params.paths.insert(params.paths.begin(), search_paths.cbegin(), search_paths.cend());
 
-        // Display input arguments in JSON format if verbose flag is on
+        // Display input arguments if the verbose flag is on.
         if (params.verbose) {
             params.print();
         }
@@ -75,18 +79,9 @@ namespace {
 
 int main(int argc, char *argv[]) {
     auto params = parse_input_arguments(argc, argv);
-    using Search = typename ioutils::FileSearch<ioutils::mlocate::Policy>;
-    Search search;
+    using Policy = typename ioutils::mlocate::UpdateDBStreamPolicy;
+    using Search = typename ioutils::FileSearch<Policy>;
+    Search search(params);
     search.traverse(params.paths);
-
-    // Serialize data to a string then save it to a file.
-    fmt::memory_buffer buffer;
-    auto const data = search.get_data();
-    for (auto item : data) {
-        fmt::format_to(buffer, "{0}\n", item.path);
-    }
-    if (params.verbose) fmt::print("Database size: {}\n", buffer.size());
-    ioutils::write(buffer.data(), buffer.size(), params.database.data());
-
     return EXIT_SUCCESS;
 }
