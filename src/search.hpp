@@ -46,7 +46,7 @@ namespace ioutils {
             // If we cannot visit some folders because of too many open file
             // problem then revisit them ntries times. This workaround may not
             // fix all potential issues with this type of problem.
-            // TODO: Figure out why mfind miss files in this folder $P4_HOME/prod/local/5.16/.
+            // TODO: Figure out why fast-find miss files in this folder $P4_HOME/prod/local/5.16/.
             constexpr int ntries = 3;
             for (int idx = 0; idx < ntries; ++idx) {
                 if (unvisited_paths.empty()) break;

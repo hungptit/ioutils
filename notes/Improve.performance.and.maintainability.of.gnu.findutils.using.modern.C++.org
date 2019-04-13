@@ -12,22 +12,22 @@ ioutils is created because of the following reasons.
    + Support search folder.
    + Support search pattern, file extensions etc.
 * Results
-
+  
 Benchmark results collected in Mac OS
 ``` text
-hdang@015249 ~/w/i/benchmark> ./mfind
+hdang@015249 ~/w/i/benchmark> ./fast-find
 Celero
 Timer resolution: 0.001000 us
 -----------------------------------------------------------------------------------------------------------------------------------------------
      Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
 -----------------------------------------------------------------------------------------------------------------------------------------------
 find            | gnu_find        |               0 |              10 |               1 |         1.00000 |    431944.00000 |            2.32 |
-find            | mfind_to_consol |               0 |              10 |               1 |         0.37290 |    161072.00000 |            6.21 |
-find            | mfind_dfs_store |               0 |              10 |               1 |         0.34578 |    149359.00000 |            6.70 |
-find            | mfind_bfs_store |               0 |              10 |               1 |         0.35773 |    154519.00000 |            6.47 |
+find            | fast-find_to_consol |               0 |              10 |               1 |         0.37290 |    161072.00000 |            6.21 |
+find            | fast-find_dfs_store |               0 |              10 |               1 |         0.34578 |    149359.00000 |            6.70 |
+find            | fast-find_bfs_store |               0 |              10 |               1 |         0.35773 |    154519.00000 |            6.47 |
 Complete.
 ```
 * Conclusions
   + Our ioutls library is reusable and performant. Thanks to the powerfullness of the C++ template and Policy Based Design..
   + The combination of the modern C++ design and low level system call allow us to improve both reusablity and performance of our library.
-  + Our performance analysis shows that our mfind and fast-locate commands are faster than that of similar GNU commands i.e find and locate.
+  + Our performance analysis shows that our fast-find and fast-locate commands are faster than that of similar GNU commands i.e find and locate.

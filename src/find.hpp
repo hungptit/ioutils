@@ -4,7 +4,7 @@
 #include "filesystem.hpp"
 
 namespace ioutils {
-    namespace mfind {
+    namespace find {
         static const std::string FIFO_COLOR = "\033[2;32m";    // Normal, Green
         static const std::string DIR_COLOR = "\033[1;91m";     // Bold, Light red
         static const std::string CHR_COLOR = "\033[2;33m";     // Normal, Yellow
@@ -410,5 +410,5 @@ namespace ioutils {
             const char EOL = '\n';
             const char SEP = '/';
         };
-    } // namespace mfind
+    } // namespace find
 } // namespace ioutils

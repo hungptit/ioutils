@@ -40,11 +40,34 @@ namespace ioutils {
                 paths.emplace_back(parent.path + SEP + stem);
             }
         }
+        
+        void process_symlink(const Path &parent) {
+            if (store_symlink) {
+                paths.emplace_back(parent.path);
+            }
+        }
+        
         void process_dir(const std::string &p) {
             if (store_dir) {
                 paths.push_back(p);
             }
         }
+
+        void process_fifo(const Path &, const char *){}
+        void process_fifo(const Path &){}
+        
+        void process_chr(const Path &, const char *){}
+        void process_chr(const Path &){}
+        
+        void process_blk(const Path &, const char *){}
+        void process_blk(const Path &){}
+        
+        void process_socket(const Path &, const char *){}
+        void process_socket(const Path &){}
+        
+        void process_whiteout(const Path &, const char *){}
+        void process_whiteout(const Path &){}
+        
         container_type paths;
     };
 } // namespace ioutils

@@ -29,8 +29,8 @@ namespace ioutils {
 
         ~StreamWriter() {
             if (!buffer.empty()) {
-                auto nbytes = ::write(fd, buffer.data(), buffer.size());
-                if (nbytes != buffer.size()) {
+                long nbytes = ::write(fd, buffer.data(), buffer.size());
+                if (nbytes != (long)buffer.size()) {
                     handle_error();
                 }
             }
@@ -44,8 +44,8 @@ namespace ioutils {
         void write(const char *begin, const size_t len) {
             // Flush the buffer it reaches the threshold.
             if ((buffer.size() + len) > BUFFER_SIZE) {
-                auto nbytes = ::write(fd, buffer.data(), buffer.size());
-                if (nbytes != buffer.size()) {
+                long nbytes = ::write(fd, buffer.data(), buffer.size());
+                if (nbytes != (long)buffer.size()) {
                     handle_error();
                 }
                 buffer.clear();

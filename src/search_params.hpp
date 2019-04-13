@@ -170,7 +170,7 @@ namespace ioutils {
             if (help) {
                 std::ostringstream oss;
                 oss << cli;
-                fmt::print("{}\n", "mfind version 0.1.0");
+                fmt::print("{}\n", "fast-find version 0.1.0");
                 fmt::print("{}\n", "Hung Dang <hungptit@gmail.com>");
                 fmt::print("{}", oss.str());
                 exit(EXIT_SUCCESS);

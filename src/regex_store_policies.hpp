@@ -44,9 +44,31 @@ namespace ioutils {
                 paths.push_back(buffer);
             }
         }
+        
+        void process_symlink(const Path &parent) {
+            if (!store_symlink) return;
+            if (matcher.is_matched(parent.path.data(), parent.path.size())) {
+                paths.push_back(parent.path);
+            }
+        }
 
         void process_dir(const std::string &) {}
 
+        void process_fifo(const Path &, const char *) {}
+        void process_fifo(const Path &) {}
+        
+        void process_chr(const Path &, const char *) {}
+        void process_chr(const Path &) {}
+        
+        void process_blk(const Path &, const char *) {}
+        void process_blk(const Path &) {}
+        
+        void process_socket(const Path &, const char *) {}
+        void process_socket(const Path &) {}
+        
+        void process_whiteout(const Path &, const char *) {}
+        void process_whiteout(const Path &) {}
+        
         std::string buffer;
         Matcher matcher;
         std::vector<std::string> paths;
