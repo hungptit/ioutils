@@ -22,7 +22,7 @@ message("-- Version: ${VERSION}")
 set(GENERIC_LIB_VERSION ${VERSION})
 string(SUBSTRING ${VERSION} 0 1 GENERIC_LIB_SOVERSION)
 
-option(USE_AVX2 "Support AVX2" OFF)
+option(USE_AVX2 "Support AVX2" ON)
 
 include(CheckCXXCompilerFlag)
 include(AddCXXCompilerFlag)
@@ -83,7 +83,7 @@ set(CMAKE_INSTALL_PREFIX "$ENV{HOME}")
 SET(LIB_HS "${EXTERNAL_DIR}/lib/libhs.a")
 SET(LIB_HS_RUNTIME "${EXTERNAL_DIR}/lib/libhs_runtime.a")
 
-set(SRC_FILES mupdatedb mlocate mfind mwc)
+set(SRC_FILES fast-updatedb fast-locate fast-find fast-wc)
 foreach (src_file ${SRC_FILES})
   ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
   TARGET_LINK_LIBRARIES(${src_file} ${LIB_HS} ${LIB_HS_RUNTIME})

@@ -1,9 +1,11 @@
 #pragma once
-#include "fmt/format.h"
 #include <cstring>
 #include <fcntl.h>
+#include <stdexcept>
 #include <string>
+#include <sys/errno.h>
 #include <unistd.h>
+#include <cassert>
 
 namespace ioutils {
     class StreamWriter {
@@ -15,9 +17,7 @@ namespace ioutils {
         static StreamWriter stdout() { return StreamWriter(STDOUT); }
         static StreamWriter stderr() { return StreamWriter(STDERR); }
 
-        StreamWriter(const int fides, const int len = BUFFER_SIZE) : fd(fides), buflen(len) {
-            buffer.reserve(buflen);
-        }
+        StreamWriter(const int fides, const int len = BUFFER_SIZE) : fd(fides), buflen(len) { buffer.reserve(buflen); }
 
         StreamWriter(const char *fname, const int len = BUFFER_SIZE) {
             fd = ::open(fname, O_CREAT | O_WRONLY, S_IRWXU);
@@ -28,10 +28,13 @@ namespace ioutils {
             buflen = len;
             buffer.reserve(buflen);
         }
-        
+
         ~StreamWriter() {
             if (!buffer.empty()) {
-                ::write(fd, buffer.data(), buffer.size());
+                long nbytes = ::write(fd, buffer.data(), buffer.size());
+                if (nbytes != (long)buffer.size()) {
+                    handle_error();
+                }
             }
 
             // Close the output file if needed.
@@ -44,8 +47,8 @@ namespace ioutils {
             // Flush the buffer it reaches the threshold.
             if ((buffer.size() + len) > BUFFER_SIZE) {
                 long nbytes = ::write(fd, buffer.data(), buffer.size());
-                if (nbytes < 0) {
-                    throw std::runtime_error("Cannot write to the output file descriptor.");
+                if (nbytes != (long)buffer.size()) {
+                    handle_error();
                 }
                 buffer.clear();
             }
@@ -54,13 +57,30 @@ namespace ioutils {
             buffer.append(begin, len);
         }
 
-        void put(const char ch) {
-            buffer.push_back(ch);
+        void put(const char ch) { buffer.push_back(ch); }
+
+        void eol() {
+            buffer.push_back(EOL);
+        }
+
+        void sep() {
+            buffer.push_back(SEP);
         }
 
       private:
+        const char EOL = '\n';
+        const char SEP = '/';
         int fd;
         int buflen;
         std::string buffer;
+
+        void handle_error() {
+            int errcode = errno;
+            if (errcode) {
+                std::string errmsg(strerror(errcode));
+                long nbytes = ::write(STDERR, errmsg.data(), errmsg.size());
+                assert(nbytes == errmsg.size());
+            }
+        }
     };
 } // namespace ioutils

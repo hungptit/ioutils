@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 namespace ioutils {
-    namespace mlocate {
+    namespace locate {
         /**
          * This policy will write the output to the given file.
          */
@@ -16,41 +16,52 @@ namespace ioutils {
           public:
             UpdateDBStreamPolicy() : writer(StreamWriter::STDOUT) {}
 
-            template <typename Params> UpdateDBStreamPolicy(Params &&params) : writer(params.database.data()) {}
+            template <typename Params>
+            UpdateDBStreamPolicy(Params &&params) : writer(params.database.data()) {}
 
           protected:
             bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
-            void process_file(const Path &parent, const char *stem) {
+            void process_file(const Path &parent, const char *stem = nullptr) {
                 writer.write(parent.path.data(), parent.path.size());
-                writer.put(SEP);
-                writer.write(stem, strlen(stem));
-                writer.put(EOL);
+                if (stem != nullptr) {
+                    writer.sep();
+                    writer.write(stem, strlen(stem));
+                }
+                writer.eol();
             }
 
-            void process_file(const Path &parent) {
-                writer.write(parent.path.data(), parent.path.size());
-                writer.put(EOL);
+            void process_symlink(const Path &parent, const char *stem = nullptr) {
+                process_file(parent, stem);
+            }
+            void process_fifo(const Path &parent, const char *stem = nullptr) {
+                process_file(parent, stem);
+            }
+            void process_chr(const Path &parent, const char *stem = nullptr) { process_file(parent, stem); }
+            void process_blk(const Path &parent, const char *stem = nullptr) { process_file(parent, stem); }
+            void process_socket(const Path &parent, const char *stem = nullptr) {
+                process_file(parent, stem);
+            }
+            void process_whiteout(const Path &parent, const char *stem = nullptr) {
+                process_file(parent, stem);
             }
 
-            void process_symlink(const Path &parent, const char *stem) { process_file(parent, stem); }
-            
             void process_dir(const std::string &path) {
                 writer.write(path.data(), path.size());
-                writer.put(EOL);
+                writer.eol();
             }
 
           private:
             StreamWriter writer;
-            const char EOL = '\n';
-            const char SEP = '/';
         };
-    } // namespace mlocate
+    } // namespace locate
 
     template <typename Matcher> class LocateStreamPolicy {
       public:
         template <typename Params>
         LocateStreamPolicy(Params &&params)
-            : matcher(params.pattern, params.regex_mode), linebuf(), prefix(params.prefix),
+            : matcher(params.pattern, params.regex_mode),
+              linebuf(),
+              prefix(params.prefix),
               console(StreamWriter::STDOUT) {}
         void process(const char *begin, const size_t len) {
             const char *start = begin;
@@ -96,7 +107,8 @@ namespace ioutils {
             }
         }
 
-        // Note: Override this function to make FileReader happy. We do not care about the database name in mlocate.
+        // Note: Override this function to make FileReader happy. We do not care about the database name in
+        // fast-locate.
         void set_filename(const char *) {}
 
         // Process text data in the linebuf.
@@ -108,17 +120,9 @@ namespace ioutils {
 
     class PrintAllPolicy {
       public:
-        template <typename Params> PrintAllPolicy(Params &&args) : prefix(args.prefix), console(StreamWriter::STDOUT) {}
-        void process(const char *begin, const size_t len) {
-            constexpr char EOL = '\n';
-            const char *start = begin;
-            const char *end = begin + len;
-            const char *ptr = begin;
-            while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
-                process_line(start, ptr - start + 1);
-                start = ++ptr;
-            }
-        }
+        template <typename Params>
+        PrintAllPolicy(Params &&args) : prefix(args.prefix), console(StreamWriter::STDOUT) {}
+        void process(const char *begin, const size_t len) { console.write(begin, len); }
 
       protected:
         void set_filename(const char *) {}
@@ -127,6 +131,6 @@ namespace ioutils {
       private:
         std::string prefix;
         StreamWriter console;
-        void process_line(const char *begin, const size_t len) { console.write(begin, len); }
+        // void process_line(const char *begin, const size_t len) { console.write(begin, len); }
     };
 } // namespace ioutils
