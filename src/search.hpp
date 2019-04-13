@@ -21,10 +21,17 @@ namespace ioutils {
     template <typename Policy> class FileSearch : public Policy {
       public:
         // Filtering files using given patterns.
-        template <typename T> FileSearch(T &&params) : Policy(std::forward<T>(params)), current(), next() {
-            init();
-            use_dfs = params.dfs();
-            level = params.level;
+        template <typename T>
+        FileSearch(T &&params)
+            : Policy(std::forward<T>(params)),
+              current(),
+              next(),
+              use_dfs(params.dfs()),
+              follow_link(params.follow_symlink()),
+              donot_ignore_git(params.donot_ignore_git()),
+              level(params.level) {
+            current.reserve(512);
+            next.reserve(512);
         }
 
         void traverse(const std::vector<std::string> &paths) {
@@ -105,17 +112,11 @@ namespace ioutils {
         }
 
       private:
-        void init() {
-            current.reserve(512);
-            next.reserve(512);
-        }
-
         void visit(const Path &dir) {
             struct stat props;
             int retval = fstat(dir.fd, &props);
             if (retval < 0) {
-                fmt::print(stderr, "Cannot get file information: \"{}\". strerror: \"{}\".\n", dir.path,
-                           strerror(errno));
+                fmt::print(stderr, "Cannot get file information: \"{}\". {}.\n", dir.path, strerror(errno));
                 ::close(dir.fd);
                 return;
             }
@@ -127,8 +128,10 @@ namespace ioutils {
                     struct dirent *info;
                     while ((info = readdir(dirp)) != NULL) {
                         switch (info->d_type) {
-                        case DT_DIR:
-                            if (Policy::is_valid_dir(info->d_name)) {
+                        case DT_DIR: {
+                            const bool is_valid_dir = filesystem::is_valid_dir(info->d_name) &&
+                                                      Policy::is_valid_dir(info->d_name);
+                            if (is_valid_dir) {
                                 std::string p(dir.path + "/" + info->d_name);
                                 Policy::process_dir(p);
                                 int current_dir_fd = ::open(p.data(), O_RDONLY);
@@ -143,12 +146,12 @@ namespace ioutils {
                                          */
                                         unvisited_paths.emplace_back(p);
                                     } else {
-                                        fmt::print(stderr, "Cannot open: \"{}\", strerror: \"{}\"\n", p,
-                                                   strerror(errno));
+                                        fmt::print(stderr, "{}. Cannot open: \"{}\"\n", strerror(errno), p);
                                     }
                                 }
                             }
                             break;
+                        }
                         case DT_REG:
                             Policy::process_file(dir, info->d_name);
                             break;
@@ -157,6 +160,7 @@ namespace ioutils {
                             break;
                         }
                         case DT_FIFO: {
+                            Policy::process_fifo(dir, info->d_name);
                             break;
                         }
                         case DT_CHR: {
@@ -164,20 +168,22 @@ namespace ioutils {
                             break;
                         }
                         case DT_BLK: {
-                            fmt::print(stderr, "BLK: {}/{}\n", dir.path, info->d_name);
+                            Policy::process_blk(dir, info->d_name);
                             break;
                         }
                         case DT_SOCK: {
-                            fmt::print(stderr, "SOCK: {}/{}\n", dir.path, info->d_name);
+                            Policy::process_socket(dir, info->d_name);
                             break;
                         }
                         case DT_WHT: {
-                            fmt::print(stderr, "WHT: {}/{}\n", dir.path, info->d_name);
+                            Policy::process_whiteout(dir, info->d_name);
                             break;
                         }
                         default:
-                            fmt::print(stderr, "Unrecognized path: {}/{}, type: {:b}\n", dir.path, info->d_name,
-                                       info->d_type);
+                            // TODO: Need a clean way to handle this situation.
+                            // https://stackoverflow.com/questions/47078417/readdir-returning-dirent-with-d-type-dt-unknown-for-directories-and
+                            fmt::print(stderr, "Unrecognized path type: {}/{}, type: {:x}\n", dir.path,
+                                       info->d_name, info->d_type);
                             break;
                         }
                     }
@@ -189,23 +195,28 @@ namespace ioutils {
             } else if (mode == S_IFLNK) {
                 Policy::process_symlink(dir);
             } else if (mode == S_IFIFO) { // Pipe
-                fmt::print(stderr, "Pipe: {}\n", dir.path);
+                Policy::process_fifo(dir);
             } else if (mode == S_IFCHR) { // Character special
                 Policy::process_chr(dir);
             } else if (mode == S_IFBLK) { // Block special
-                fmt::print(stderr, "Block special: {}\n", dir.path);
+                Policy::process_blk(dir);
             } else if (mode == S_IFSOCK) { // Socket special
-                fmt::print(stderr, "Socket: {}\n", dir.path);
+                Policy::process_socket(dir);
             } else if (mode == S_IFWHT) { // Whiteout
-                fmt::print(stderr, "Whiteput: {}\n", dir.path);
+                Policy::process_whiteout(dir);
             } else {
-                fmt::print(stderr, "Unrecognized mode : {:x}\n", mode);
+                // TODO: Need a clean way to handle this situation.
+                // Reference:
+                // https://stackoverflow.com/questions/47078417/readdir-returning-dirent-with-d-type-dt-unknown-for-directories-and
+                fmt::print(stderr, "Unrecognized path type: {:x}\n", mode);
             }
         }
 
         std::vector<Path> current;
         std::vector<Path> next;
-        bool use_dfs = true;
+        bool use_dfs;
+        bool follow_link;
+        bool donot_ignore_git;
         int level = -1;
         std::vector<std::string> unvisited_paths;
         static constexpr char SEP = '/';

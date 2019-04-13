@@ -19,7 +19,9 @@ namespace {
         bool verbose = 0;
 
         bool dfs() { return true; } // Use bfs traversal to explore folders.
-
+        bool donot_ignore_git() const { return true; }
+        bool follow_symlink() const { return false; }
+        
         void print() const {
             fmt::print("Search paths: [\"{}\"]\n", fmt::join(paths, "\",\""));
             fmt::print("Database: {}\n", database);

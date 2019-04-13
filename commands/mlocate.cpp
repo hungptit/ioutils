@@ -35,7 +35,7 @@ namespace {
         bool invert_match() const { return (flags & INVERT_MATCH) > 0; }
         bool exact_match() const { return (flags & EXACT_MATCH) > 0; }
         bool ignore_case() const { return (flags & IGNORE_CASE) > 0; }
-
+        
         void print() const {
             fmt::print("verbose: {}\n", verbose());
             fmt::print("info: {}\n", info());
