@@ -176,6 +176,7 @@ Complete.
 ```
 
 **Analysis**
+
 fast-locate is significantly faster than GNU locate because:
 * fast-locate uses an efficient algorithm to read the file information from the indexed database.
 * mupdatedb stores the file information in an efficient structure which allows fast-locate to quickly find the desired item with the minimum number of cache misses.
@@ -223,7 +224,8 @@ Complete.
 ```
 
 **Analysis**
-* fast-find is faster than GNU find and fd because below reasons:
+
+fast-find is faster than GNU find and fd because of below reasons:
 1. Require less system calls to explore paths.
 2. Use cache friendly file traversal algorithms.
 3. Use [the best regular expression matching algorithm](https://branchfree.org/2019/02/28/paper-hyperscan-a-fast-multi-pattern-regex-matcher-for-modern-cpus/).
