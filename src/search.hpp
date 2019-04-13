@@ -120,7 +120,8 @@ namespace ioutils {
                 return;
             }
 
-            if (ioutils::filesystem::is_directory(props.st_mode)) {
+            auto const mode = props.st_mode & S_IFMT;
+            if (mode == S_IFDIR) { // A directory
                 DIR *dirp = fdopendir(dir.fd);
                 if (dirp != nullptr) {
                     struct dirent *info;
@@ -155,18 +156,50 @@ namespace ioutils {
                             Policy::process_symlink(dir, info->d_name);
                             break;
                         }
+                        case DT_FIFO: {
+                            break;
+                        }
+                        case DT_CHR: {
+                            Policy::process_chr(dir, info->d_name);
+                            break;
+                        }
+                        case DT_BLK: {
+                            fmt::print(stderr, "BLK: {}/{}\n", dir.path, info->d_name);
+                            break;
+                        }
+                        case DT_SOCK: {
+                            fmt::print(stderr, "SOCK: {}/{}\n", dir.path, info->d_name);
+                            break;
+                        }
+                        case DT_WHT: {
+                            fmt::print(stderr, "WHT: {}/{}\n", dir.path, info->d_name);
+                            break;
+                        }
                         default:
-                            // We only care about directories, symlinks and regular files.
+                            fmt::print(stderr, "Unrecognized path: {}/{}, type: {:b}\n", dir.path, info->d_name,
+                                       info->d_type);
                             break;
                         }
                     }
                 }
                 (void)closedir(dirp);
-            } else if (ioutils::filesystem::is_regular_file(props.st_mode)) {
+            } else if (mode == S_IFREG) {
                 Policy::process_file(dir);
                 ::close(dir.fd);
+            } else if (mode == S_IFLNK) {
+                Policy::process_symlink(dir);
+            } else if (mode == S_IFIFO) { // Pipe
+                fmt::print(stderr, "Pipe: {}\n", dir.path);
+            } else if (mode == S_IFCHR) { // Character special
+                Policy::process_chr(dir);
+            } else if (mode == S_IFBLK) { // Block special
+                fmt::print(stderr, "Block special: {}\n", dir.path);
+            } else if (mode == S_IFSOCK) { // Socket special
+                fmt::print(stderr, "Socket: {}\n", dir.path);
+            } else if (mode == S_IFWHT) { // Whiteout
+                fmt::print(stderr, "Whiteput: {}\n", dir.path);
             } else {
-                throw std::runtime_error("We should not be here!");
+                fmt::print(stderr, "Unrecognized mode : {:x}\n", mode);
             }
         }
 

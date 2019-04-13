@@ -22,27 +22,25 @@ namespace ioutils {
             bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
             void process_file(const Path &parent, const char *stem) {
                 writer.write(parent.path.data(), parent.path.size());
-                writer.put(SEP);
+                writer.sep();
                 writer.write(stem, strlen(stem));
-                writer.put(EOL);
+                writer.eol();
             }
 
             void process_file(const Path &parent) {
                 writer.write(parent.path.data(), parent.path.size());
-                writer.put(EOL);
+                writer.eol();
             }
 
             void process_symlink(const Path &parent, const char *stem) { process_file(parent, stem); }
             
             void process_dir(const std::string &path) {
                 writer.write(path.data(), path.size());
-                writer.put(EOL);
+                writer.eol();
             }
 
           private:
             StreamWriter writer;
-            const char EOL = '\n';
-            const char SEP = '/';
         };
     } // namespace mlocate
 
@@ -110,14 +108,7 @@ namespace ioutils {
       public:
         template <typename Params> PrintAllPolicy(Params &&args) : prefix(args.prefix), console(StreamWriter::STDOUT) {}
         void process(const char *begin, const size_t len) {
-            constexpr char EOL = '\n';
-            const char *start = begin;
-            const char *end = begin + len;
-            const char *ptr = begin;
-            while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
-                process_line(start, ptr - start + 1);
-                start = ++ptr;
-            }
+            console.write(begin, len);
         }
 
       protected:
@@ -127,6 +118,6 @@ namespace ioutils {
       private:
         std::string prefix;
         StreamWriter console;
-        void process_line(const char *begin, const size_t len) { console.write(begin, len); }
+        // void process_line(const char *begin, const size_t len) { console.write(begin, len); }
     };
 } // namespace ioutils
