@@ -5,6 +5,7 @@
 
 namespace ioutils {
     namespace find {
+        // Reference: https://misc.flogisoft.com/bash/tip_colors_and_formatting
         static const std::string FIFO_COLOR = "\033[2;32m";    // Normal, Green
         static const std::string DIR_COLOR = "\033[1;91m";     // Bold, Light red
         static const std::string CHR_COLOR = "\033[2;33m";     // Normal, Yellow
