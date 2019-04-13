@@ -28,7 +28,7 @@ include(CheckCXXCompilerFlag)
 include(AddCXXCompilerFlag)
 include(CXXFeatureCheck)
 
-set(CMAKE_CXX_COMPILER "clang++")
+# set(CMAKE_CXX_COMPILER "clang++")
 
 # Use libc++ provided by llvm
 add_cxx_compiler_flag(-stdlib=libc++)

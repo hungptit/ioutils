@@ -82,7 +82,7 @@ namespace {
 
 int main(int argc, char *argv[]) {
     auto params = parse_input_arguments(argc, argv);
-    using Policy = typename ioutils::locate::UpdateDBStreamPolicy;
+    using Policy = ioutils::locate::UpdateDBStreamPolicy;
     using Search = typename ioutils::FileSearch<Policy>;
     Search search(params);
     search.traverse(params.paths);

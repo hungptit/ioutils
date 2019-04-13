@@ -1,9 +1,11 @@
 #pragma once
 #include <cstring>
 #include <fcntl.h>
+#include <stdexcept>
 #include <string>
 #include <sys/errno.h>
 #include <unistd.h>
+#include <cassert>
 
 namespace ioutils {
     class StreamWriter {
@@ -64,7 +66,7 @@ namespace ioutils {
         void sep() {
             buffer.push_back(SEP);
         }
-        
+
       private:
         const char EOL = '\n';
         const char SEP = '/';
@@ -76,7 +78,8 @@ namespace ioutils {
             int errcode = errno;
             if (errcode) {
                 std::string errmsg(strerror(errcode));
-                ::write(STDERR, errmsg.data(), errmsg.size());
+                long nbytes = ::write(STDERR, errmsg.data(), errmsg.size());
+                assert(nbytes == errmsg.size());
             }
         }
     };

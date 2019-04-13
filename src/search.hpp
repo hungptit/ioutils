@@ -202,8 +202,8 @@ namespace ioutils {
                 Policy::process_blk(dir);
             } else if (mode == S_IFSOCK) { // Socket special
                 Policy::process_socket(dir);
-            } else if (mode == S_IFWHT) { // Whiteout
-                Policy::process_whiteout(dir);
+            // } else if (mode == S_IFWHT) { // Whiteout is not supported in Linux/ext4
+            //     Policy::process_whiteout(dir);
             } else {
                 // TODO: Need a clean way to handle this situation.
                 // Reference:
