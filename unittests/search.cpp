@@ -5,7 +5,7 @@
 #include "filesystem.hpp"
 #include "fmt/format.h"
 #include "mfind.hpp"
-#include "mlocate.hpp"
+#include "fast-locate.hpp"
 #include "regex_store_policies.hpp"
 #include "simple_store_policy.hpp"
 #include "search.hpp"

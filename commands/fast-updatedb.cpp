@@ -1,6 +1,6 @@
 #include "clara.hpp"
 #include "fmt/format.h"
-#include "mlocate.hpp"
+#include "locate.hpp"
 #include "search.hpp"
 #include "utilities.hpp"
 #include "utils/timeutils.hpp"
@@ -21,7 +21,7 @@ namespace {
         bool dfs() { return true; } // Use bfs traversal to explore folders.
         bool donot_ignore_git() const { return true; }
         bool follow_symlink() const { return false; }
-        
+
         void print() const {
             fmt::print("Search paths: [\"{}\"]\n", fmt::join(paths, "\",\""));
             fmt::print("Database: {}\n", database);
@@ -34,10 +34,11 @@ namespace {
         InputParams params;
         std::vector<std::string> paths;
         bool help = false;
-        auto cli = clara::Help(help) |
-                   clara::Opt(params.database, "database")["-d"]["--database"]("The file information database.") |
-                   clara::Opt(params.verbose)["-v"]["--verbose"]("Display verbose information") |
-                   clara::Arg(paths, "paths")("Search paths.");
+        auto cli =
+            clara::Help(help) |
+            clara::Opt(params.database, "database")["-d"]["--database"]("The file information database.") |
+            clara::Opt(params.verbose)["-v"]["--verbose"]("Display verbose information") |
+            clara::Arg(paths, "paths")("Search paths.");
 
         auto result = cli.parse(clara::Args(argc, argv));
         if (!result) {
@@ -81,7 +82,7 @@ namespace {
 
 int main(int argc, char *argv[]) {
     auto params = parse_input_arguments(argc, argv);
-    using Policy = typename ioutils::mlocate::UpdateDBStreamPolicy;
+    using Policy = typename ioutils::locate::UpdateDBStreamPolicy;
     using Search = typename ioutils::FileSearch<Policy>;
     Search search(params);
     search.traverse(params.paths);

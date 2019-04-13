@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 namespace ioutils {
-    namespace mlocate {
+    namespace locate {
         /**
          * This policy will write the output to the given file.
          */
@@ -53,7 +53,7 @@ namespace ioutils {
           private:
             StreamWriter writer;
         };
-    } // namespace mlocate
+    } // namespace locate
 
     template <typename Matcher> class LocateStreamPolicy {
       public:
@@ -108,7 +108,7 @@ namespace ioutils {
         }
 
         // Note: Override this function to make FileReader happy. We do not care about the database name in
-        // mlocate.
+        // fast-locate.
         void set_filename(const char *) {}
 
         // Process text data in the linebuf.

@@ -30,4 +30,4 @@ Complete.
 * Conclusions
   + Our ioutls library is reusable and performant. Thanks to the powerfullness of the C++ template and Policy Based Design..
   + The combination of the modern C++ design and low level system call allow us to improve both reusablity and performance of our library.
-  + Our performance analysis shows that our mfind and mlocate commands are faster than that of similar GNU commands i.e find and locate.
+  + Our performance analysis shows that our mfind and fast-locate commands are faster than that of similar GNU commands i.e find and locate.

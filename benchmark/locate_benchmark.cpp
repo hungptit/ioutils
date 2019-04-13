@@ -14,9 +14,9 @@ int test_gnu_locate_regex(const std::string &command, const std::string &regex) 
     return system(buffer.data());
 }
 
-int test_mlocate_regex(const std::string &command, const std::string &regex) {
+int test_locate_regex(const std::string &command, const std::string &regex) {
     const std::string dbfile = ".database";
-    std::string buffer = command + " -d " + dbfile + " " + regex +  " > /tmp/mlocate.log";
+    std::string buffer = command + " -d " + dbfile + " " + regex +  " > /tmp/fast-locate.log";
     return system(buffer.data());
 }
 
@@ -29,6 +29,6 @@ BASELINE(regex, gnu_locate, number_of_samples, number_of_operations) {
     test("locate -d locate.db --regex ", pattern1);
 }
 
-BENCHMARK(regex, mlocate, number_of_samples, number_of_operations) {
-    test("../commands/mlocate -d .database ", pattern1);
+BENCHMARK(regex, fast_locate, number_of_samples, number_of_operations) {
+    test("../commands/fast-locate -d .database ", pattern1);
 }

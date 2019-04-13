@@ -102,7 +102,7 @@ include_directories ("${ROOT_DIR}/src")
 #   TARGET_LINK_LIBRARIES(${src_file} ${LIB_CELERO} ${Boost_LIBRARIES})
 # endforeach (src_file)
 
-set(COMMAND_SRC_FILES mfind locate_benchmark)
+set(COMMAND_SRC_FILES fast-find locate_benchmark)
 foreach (src_file ${COMMAND_SRC_FILES})
   ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
   TARGET_LINK_LIBRARIES(${src_file} ${LIB_CELERO})

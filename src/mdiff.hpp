@@ -4,7 +4,7 @@
 #include <fcntl.h>
 
 namespace ioutils {
-    namespace mlocate {
+    namespace fast-locate {
         struct Policy {
           public:
             using container_type = std::vector<ioutils::Stats>;

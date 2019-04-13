@@ -11,7 +11,7 @@
    4. We do not search for a folder twice.
    5. We search folders using the input parameters order i.e left to right
    6. Cannot guarantee the order of the output in multi-threaded search. The order of files for each folder is guaranteed.
-* mlocate
+* fast-locate
 ** Expected behaviore
    1. Users do not need to specify database by default.
    2. Should accept regular expression pattern.

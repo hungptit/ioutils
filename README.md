@@ -12,7 +12,7 @@ ioutils is a small and very fast file system library for Linux and Unix environm
 
 * The mfind command line utility is faster than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands. Our performance benchmark shows that mfind is 2x faster than both [GNU find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd).
 
-* The mlocate command is 10x faster than [GNU locate](https://www.gnu.org/software/findutils/) command.
+* The fast-locate command is 10x faster than [GNU locate](https://www.gnu.org/software/findutils/) command.
 
 **What is the different between ioutils and other similar open source projects such as [GNU findutils](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd)?**
 
@@ -32,7 +32,7 @@ ioutils is a small and very fast file system library for Linux and Unix environm
 hungptit@hungptit ~/working/ioutils/command $ ./mfind ../src/
 ../src/fdwriter.hpp
 ../src/reader.hpp
-../src/mlocate.hpp
+../src/fast-locate.hpp
 ../src/utilities.hpp
 ../src/read_policies.hpp
 ../src/search.hpp
@@ -93,7 +93,7 @@ hdang ~/w/i/commands> mfind ../ --level 1 -e '[.]cpp$'
 ../commands/mupdatedb.cpp
 ../commands/mwc.cpp
 ../commands/mfind.cpp
-../commands/mlocate.cpp
+../commands/fast-locate.cpp
 ../commands/linestats.cpp
 ```
 
@@ -108,33 +108,33 @@ hdang@dev115 ~/w/i/command> ./mfind . -e '(o|bin|cmake|make|txt|internal|include
 ./mfind
 ./mupdatedb
 ./mfind.cpp
-./mlocate
-./mlocate.cpp
+./fast-locate
+./fast-locate.cpp
 ./mupdatedb.cpp
 ./.database
 ./foo.bi
 ```
 
 ## Build file information database ##
-Before using mlocate command we do need to build the file information database for our interrested folders.  Below command will build file information database for boost, hyperscan, tbb, and seastar packages.
+Before using fast-locate command we do need to build the file information database for our interrested folders.  Below command will build file information database for boost, hyperscan, tbb, and seastar packages.
 
 ``` shell
 mupdatedb boost/ hyperscan/ tbb/ rocksdb/ seastar/ -v
 ```
 ## Locate files using regular expression ##
 
-Assume we have already built the file information database using mupdatedb command then we can use mlocate to look for files that match our desired pattern.
+Assume we have already built the file information database using mupdatedb command then we can use fast-locate to look for files that match our desired pattern.
 
 This example will seach for all files with h and hh extensions
 
 ``` shell
-mlocate '/\wfuture.(h|hh)$'
+fast-locate '/\wfuture.(h|hh)$'
 ```
 
-Or we can display all files in our database by executing **mlocate** command
+Or we can display all files in our database by executing **fast-locate** command
 
 ``` shell
-mlocate
+fast-locate
 ```
 
 # Benchmark results
@@ -160,7 +160,7 @@ mlocate
 ### Locate files ###
 
 **Summary**
-* mlocate is about 10x faster that GNU locate.
+* fast-locate is about 10x faster that GNU locate.
 * The performance benchmark results are consistent in both MacOS and Linux environments.
 
 ``` shell
@@ -171,15 +171,15 @@ Timer resolution: 0.001000 us
      Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
 -----------------------------------------------------------------------------------------------------------------------------------------------
 regex           | gnu_locate      |               0 |              10 |               1 |         1.00000 |    649078.00000 |            1.54 |
-regex           | mlocate         |               0 |              10 |               1 |         0.05385 |     34953.00000 |           28.61 |
+regex           | fast-locate         |               0 |              10 |               1 |         0.05385 |     34953.00000 |           28.61 |
 Complete.
 ```
 
 **Analysis**
-mlocate is significantly faster than GNU locate because:
-* mlocate uses an efficient algorithm to read the file information from the indexed database.
-* mupdatedb stores the file information in an efficient structure which allows mlocate to quickly find the desired item with the minimum number of cache misses.
-* mlocate uses the best regular expression matching algorithm.
+fast-locate is significantly faster than GNU locate because:
+* fast-locate uses an efficient algorithm to read the file information from the indexed database.
+* mupdatedb stores the file information in an efficient structure which allows fast-locate to quickly find the desired item with the minimum number of cache misses.
+* fast-locate uses the best regular expression matching algorithm.
 * All algorithm code are generated at compile time that give compiler chance to inline functions.
 
 ### Search for files in boost library source code ###

@@ -1,4 +1,4 @@
-#include "mlocate.hpp"
+#include "locate.hpp"
 #include "clara.hpp"
 #include "filesystem.hpp"
 #include "fmt/format.h"
@@ -9,7 +9,7 @@
 
 namespace {
     void copyright() {
-        fmt::print("\n{}\n", "mlocate version 0.2.0");
+        fmt::print("\n{}\n", "fast-locate version 0.2.0");
         fmt::print("{}\n", "Copyright by Hung Dang <hungptit at gmail dot com>");
     }
 
@@ -64,7 +64,7 @@ namespace {
 
         auto cli = clara::Help(help) | clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information") |
                    clara::Opt(timer, "timer")["--timer"]("Display the execution runtime.") |
-                   clara::Opt(version)["--version"]("Display the version of mlocate.") |
+                   clara::Opt(version)["--version"]("Display the version of fast-locate.") |
                    clara::Opt(ignore_case)["-i"]["--ignore-case"]("Ignore case.") |
                    clara::Opt(invert_match)["-u"]["--invert-match"]("Display lines that do not match given pattern.") |
                    clara::Opt(regex_match)["-r"]["--regex"]("Use regular expression matching algorithm") |
@@ -89,7 +89,7 @@ namespace {
         }
 
         if (params.databases.empty()) {
-            auto default_db = std::getenv("MLOCATE_DB");
+            auto default_db = std::getenv("FAST-LOCATE_DB");
             if (default_db == nullptr) {
                 params.databases.emplace_back(".database");
             } else {
@@ -98,9 +98,9 @@ namespace {
         }
 
         // If user does not specify prefix then fallback to the
-        // MLOCATE_PREFIX environment variable.
+        // FAST-LOCATE_PREFIX environment variable.
         if (params.prefix.empty()) {
-            auto const default_prefix = std::getenv("MLOCATE_PREFIX");
+            auto const default_prefix = std::getenv("FAST-LOCATE_PREFIX");
             if (default_prefix != nullptr) {
                 params.prefix = std::string(default_prefix);
             }
