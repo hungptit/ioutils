@@ -10,7 +10,7 @@ ioutils is a small and very fast file system library for Linux and Unix environm
 
 * A small set of high performance file related functions and classes.
 
-* The fast-find command line utility is faster than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands. Our performance benchmark shows that fast-find is 2x faster than both [GNU find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd).
+* The fast-find command line utility is faster than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands. Our performance benchmark shows that fast-find can be 2x faster than both [GNU find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd).
 
 * The fast-locate command is 10x faster than [GNU locate](https://www.gnu.org/software/findutils/) command.
 
