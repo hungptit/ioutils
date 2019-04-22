@@ -181,8 +181,7 @@ namespace ioutils {
                         default:
                             // TODO: Need a clean way to handle this situation.
                             // https://stackoverflow.com/questions/47078417/readdir-returning-dirent-with-d-type-dt-unknown-for-directories-and
-                            fmt::print(stderr, "Unrecognized path type: {}/{}, type: {:x}\n", dir.path,
-                                       info->d_name, info->d_type);
+							Policy::process_file(dir);
                             break;
                         }
                     }
@@ -207,7 +206,7 @@ namespace ioutils {
                 // TODO: Need a clean way to handle this situation.
                 // Reference:
                 // https://stackoverflow.com/questions/47078417/readdir-returning-dirent-with-d-type-dt-unknown-for-directories-and
-                fmt::print(stderr, "Unrecognized path type: {:x}\n", mode);
+				Policy::process_file(dir);
             }
         }
 
