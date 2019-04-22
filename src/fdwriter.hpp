@@ -6,6 +6,7 @@
 #include <sys/errno.h>
 #include <unistd.h>
 #include <cassert>
+#include "warnings.hpp"
 
 namespace ioutils {
     class StreamWriter {
@@ -79,6 +80,7 @@ namespace ioutils {
             if (errcode) {
                 std::string errmsg(strerror(errcode));
                 long nbytes = ::write(STDERR, errmsg.data(), errmsg.size());
+                ignore(nbytes);
                 assert(nbytes == errmsg.size());
             }
         }
