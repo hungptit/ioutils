@@ -55,7 +55,6 @@ namespace ioutils {
                 unvisited_paths.clear();
                 if (!current_paths.empty()) {
                     for (auto p : current_paths) {
-                        fmt::print(stderr, "{}\n", p);
                         dfs(p);
                     }
                 }
