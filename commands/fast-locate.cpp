@@ -1,8 +1,8 @@
-#include "locate.hpp"
 #include "clara.hpp"
 #include "filesystem.hpp"
 #include "fmt/format.h"
 #include "ioutils.hpp"
+#include "locate.hpp"
 #include "utils/matchers.hpp"
 #include "utils/regex_matchers.hpp"
 #include <string>
@@ -35,7 +35,7 @@ namespace {
         bool invert_match() const { return (flags & INVERT_MATCH) > 0; }
         bool exact_match() const { return (flags & EXACT_MATCH) > 0; }
         bool ignore_case() const { return (flags & IGNORE_CASE) > 0; }
-        
+
         void print() const {
             fmt::print("verbose: {}\n", verbose());
             fmt::print("info: {}\n", info());
@@ -62,16 +62,18 @@ namespace {
         bool regex_match = false;
         bool timer = false;
 
-        auto cli = clara::Help(help) | clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information") |
-                   clara::Opt(timer, "timer")["--timer"]("Display the execution runtime.") |
-                   clara::Opt(version)["--version"]("Display the version of fast-locate.") |
-                   clara::Opt(ignore_case)["-i"]["--ignore-case"]("Ignore case.") |
-                   clara::Opt(invert_match)["-u"]["--invert-match"]("Display lines that do not match given pattern.") |
-                   clara::Opt(regex_match)["-r"]["--regex"]("Use regular expression matching algorithm") |
-                   clara::Opt(exact_match)["-x"]["--exact-match"]("Use exact match algorithm") |
-                   clara::Opt(params.prefix, "prefix")["--prefix"]("Path prefix.") |
-                   clara::Opt(params.databases, "database")["-d"]["--database"]("The file information database.") |
-                   clara::Arg(params.pattern, "pattern")("Search pattern");
+        auto cli =
+            clara::Help(help) | clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information") |
+            clara::Opt(timer, "timer")["--timer"]("Display the execution runtime.") |
+            clara::Opt(version)["--version"]("Display the version of fast-locate.") |
+            clara::Opt(ignore_case)["-i"]["--ignore-case"]("Ignore case.") |
+            clara::Opt(invert_match)["-u"]["--invert-match"](
+                "Display lines that do not match given pattern.") |
+            clara::Opt(regex_match)["-r"]["--regex"]("Use regular expression matching algorithm") |
+            clara::Opt(exact_match)["-x"]["--exact-match"]("Use exact match algorithm") |
+            clara::Opt(params.prefix, "prefix")["--prefix"]("Path prefix.") |
+            clara::Opt(params.databases, "database")["-d"]["--database"]("The file information database.") |
+            clara::Arg(params.pattern, "pattern")("Search pattern");
 
         auto result = cli.parse(clara::Args(argc, argv));
         if (!result) {
@@ -89,7 +91,7 @@ namespace {
         }
 
         if (params.databases.empty()) {
-            auto default_db = std::getenv("FAST-LOCATE_DB");
+            auto default_db = std::getenv("FAST_LOCATE_DB");
             if (default_db == nullptr) {
                 params.databases.emplace_back(".database");
             } else {
@@ -110,8 +112,9 @@ namespace {
         exact_match = regex_match ? !regex_match : exact_match;
         params.flags = verbose * VERBOSE | invert_match * INVERT_MATCH | exact_match * EXACT_MATCH |
                        ignore_case * IGNORE_CASE;
-        params.regex_mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH) | (params.ignore_case() ? HS_FLAG_CASELESS : 0);
-        
+        params.regex_mode =
+            (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH) | (params.ignore_case() ? HS_FLAG_CASELESS : 0);
+
         // Display input arguments in JSON format if verbose flag is on
         if (params.verbose()) {
             params.print();

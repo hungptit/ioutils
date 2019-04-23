@@ -71,7 +71,8 @@ namespace ioutils {
         void dfs(const std::string &p) {
             int fd = ::open(p.data(), O_RDONLY);
             if (fd > -1) {
-                next.emplace_back(Path{fd, p});
+                std::string buffer = p != "/" ? p : "";
+                next.emplace_back(Path{fd, buffer});
             } else {
                 fmt::print(stderr, "Cannot access '{}'\n", p);
             }
@@ -90,7 +91,8 @@ namespace ioutils {
         void bfs(const std::string &p) {
             int fd = ::open(p.data(), O_RDONLY);
             if (fd > -1) {
-                current.emplace_back(Path{fd, p});
+                std::string buffer = p != "/" ? p : "";
+                current.emplace_back(Path{fd, buffer});
             } else {
                 fmt::print(stderr, "Cannot access '{}'\n", p);
             }

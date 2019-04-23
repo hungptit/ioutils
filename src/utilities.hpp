@@ -8,13 +8,21 @@
 
 namespace ioutils {
     void remove_trailing_slash(std::string &s) {
+        if (s.empty()) return; // Return early for an empty input.
         constexpr char SLASH = '/';
+        bool has_slash = false;
         while (!s.empty()) {
             if (s.back() == SLASH) {
                 s.pop_back();
+                has_slash = true;
             } else {
                 break;
             }
+        }
+
+        // Make sure that a given path has only one slash at the end.
+        if (s.empty()) {
+            s.push_back(SLASH);
         }
     }
 
@@ -33,7 +41,7 @@ namespace ioutils {
            Situations that we need to handle:
            1. A given path is valid and do not have any slash.
            2. A given path is valid and do have slash.
-           3. A given path is 
+           3. A given path is
         **/
         auto decompose(const char *begin, const char *end) {
             constexpr char FWD_SLASH = '/';
@@ -60,8 +68,6 @@ namespace ioutils {
             if (end > pos) {
                 pattern.append(pos, end - pos);
             }
-            
-
 
             return std::tie(current_path, pattern);
         }
