@@ -45,9 +45,6 @@ namespace ioutils {
 
             void process_file(const Path &parent, const char *stem) {
                 if (ignore_file) return;
-                if (color) {
-                    writer.write(FILE_COLOR.data(), FILE_COLOR.size());
-                }
                 writer.write(parent.path.data(), parent.path.size());
                 writer.sep();
                 writer.write(stem, strlen(stem));
@@ -57,9 +54,6 @@ namespace ioutils {
 
             void process_file(const Path &parent) {
                 if (ignore_file) return;
-                if (color) {
-                    writer.write(FILE_COLOR.data(), FILE_COLOR.size());
-                }
                 writer.write(parent.path.data(), parent.path.size());
                 writer.eol();
                 ++number_of_files;
@@ -217,9 +211,6 @@ namespace ioutils {
                 if (ignore_file) return;
                 buffer = parent.path + "/" + stem;
                 if (matcher.is_matched(buffer.data(), buffer.size())) {
-                    if (color) {
-                        writer.write(FILE_COLOR.data(), FILE_COLOR.size());
-                    }
                     writer.write(buffer.data(), buffer.size());
                     writer.eol();
                 }
@@ -228,9 +219,6 @@ namespace ioutils {
             void process_file(const Path &parent) {
                 if (ignore_file) return;
                 if (matcher.is_matched(parent.path.data(), parent.path.size())) {
-                    if (color) {
-                        writer.write(FILE_COLOR.data(), FILE_COLOR.size());
-                    }
                     writer.write(parent.path.data(), parent.path.size());
                     writer.eol();
                 }
