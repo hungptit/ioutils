@@ -340,6 +340,7 @@ Complete.
 
 **Analysis**
 
-It is obvious that fast-locate is 10x faster than GNU locate command the differences come from below factors:
-1. fast-locate can read the file information database from the database faster.
+It is obvious that fast-locate is 10x faster than GNU locate command and the differences come from below factors:
+1. fast-locate can quickly read the file information database from the database faster.
 2. fast-locate regular expression matching algorithm is much faster that that that of GNU locate.
+3. fast-locate source code is heavily templatized and many logics or code paths have been dispatched at compile time.
