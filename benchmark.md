@@ -7,7 +7,7 @@
 
 Notes:
 * All automated performance benchmark results are collected on a SSD drive with a warm up cache.
-* I tried to select the regular expression based on my normal usage pattern so it is definitely biased.
+* The regular expression is selected using my normal usage pattern so it is definitely biased.
 * Both GNU find and fast-find are single thread so the CPU clock does not jump during the test, however, fd does push all CPU cores to their limits.
 
 # Finding files and folders #
