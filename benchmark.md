@@ -18,7 +18,7 @@ Notes:
 
 #### Find all files ####
 
-This performance benchmark will measure the performance of all commands by finding all valid files and folders in my Macbook Pro using **time** command.
+This performance benchmark will measure the performance of all commands by finding all valid files and folders in my Macbook Pro.
 
 **GNU find**
 
