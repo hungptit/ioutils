@@ -5,7 +5,148 @@
 * Hard drive: Fast SSD drive.
 * OS: Darwin Kernel Version 18.2.0
 
+Notes:
+* All automated performance benchmark results are collected on a SSD drive with a warm up cache.
+* I tried to select the regular expression based on my normal usage pattern so it is definitely biased.
+* Both GNU find and fast-find are single thread so the CPU clock does not jump during the test, however, fd does push all CPU cores to their limits.
+
 # Finding files and folders #
+
+## Big folders ##
+
+### Manual tests ###
+
+#### Find all files ####
+
+This performance benchmark will measure the performance of all commands by finding all valid files and folders in my Macbook Pro using **time** command.
+
+**GNU find**
+
+``` shell
+/usr/bin/time -l find / > 2.log
+       57.03 real         2.47 user        35.21 sys
+  14012416  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+      3796  page reclaims
+         1  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+    175401  voluntary context switches
+      8391  involuntary context switches
+```
+
+**fd**
+
+``` shell
+ATH020224:ioutils hdang$ /usr/bin/time -l fd . -H --no-ignore / > 3.log
+       19.08 real        12.35 user        62.09 sys
+ 291508224  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+     73009  page reclaims
+       244  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+    166536  voluntary context switches
+    770471  involuntary context switches
+```
+
+**fast-find**
+
+``` shell
+/usr/bin/time -l fast-find --donot-ignore-git / > 1.log
+       24.96 real         1.62 user        13.39 sys
+   1843200  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+       426  page reclaims
+        77  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+     93079  voluntary context switches
+      4006  involuntary context switches
+```
+
+**Analysis**
+
+* Both GNU find and fast-find output more paths than fd.
+* fd is the fastest command in this performance benchmark. It is 30% faster than fast-find, however, fd uses 4x more CPU resources and 150x more memory than that of fast-find.
+* GNU find is 2x slower than fast-find and it is also 3x slower than fd.
+
+#### Find files using given regular expression ####
+
+**fd**
+
+``` shell
+ATH020224:ioutils hdang$ /usr/bin/time -lp fd "zstd/.*doc/README[.]md$" /
+real        20.86
+user        15.27
+sys         91.64
+ 253153280  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+     61827  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+    163825  voluntary context switches
+   1745591  involuntary context switches
+```
+
+**fast-find**
+
+``` shell
+ATH020224:ioutils hdang$ /usr/bin/time -lp fast-find / -e "zstd/.*doc/README[.]md$"
+fast-find: '/.Spotlight-V100': Operation not permitted
+...
+fast-find: '/usr/sbin/authserver': Permission denied
+/Users/hdang/working/backup/projects/projects/others/coverage/3p/zstd/doc/README.md
+/Users/hdang/working/zstd/doc/README.md
+/Users/hdang/working/contribs/zstd/doc/README.md
+/Users/hdang/working/3p/src/zstd/doc/README.md
+real        25.57
+user         2.11
+sys         12.75
+   3948544  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+      1009  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+    100598  voluntary context switches
+      3319  involuntary context switches
+```
+
+**Analysis**
+
+* The performance gap between fd and fast-find is decreased to 23%, however, fd cannot find any matched file even though fast-find have found 4 matched files.
 
 ## Small folder i.e boost libraries source code with more than 50K files and folders ##
 
@@ -17,14 +158,14 @@
 MacOS:commands hdang$ find ../../3p/src/boost/ | wc
    59458   59461 4019016
 MacOS:benchmark hdang$ fd . ../../3p/src/boost/ -H --no-ignore | wc
-   59457   59460 3959539   
+   59457   59460 3959539
 MacOS:commands hdang$ fast-find --donot-ignore-git ../../3p/src/boost/ | wc
    59457   59460 3959539
 ```
 
 **Analysis**
 
-* All three commands produce the same output. Note that the output of GNU find is off by one because it includes a given search path. 
+* All three commands produce the same output. Note that the output of GNU find is off by one because it includes a given search path.
 * The output of fast-find and fd are identical.
 
 ### Manual tests ###
@@ -300,7 +441,7 @@ sys          0.02
 
 **Analysis**
 
-* fast-locate is 30x faster than GNU locate in tests that try to locate files in my Macbook Pro machine. 
+* fast-locate is 30x faster than GNU locate in tests that try to locate files in my Macbook Pro machine.
 * The memory used by fast-locate is about 3x more than that of GNU locate. It is expected because fast-locate is compiled using heavily templatized code.
 
 ### Automated benchmark results using Celero ###
