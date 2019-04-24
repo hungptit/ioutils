@@ -6,6 +6,7 @@
 #include "utils/matchers.hpp"
 #include "utils/regex_matchers.hpp"
 #include <string>
+#include "utils/memchr.hpp"
 
 namespace {
     void copyright() {

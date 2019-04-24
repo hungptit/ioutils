@@ -3,10 +3,10 @@
 #include "fdwriter.hpp"
 #include "filesystem.hpp"
 #include "search.hpp"
+#include "utils/memchr.hpp"
 #include <fcntl.h>
 #include <string>
 #include <unistd.h>
-
 namespace ioutils {
     namespace locate {
         /**
@@ -67,7 +67,11 @@ namespace ioutils {
             const char *start = begin;
             const char *end = begin + len;
             const char *ptr = begin;
+#ifdef USE_AVX2
+            while ((ptr = utils::avx2::memchr(ptr, EOL, end - ptr))) {
+#elif
             while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
+#endif
                 if (linebuf.empty()) {
                     process_line(start, ptr - start + 1);
                 } else {
@@ -131,6 +135,5 @@ namespace ioutils {
       private:
         std::string prefix;
         StreamWriter console;
-        // void process_line(const char *begin, const size_t len) { console.write(begin, len); }
     };
 } // namespace ioutils
