@@ -62,6 +62,27 @@ ATH020224:ioutils hdang$ /usr/bin/time -l fd . -H --no-ignore / > 3.log
     770471  involuntary context switches
 ```
 
+**fd with one thread**
+
+``` shell
+ATH020224:ioutils hdang$ /usr/bin/time -l fd . -H --no-ignore / -j1 > 3.log
+       36.66 real         8.42 user        28.17 sys
+ 180875264  maximum resident set size
+         0  average shared memory size
+         0  average unshared data size
+         0  average unshared stack size
+     45311  page reclaims
+         0  page faults
+         0  swaps
+         0  block input operations
+         0  block output operations
+         0  messages sent
+         0  messages received
+         0  signals received
+    107988  voluntary context switches
+    227620  involuntary context switches
+```
+
 **fast-find**
 
 ``` shell
@@ -87,6 +108,7 @@ ATH020224:ioutils hdang$ /usr/bin/time -l fd . -H --no-ignore / > 3.log
 
 * Both GNU find and fast-find output more paths than fd.
 * fd is the fastest command in this performance benchmark. It is 30% faster than fast-find, however, fd uses 4x more CPU resources and 150x more memory than that of fast-find.
+* If we use fd with only one thread then it is 46% slower than fast-find and uses 150x more memory.
 * GNU find is 2x slower than fast-find and it is also 3x slower than fd.
 
 #### Find files using given regular expression ####
