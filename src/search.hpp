@@ -74,7 +74,7 @@ namespace ioutils {
                 std::string buffer = p != "/" ? p : "";
                 next.emplace_back(Path{fd, buffer});
             } else {
-                fmt::print(stderr, "Cannot access '{}'\n", p);
+                fmt::print(stderr, "fast-find: '{}': {}.\n", p, strerror(errno));
             }
 
             // Search for files and folders using DFS traversal.
@@ -94,7 +94,7 @@ namespace ioutils {
                 std::string buffer = p != "/" ? p : "";
                 current.emplace_back(Path{fd, buffer});
             } else {
-                fmt::print(stderr, "Cannot access '{}'\n", p);
+                fmt::print(stderr, "fast-find: '{}': {}.\n", p, strerror(errno));
             }
 
             // Search for files and folders using BFS traversal.
@@ -117,7 +117,7 @@ namespace ioutils {
             struct stat props;
             int retval = fstat(dir.fd, &props);
             if (retval < 0) {
-                fmt::print(stderr, "Cannot get file information: \"{}\". {}.\n", dir.path, strerror(errno));
+                fmt::print(stderr, "fast-find: '{}': {}.\n", dir.path, strerror(errno));
                 ::close(dir.fd);
                 return;
             }
@@ -147,7 +147,7 @@ namespace ioutils {
                                          */
                                         unvisited_paths.emplace_back(p);
                                     } else {
-                                        fmt::print(stderr, "{}. Cannot open: \"{}\"\n", strerror(errno), p);
+                                        fmt::print(stderr, "fast-find: '{}': {}\n", p, strerror(errno));
                                     }
                                 }
                             }
@@ -183,7 +183,7 @@ namespace ioutils {
                         default:
                             // TODO: Need a clean way to handle this situation.
                             // https://stackoverflow.com/questions/47078417/readdir-returning-dirent-with-d-type-dt-unknown-for-directories-and
-							Policy::process_file(dir);
+                            Policy::process_file(dir);
                             break;
                         }
                     }
@@ -202,13 +202,13 @@ namespace ioutils {
                 Policy::process_blk(dir);
             } else if (mode == S_IFSOCK) { // Socket special
                 Policy::process_socket(dir);
-            // } else if (mode == S_IFWHT) { // Whiteout is not supported in Linux/ext4
-            //     Policy::process_whiteout(dir);
+                // } else if (mode == S_IFWHT) { // Whiteout is not supported in Linux/ext4
+                //     Policy::process_whiteout(dir);
             } else {
                 // TODO: Need a clean way to handle this situation.
                 // Reference:
                 // https://stackoverflow.com/questions/47078417/readdir-returning-dirent-with-d-type-dt-unknown-for-directories-and
-				Policy::process_file(dir);
+                Policy::process_file(dir);
             }
         }
 

@@ -25,10 +25,19 @@ const std::string pattern1{"zstd/.*doc/README[.]md$"};
 CELERO_MAIN
 
 // Find all files in the boost source code
-BASELINE(regex, gnu_locate, number_of_samples, number_of_operations) {
-    test("glocate -d locate.db --regex ", pattern1);
+BASELINE(mid, gnu_locate, number_of_samples, number_of_operations) {
+    test("glocate -d locate_db_mid --regex ", pattern1);
 }
 
-BENCHMARK(regex, fast_locate, number_of_samples, number_of_operations) {
-    test("../commands/fast-locate -d .database ", pattern1);
+BENCHMARK(mid, fast_locate, number_of_samples, number_of_operations) {
+    test("../commands/fast-locate -d .database_mid ", pattern1);
+}
+
+// Find all files in the boost source code
+BASELINE(big, gnu_locate, number_of_samples, number_of_operations) {
+    test("glocate -d locate_db_big --regex ", pattern1);
+}
+
+BENCHMARK(big, fast_locate, number_of_samples, number_of_operations) {
+    test("../commands/fast-locate -d .database_big ", pattern1);
 }
