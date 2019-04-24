@@ -103,11 +103,10 @@ sys          0.32
 
 **Analysis**
 
-* Both GNU find and fast-find use the similar amound of memory, however, fd uses 7x more memory than both GNU find and fast-find.
+* Both GNU find and fast-find use the similar amount of memory, however, fd uses 7x more memory than both GNU find and fast-find.
 * fast-find is 3x faster than GNU find and 10% faster than fd in our manual tests.
 * fast-find uses less system resources than GNU find i.e 3x.
 * fd use 6x more system resource than that of fast-find.
-
 
 ### Search for all files ###
 
