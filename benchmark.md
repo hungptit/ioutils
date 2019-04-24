@@ -1,3 +1,10 @@
+# Test environments #
+
+* CPU: Core I7 2200 MHz
+* Memory: 16 GB
+* Hard drive: Fast SSD drive.
+* OS: Darwin Kernel Version 18.2.0
+
 # Finding files and folders #
 
 ## Small folder i.e boost libraries source code with more than 50K files and folders ##
@@ -7,17 +14,17 @@
 **Results**
 
 ``` shell
-ATH020224:commands hdang$ find ../../3p/src/boost/ | wc
+MacOS:commands hdang$ find ../../3p/src/boost/ | wc
    59458   59461 4019016
-ATH020224:benchmark hdang$ fd . ../../3p/src/boost/ -H --no-ignore | wc
+MacOS:benchmark hdang$ fd . ../../3p/src/boost/ -H --no-ignore | wc
    59457   59460 3959539   
-ATH020224:commands hdang$ fast-find --donot-ignore-git ../../3p/src/boost/ | wc
+MacOS:commands hdang$ fast-find --donot-ignore-git ../../3p/src/boost/ | wc
    59457   59460 3959539
 ```
 
 **Analysis**
 
-* All three commands produce the same output. Note that the output of GNU find is off by one because it includes the search path at the output. 
+* All three commands produce the same output. Note that the output of GNU find is off by one because it includes a given search path. 
 * The output of fast-find and fd are identical.
 
 ### Manual tests ###
@@ -25,7 +32,7 @@ ATH020224:commands hdang$ fast-find --donot-ignore-git ../../3p/src/boost/ | wc
 **GNU find**
 
 ``` shell
-ATH020224:benchmark hdang$ /usr/bin/time -lp find ../../3p/src/boost/ | wc
+MacOS:benchmark hdang$ /usr/bin/time -lp find ../../3p/src/boost/ | wc
 real         1.18
 user         0.07
 sys          0.92
@@ -49,7 +56,7 @@ sys          0.92
 **fd**
 
 ``` shell
-ATH020224:benchmark hdang$ /usr/bin/time -lp fd . ../../3p/src/boost/ -H --no-ignore | wc
+MacOS:benchmark hdang$ /usr/bin/time -lp fd . ../../3p/src/boost/ -H --no-ignore | wc
 real         0.43
 user         0.44
 sys          2.20
@@ -73,7 +80,7 @@ sys          2.20
 **faast-find**
 
 ``` shell
-ATH020224:benchmark hdang$ /usr/bin/time -lp fast-find --donot-ignore-git ../../3p/src/boost/ | wc
+MacOS:benchmark hdang$ /usr/bin/time -lp fast-find --donot-ignore-git ../../3p/src/boost/ | wc
 real         0.38
 user         0.05
 sys          0.32
@@ -107,7 +114,7 @@ sys          0.32
 **Benchmark results**
 
 ``` shell
-ATH020224:benchmark hdang$ ./fast-find -g all
+MacOS:benchmark hdang$ ./fast-find -g all
 Celero
 Timer resolution: 0.001000 us
 -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -130,7 +137,7 @@ Complete.
 **Benchmark results**
 
 ``` shell
-ATH020224:benchmark hdang$ ./fast-find -g ignore_git
+MacOS:benchmark hdang$ ./fast-find -g ignore_git
 Celero
 Timer resolution: 0.001000 us
 -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -153,7 +160,7 @@ Complete.
 **Benchmark results**
 
 ``` shell
-ATH020224:benchmark hdang$ ./fast-find -g regex
+MacOS:benchmark hdang$ ./fast-find -g regex
 Celero
 Timer resolution: 0.001000 us
 -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -184,7 +191,7 @@ From the output of the time command we can easily see that fast-update is about 
 **fast-updatedb**
 
 ``` shell
-ATH020224:benchmark hdang$ time fast-updatedb / -d .all
+MacOS:benchmark hdang$ time fast-updatedb / -d .all
 fast-find: '/.Spotlight-V100': Operation not permitted
 ...
 
@@ -196,7 +203,7 @@ sys     0m13.225s
 **GNU updatedb**
 
 ``` shell
-ATH020224:benchmark hdang$ time gupdatedb --localpaths="/" --output=all.db
+MacOS:benchmark hdang$ time gupdatedb --localpaths="/" --output=all.db
 /usr/local/Cellar/findutils/4.6.0/bin/gfind: '/usr/sbin/authserver': Permission denied
 /usr/local/Cellar/findutils/4.6.0/bin/gfind: '/.Spotlight-V100': Operation not permitted
 ...
@@ -211,13 +218,13 @@ sys     1m0.713s
 A simple analysis show that fast-updatedb store more paths than GNU updatedb and we can easily see that if fast-locate is 2.5x faster than GNU locate if we want to show all paths stored in the indexed databases.
 
 ``` shell
-ATH020224:benchmark hdang$ time glocate -d all.db . | wc
+MacOS:benchmark hdang$ time glocate -d all.db . | wc
  1548086 2129057 154803280
 
 real    0m1.479s
 user    0m1.973s
 sys     0m0.102s
-ATH020224:benchmark hdang$ time fast-locate -d .all | wc
+MacOS:benchmark hdang$ time fast-locate -d .all | wc
  1725875 2399258 168627045
 
 real    0m0.593s
@@ -230,9 +237,9 @@ Now let pipe outputs to files and figure out the differences bettween these two 
 ``` shell
 glocate -d all.db . | sort -s > 2.log
 fast-locate -d .all | sort -s > 1.log
-ATH020224:benchmark hdang$ diff 1.log 2.log | grep '<' | wc
+MacOS:benchmark hdang$ diff 1.log 2.log | grep '<' | wc
   177831  448078 14183329
-ATH020224:benchmark hdang$ diff 1.log 2.log | grep '>' | wc
+MacOS:benchmark hdang$ diff 1.log 2.log | grep '>' | wc
       42      88    3986
 ```
 
@@ -246,7 +253,7 @@ Below are the observations:
 ### Manual benchmark ###
 
 ``` shell
-ATH020224:benchmark hdang$ /usr/bin/time -lp fast-locate -d .database_big 'zstd/.*doc/README[.]md$'
+MacOS:benchmark hdang$ /usr/bin/time -lp fast-locate -d .database_big 'zstd/.*doc/README[.]md$'
 /Users/hdang/working/backup/projects/projects/others/coverage/3p/zstd/doc/README.md
 /Users/hdang/working/zstd/doc/README.md
 /Users/hdang/working/contribs/zstd/doc/README.md
@@ -268,7 +275,7 @@ sys          0.03
          0  signals received
          2  voluntary context switches
          7  involuntary context switches
-ATH020224:benchmark hdang$ /usr/bin/time -lp glocate -d locate_db_big --regex 'zstd/.*doc/README[.]md$'
+MacOS:benchmark hdang$ /usr/bin/time -lp glocate -d locate_db_big --regex 'zstd/.*doc/README[.]md$'
 /Users/hdang/working/3p/src/zstd/doc/README.md
 /Users/hdang/working/backup/projects/projects/others/coverage/3p/zstd/doc/README.md
 /Users/hdang/working/contribs/zstd/doc/README.md
