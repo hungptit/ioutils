@@ -10,11 +10,9 @@ namespace ioutils {
     void remove_trailing_slash(std::string &s) {
         if (s.empty()) return; // Return early for an empty input.
         constexpr char SLASH = '/';
-        bool has_slash = false;
         while (!s.empty()) {
             if (s.back() == SLASH) {
                 s.pop_back();
-                has_slash = true;
             } else {
                 break;
             }
