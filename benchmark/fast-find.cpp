@@ -80,7 +80,7 @@ BASELINE(regex, find, number_of_samples, number_of_operations) {
 }
 
 BENCHMARK(regex, fd, number_of_samples, number_of_operations) {
-    test_fd_regex("fd ", pattern1, " ../../3p/src/boost");
+    test_fd_regex("fd --full-path ", pattern1, " ../../3p/src/boost");
 }
 
 BENCHMARK(regex, fast_find, number_of_samples, number_of_operations) {
