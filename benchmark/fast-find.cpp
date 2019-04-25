@@ -57,7 +57,7 @@ BENCHMARK(all, fast_find_bfs, number_of_samples, number_of_operations) {
 }
 
 // Find all files and ignore .git folder
-BASELINE(ignore_git, gnu_find, number_of_samples, number_of_operations) {
+BASELINE(ignore_git, find, number_of_samples, number_of_operations) {
     test("gfind ", "../../3p/src/boost");
 }
 

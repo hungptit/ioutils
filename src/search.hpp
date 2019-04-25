@@ -24,6 +24,7 @@ namespace ioutils {
         template <typename T>
         FileSearch(T &&params)
             : Policy(std::forward<T>(params)),
+              current_path(),
               current(),
               next(),
               use_dfs(params.dfs()),
@@ -46,7 +47,6 @@ namespace ioutils {
             // If we cannot visit some folders because of too many open file
             // problem then revisit them ntries times. This workaround may not
             // fix all potential issues with this type of problem.
-            // TODO: Figure out why fast-find miss files in this folder $P4_HOME/prod/local/5.16/.
             constexpr int ntries = 3;
             for (int idx = 0; idx < ntries; ++idx) {
                 if (unvisited_paths.empty()) break;
@@ -133,21 +133,21 @@ namespace ioutils {
                             const bool is_valid_dir = filesystem::is_valid_dir(info->d_name) &&
                                                       Policy::is_valid_dir(info->d_name);
                             if (is_valid_dir) {
-                                std::string p(dir.path + "/" + info->d_name);
-                                Policy::process_dir(p);
-                                int current_dir_fd = ::open(p.data(), O_RDONLY);
+                                current_path = dir.path + "/" + info->d_name;
+                                Policy::process_dir(current_path);
+                                int current_dir_fd = ::openat(dir.fd, info->d_name, O_RDONLY);
                                 if (current_dir_fd >= 0) {
-                                    next.emplace_back(Path{current_dir_fd, p});
+                                    next.emplace_back(Path{current_dir_fd, current_path});
                                 } else {
                                     if (errno == EMFILE) {
                                         /**
-                                         * We we hit too many files open issue
-                                         * then cache the unvisited path then do
-                                         * it later.
+                                         * We might experience too many files open issue for a large folder
+                                         * hierarchy. If we do then cache all unvisited paths and re-traverse
+                                         * them later.
                                          */
-                                        unvisited_paths.emplace_back(p);
+                                        unvisited_paths.emplace_back(current_path);
                                     } else {
-                                        fmt::print(stderr, "fast-find: '{}': {}\n", p, strerror(errno));
+                                        fmt::print(stderr, "fast-find: '{}': {}\n", current_path, strerror(errno));
                                     }
                                 }
                             }
@@ -212,6 +212,7 @@ namespace ioutils {
             }
         }
 
+        std::string current_path;
         std::vector<Path> current;
         std::vector<Path> next;
         bool use_dfs;
