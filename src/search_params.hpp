@@ -28,12 +28,15 @@ namespace ioutils {
         struct Params {
             static constexpr int EXPLORE_ALL = -1;
             Params()
-                : flags(0), regex_mode(HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH), level(EXPLORE_ALL), regex(),
+                : flags(0),
+                  regex_mode(HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH),
+                  level(EXPLORE_ALL),
+                  regex(),
                   paths() {}
 
             int flags;
             int regex_mode;
-            int level;
+            int level = -1;
             std::string regex;
             std::vector<std::string> paths;
 
@@ -148,9 +151,9 @@ namespace ioutils {
                 clara::Opt(bfs)["--bfs"]("Use BFS for traversing. Note that BFS algorithm does not work "
                                          "well for large folders.") |
                 clara::Opt(params.regex, "path-regex")["-e"]["--path-regex"]("Search pattern.") |
+                clara::Opt(params.level, "level")["--level"]("The search depth.") |
 
                 // Unsupported options
-                clara::Opt(params.level, "level")["--level"]("The search depth.") |
                 clara::Opt(follow_link, "follow-link")["--follow-link"]("Follow symbolic links. (WIP)") |
                 clara::Opt(begin_time, "newer")["--newer"](
                     "Display paths that are newer than a given timestamp. (WIP)") |
@@ -189,8 +192,15 @@ namespace ioutils {
             // Init the mode for our regular expression engine.
             params.regex_mode = HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH | (ignore_case ? HS_FLAG_CASELESS : 0);
 
+            // Use BFS if if users want to specify the level of exploration.
+            if (params.level > -1) {
+                bfs = true;
+            }
+
+            // Select the file traversal algorithm
+            dfs = !bfs;
+
             // Parse the display type
-            dfs = dfs ? true : !bfs;
             params.flags =
                 ignore_file * PARAMS::IGNORE_FILE | ignore_dir * PARAMS::IGNORE_DIR |
                 ignore_symlink * PARAMS::IGNORE_SYMLINK | color * PARAMS::COLOR |

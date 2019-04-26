@@ -57,7 +57,7 @@ BENCHMARK(all, fast_find_bfs, number_of_samples, number_of_operations) {
 }
 
 // Find all files and ignore .git folder
-BASELINE(ignore_git, gnu_find, number_of_samples, number_of_operations) {
+BASELINE(ignore_git, find, number_of_samples, number_of_operations) {
     test("gfind ", "../../3p/src/boost");
 }
 
@@ -80,7 +80,7 @@ BASELINE(regex, find, number_of_samples, number_of_operations) {
 }
 
 BENCHMARK(regex, fd, number_of_samples, number_of_operations) {
-    test_fd_regex("fd ", pattern1, " ../../3p/src/boost");
+    test_fd_regex("fd --full-path ", pattern1, " ../../3p/src/boost");
 }
 
 BENCHMARK(regex, fast_find, number_of_samples, number_of_operations) {
