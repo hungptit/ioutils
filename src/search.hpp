@@ -142,12 +142,13 @@ namespace ioutils {
                                     if (errno == EMFILE) {
                                         /**
                                          * We might experience too many files open issue for a large folder
-                                         * hierarchy. If we do then cache all unvisited paths and re-traverse
-                                         * them later.
+                                         * hierarchy. If we do then cache all unvisited paths and
+                                         * re-traverse them later.
                                          */
                                         unvisited_paths.emplace_back(current_path);
                                     } else {
-                                        fmt::print(stderr, "fast-find: '{}': {}\n", current_path, strerror(errno));
+                                        fmt::print(stderr, "fast-find: '{}': {}\n", current_path,
+                                                   strerror(errno));
                                     }
                                 }
                             }
