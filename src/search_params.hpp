@@ -22,13 +22,17 @@ namespace ioutils {
             IGNORE_BLK = 1 << 10,       // Ignore block special
             IGNORE_SOCKET = 1 << 11,    // Ignore sockets
             IGNORE_WHITEOUT = 1 << 12,  // Ignore whiteout files
-            DONOT_IGNORE_GIT = 1 << 13, // Ignore git folders.
+            IGNORE_UNKNOWN = 1 << 13,   // Ignore unknown paths
+            DONOT_IGNORE_GIT = 1 << 14, // Ignore git folders.
         };
 
         struct Params {
             static constexpr int EXPLORE_ALL = -1;
             Params()
-                : flags(0), regex_mode(HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH), level(EXPLORE_ALL), regex(),
+                : flags(0),
+                  regex_mode(HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH),
+                  level(EXPLORE_ALL),
+                  regex(),
                   paths() {}
 
             int flags;
@@ -49,6 +53,7 @@ namespace ioutils {
             bool ignore_blk() { return (flags & PARAMS::IGNORE_BLK) > 0; }
             bool ignore_socket() { return (flags & PARAMS::IGNORE_SOCKET) > 0; }
             bool ignore_whiteout() { return (flags & PARAMS::IGNORE_WHITEOUT) > 0; }
+            bool ignore_unknown() { return (flags & PARAMS::IGNORE_UNKNOWN) > 0; }
 
             bool donot_ignore_git() { return (flags & PARAMS::DONOT_IGNORE_GIT) > 0; }
 
@@ -116,6 +121,7 @@ namespace ioutils {
             bool ignore_blk = false;
             bool ignore_socket = false;
             bool ignore_whiteout = false;
+            bool ignore_unknown = false;
             bool donot_ignore_git = false;
 
             bool follow_link = false;
@@ -197,7 +203,8 @@ namespace ioutils {
                 verbose * PARAMS::VERBOSE | inverse_match * PARAMS::INVERT_MATCH | dfs * PARAMS::DFS |
                 ignore_fifo * PARAMS::IGNORE_FIFO | ignore_blk * PARAMS::IGNORE_BLK |
                 ignore_chr * PARAMS::IGNORE_CHR | ignore_socket * PARAMS::IGNORE_SOCKET |
-                ignore_whiteout * PARAMS::IGNORE_WHITEOUT | donot_ignore_git * PARAMS::DONOT_IGNORE_GIT;
+                ignore_whiteout * PARAMS::IGNORE_WHITEOUT | ignore_unknown * PARAMS::IGNORE_UNKNOWN |
+                donot_ignore_git * PARAMS::DONOT_IGNORE_GIT;
 
             // Display input arguments in JSON format if verbose flag is on
             if (params.verbose()) {

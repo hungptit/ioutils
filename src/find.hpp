@@ -29,6 +29,7 @@ namespace ioutils {
                   ignore_blk(params.ignore_blk()),
                   ignore_socket(params.ignore_socket()),
                   ignore_whiteout(params.ignore_whiteout()),
+                  ignore_unknown(params.ignore_unknown()),
                   donot_ignore_git(params.donot_ignore_git()),
                   writer(StreamWriter::STDOUT) {}
 
@@ -139,6 +140,16 @@ namespace ioutils {
                 ++number_of_whiteouts;
             }
 
+            // Process whiteout files
+            void process_unknown(const Path &parent, const char *stem = nullptr) {
+                if (ignore_whiteout) return;
+                if (color) {
+                    writer.write(WHT_COLOR.data(), WHT_COLOR.size());
+                }
+                process_path(parent, stem);
+                ++number_of_whiteouts;
+            }
+
           private:
             bool color;
             bool ignore_dir;
@@ -150,6 +161,8 @@ namespace ioutils {
             bool ignore_blk;
             bool ignore_socket;
             bool ignore_whiteout;
+            bool ignore_unknown;
+            
             bool donot_ignore_git;
 
             StreamWriter writer;
@@ -197,6 +210,7 @@ namespace ioutils {
                   ignore_blk(params.ignore_blk()),
                   ignore_socket(params.ignore_socket()),
                   ignore_whiteout(params.ignore_whiteout()),
+                  ignore_unknown(params.ignore_unknown()),
                   donot_ignore_git(params.donot_ignore_git()),
                   writer(StreamWriter::STDOUT) {
                 buffer.reserve(1023);
@@ -367,6 +381,29 @@ namespace ioutils {
                 writer.eol();
             }
 
+            void process_unknown(const Path &parent, const char *stem) {
+                if (ignore_unknown) return;
+                buffer = parent.path;
+                buffer.push_back(SEP);
+                buffer.append(stem);
+                if (!matcher.is_matched(buffer.data(), buffer.size())) return;
+                if (color) {
+                    writer.write(WHT_COLOR.data(), WHT_COLOR.size());
+                }
+                writer.write(buffer.data(), buffer.size());
+                writer.eol();
+            }
+
+            void process_unknown(const Path &parent) {
+                if (ignore_unknown) return;
+                if (!matcher.is_matched(parent.path.data(), parent.path.size())) return;
+                if (color) {
+                    writer.write(WHT_COLOR.data(), WHT_COLOR.size());
+                }
+                writer.write(parent.path.data(), parent.path.size());
+                writer.eol();
+            }
+
             void process_dir(const std::string &p) {
                 if (!ignore_dir) return;
                 if (matcher.is_matched(p.data(), p.size())) {
@@ -392,6 +429,7 @@ namespace ioutils {
             bool ignore_blk;
             bool ignore_socket;
             bool ignore_whiteout;
+            bool ignore_unknown;
 
             bool donot_ignore_git;
 
