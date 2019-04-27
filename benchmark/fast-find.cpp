@@ -11,6 +11,12 @@
 constexpr int number_of_samples = 10;
 constexpr int number_of_operations = 1;
 
+#ifdef __APPLE__
+const std::string find_cmd = "gfind ";
+#else
+const std::string find_cmd = "find ";
+#endif
+
 int test(const std::string &command, const std::string &path) {
     std::string buffer = command + path + " > /tmp/output.log";
     return system(buffer.data());
@@ -41,7 +47,7 @@ CELERO_MAIN
 
 // Find all files in the boost source code
 BASELINE(all, find, number_of_samples, number_of_operations) {
-    test("find ", "../../3p/src/boost");
+    test(find_cmd, "../../3p/src/boost");
 }
 
 BENCHMARK(all, fd_noignore, number_of_samples, number_of_operations) {
@@ -58,7 +64,7 @@ BENCHMARK(all, fast_find_bfs, number_of_samples, number_of_operations) {
 
 // Find all files and ignore .git folder
 BASELINE(ignore_git, find, number_of_samples, number_of_operations) {
-    test("find ", "../../3p/src/boost");
+    test(find_cmd, "../../3p/src/boost");
 }
 
 BENCHMARK(ignore_git, fd, number_of_samples, number_of_operations) {
@@ -76,7 +82,7 @@ BENCHMARK(ignore_git, fast_find_bfs, number_of_samples, number_of_operations) {
 
 // Find all files using a regex that does not match any results
 BASELINE(regex, find, number_of_samples, number_of_operations) {
-    test_find_regex("find ", pattern1, " ../../3p/src/boost");
+    test_find_regex(find_cmd, pattern1, " ../../3p/src/boost");
 }
 
 BENCHMARK(regex, fd, number_of_samples, number_of_operations) {

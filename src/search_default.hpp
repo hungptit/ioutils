@@ -30,6 +30,7 @@ namespace ioutils {
                   use_dfs(params.dfs()),
                   follow_link(params.follow_symlink()),
                   donot_ignore_git(params.donot_ignore_git()),
+                  ignore_error(params.ignore_error()),
                   level(params.level) {
                 current.reserve(512);
                 next.reserve(512);
@@ -82,12 +83,13 @@ namespace ioutils {
                 struct stat props;
                 int fd = ::open(dir.path.data(), O_RDONLY);
                 if (fd < 0) {
-                    fmt::print(stderr, "fast-find: Cannot open '{}': {}.\n", dir.path, strerror(errno));
+                    if (!ignore_error) fmt::print(stderr, "fast-find: Cannot open '{}': {}.\n", dir.path, strerror(errno));
+                    return;
                 }
 
                 int retval = fstat(fd, &props);
                 if (retval < 0) {
-                    fmt::print(stderr, "fast-find: '{}': {}.\n", dir.path, strerror(errno));
+                    if (!ignore_error) fmt::print(stderr, "fast-find: '{}': {}.\n", dir.path, strerror(errno));
                     ::close(fd);
                     return;
                 }
@@ -104,7 +106,12 @@ namespace ioutils {
                                 const bool is_valid_dir =
                                     filesystem::is_valid_dir(info->d_name) && Policy::is_valid_dir(info->d_name);
                                 if (is_valid_dir) {
-                                    std::string p(dir.path + "/" + info->d_name);
+                                    std::string p;
+                                    if (dir.path != "/") {
+                                        p.append(dir.path);
+                                    }
+                                    p.push_back('/');
+                                    p.append(info->d_name);
                                     Policy::process_dir(p);
                                     next.emplace_back(Path{-1, p});
                                 }
@@ -161,10 +168,10 @@ namespace ioutils {
                         Policy::process_blk(dir);
                     } else if (mode == S_IFSOCK) { // Socket special
                         Policy::process_socket(dir);
-#ifdef __APPLE__						
+#ifdef __APPLE__
                     } else if (mode == S_IFWHT) { // Whiteout is not supported in Linux/ext4
                         Policy::process_whiteout(dir);
-#endif						
+#endif
                     } else {
                         // https://stackoverflow.com/questions/47078417/readdir-returning-dirent-with-d-type-dt-unknown-for-directories-and
                         Policy::process_unknown(dir);
@@ -179,6 +186,7 @@ namespace ioutils {
             bool use_dfs;
             bool follow_link;
             bool donot_ignore_git;
+            bool ignore_error;
             int level = -1;
             std::vector<std::string> unvisited_paths;
             static constexpr char SEP = '/';
