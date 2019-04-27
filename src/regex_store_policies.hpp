@@ -68,6 +68,9 @@ namespace ioutils {
         
         void process_whiteout(const Path &, const char *) {}
         void process_whiteout(const Path &) {}
+		
+        void process_unknown(const Path &, const char *) {}
+        void process_unknown(const Path &) {}
         
         std::string buffer;
         Matcher matcher;
