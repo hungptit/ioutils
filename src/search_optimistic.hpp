@@ -206,8 +206,10 @@ namespace ioutils {
                     Policy::process_blk(dir);
                 } else if (mode == S_IFSOCK) { // Socket special
                     Policy::process_socket(dir);
+#ifdef __APPLE__
                 } else if (mode == S_IFWHT) { // Whiteout is not supported in Linux/ext4
                     Policy::process_whiteout(dir);
+#endif
                 } else {
                     // https://stackoverflow.com/questions/47078417/readdir-returning-dirent-with-d-type-dt-unknown-for-directories-and
                     Policy::process_unknown(dir);

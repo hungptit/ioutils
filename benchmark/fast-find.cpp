@@ -40,8 +40,8 @@ const std::string pattern1{"\'/\\w+options.c(p)*$\'"};
 CELERO_MAIN
 
 // Find all files in the boost source code
-BASELINE(all, gnu_find, number_of_samples, number_of_operations) {
-    test("gfind ", "../../3p/src/boost");
+BASELINE(all, find, number_of_samples, number_of_operations) {
+    test("find ", "../../3p/src/boost");
 }
 
 BENCHMARK(all, fd_noignore, number_of_samples, number_of_operations) {
@@ -57,8 +57,8 @@ BENCHMARK(all, fast_find_bfs, number_of_samples, number_of_operations) {
 }
 
 // Find all files and ignore .git folder
-BASELINE(ignore_git, gnu_find, number_of_samples, number_of_operations) {
-    test("gfind ", "../../3p/src/boost");
+BASELINE(ignore_git, find, number_of_samples, number_of_operations) {
+    test("find ", "../../3p/src/boost");
 }
 
 BENCHMARK(ignore_git, fd, number_of_samples, number_of_operations) {
@@ -76,7 +76,7 @@ BENCHMARK(ignore_git, fast_find_bfs, number_of_samples, number_of_operations) {
 
 // Find all files using a regex that does not match any results
 BASELINE(regex, find, number_of_samples, number_of_operations) {
-    test_find_regex("gfind ", pattern1, " ../../3p/src/boost");
+    test_find_regex("find ", pattern1, " ../../3p/src/boost");
 }
 
 BENCHMARK(regex, fd, number_of_samples, number_of_operations) {
