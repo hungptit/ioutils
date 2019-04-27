@@ -18,9 +18,10 @@ namespace {
         bool stats = 0;
         bool verbose = 0;
 
-        bool dfs() { return true; } // Use bfs traversal to explore folders.
+        bool dfs() { return true; } // Use dfs traversal to explore folders.
         bool donot_ignore_git() const { return true; }
         bool follow_symlink() const { return false; }
+        bool ignore_error() const { return false; }
 
         void print() const {
             fmt::print("Search paths: [\"{}\"]\n", fmt::join(paths, "\",\""));
@@ -34,11 +35,10 @@ namespace {
         InputParams params;
         std::vector<std::string> paths;
         bool help = false;
-        auto cli =
-            clara::Help(help) |
-            clara::Opt(params.database, "database")["-d"]["--database"]("The file information database.") |
-            clara::Opt(params.verbose)["-v"]["--verbose"]("Display verbose information") |
-            clara::Arg(paths, "paths")("Search paths.");
+        auto cli = clara::Help(help) |
+                   clara::Opt(params.database, "database")["-d"]["--database"]("The file information database.") |
+                   clara::Opt(params.verbose)["-v"]["--verbose"]("Display verbose information") |
+                   clara::Arg(paths, "paths")("Search paths.");
 
         auto result = cli.parse(clara::Args(argc, argv));
         if (!result) {
@@ -83,7 +83,7 @@ namespace {
 int main(int argc, char *argv[]) {
     auto params = parse_input_arguments(argc, argv);
     using Policy = ioutils::locate::UpdateDBStreamPolicy;
-    using Search = typename ioutils::filesystem::Search<Policy>;
+    using Search = typename ioutils::filesystem::DefaultSearch<Policy>;
     Search search(params);
     search.traverse(params.paths);
     return EXIT_SUCCESS;
