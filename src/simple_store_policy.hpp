@@ -68,6 +68,9 @@ namespace ioutils {
         void process_whiteout(const Path &, const char *){}
         void process_whiteout(const Path &){}
         
+        void process_unknown(const Path &, const char *){}
+        void process_unknown(const Path &){}
+        
         container_type paths;
     };
 } // namespace ioutils

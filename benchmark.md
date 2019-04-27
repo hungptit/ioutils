@@ -8,7 +8,9 @@
 Notes:
 * All automated performance benchmark results are collected on a SSD drive with a warm up cache.
 * The regular expression is selected using my normal usage pattern so it is definitely biased.
-* Both GNU find and fast-find are single thread so the CPU clock does not jump during the test, however, fd does push all CPU cores to their limits.
+* Both GNU find and fast-find are single thread so the CPU clock does not jump during the test, however, **fd does push all CPU cores to their limits**.
+* Our benchmark use the latest version of GNU find which is significantly faster than the system find command.
+* We avoid to alter the default options of all tested commands if possible.
 
 # Finding files and folders #
 
@@ -113,48 +115,52 @@ ATH020224:ioutils hdang$ /usr/bin/time -l fd . -H --no-ignore / -j1 > 3.log
 
 #### Find files using given regular expression ####
 
+This benchmark will try to simulate a refular user workflow i.e match the whole path with the given regular expression instead of matching to the stem only. fast-find command does support this option by default, however, we do need to specify a **--full-path** option so fd can match the whole path.
+
 **fd**
 
 ``` shell
-ATH020224:ioutils hdang$ /usr/bin/time -lp fd "zstd/.*doc/README[.]md$" /
-real        20.86
-user        15.27
-sys         91.64
- 253153280  maximum resident set size
+ATH020224:commands hdang$ /usr/bin/time -lp fd --full-path "zstd/.*doc/README[.]md$" /
+/Users/hdang/working/zstd/doc/README.md
+/Users/hdang/working/contribs/zstd/doc/README.md
+/Users/hdang/working/3p/src/zstd/doc/README.md
+/Users/hdang/working/backup/projects/projects/others/coverage/3p/zstd/doc/README.md
+real        19.89
+user        16.80
+sys         93.30
+ 226848768  maximum resident set size
          0  average shared memory size
          0  average unshared data size
          0  average unshared stack size
-     61827  page reclaims
-         0  page faults
+     55889  page reclaims
+       308  page faults
          0  swaps
          0  block input operations
          0  block output operations
          0  messages sent
          0  messages received
          0  signals received
-    163825  voluntary context switches
-   1745591  involuntary context switches
+    169989  voluntary context switches
+   1730498  involuntary context switches
 ```
 
 **fast-find**
+*Note that we need to use --ignore-error flag to suppress all error related to file/folder permissions*.
 
 ``` shell
-ATH020224:ioutils hdang$ /usr/bin/time -lp fast-find / -e "zstd/.*doc/README[.]md$"
-fast-find: '/.Spotlight-V100': Operation not permitted
-...
-fast-find: '/usr/sbin/authserver': Permission denied
+ATH020224:commands hdang$ /usr/bin/time -lp ./fast-find --ignore-error -e "zstd/.*doc/README[.]md$" /
 /Users/hdang/working/backup/projects/projects/others/coverage/3p/zstd/doc/README.md
 /Users/hdang/working/zstd/doc/README.md
 /Users/hdang/working/contribs/zstd/doc/README.md
 /Users/hdang/working/3p/src/zstd/doc/README.md
-real        25.57
-user         2.11
-sys         12.75
-   3948544  maximum resident set size
+real        24.62
+user         2.16
+sys         13.46
+   3973120  maximum resident set size
          0  average shared memory size
          0  average unshared data size
          0  average unshared stack size
-      1009  page reclaims
+      1005  page reclaims
          0  page faults
          0  swaps
          0  block input operations
@@ -162,13 +168,13 @@ sys         12.75
          0  messages sent
          0  messages received
          0  signals received
-    100598  voluntary context switches
-      3319  involuntary context switches
+     87541  voluntary context switches
+      4743  involuntary context switches
 ```
 
 **Analysis**
 
-* The performance gap between fd and fast-find is decreased to 23%, however, fd cannot find any matched file even though fast-find have found 4 matched files.
+* The performance gap between fd and fast-find is decreased to about 25%, however, fd uses 6x times more system resources than that of fast-find. 
 
 ## Small folder i.e boost libraries source code with more than 50K files and folders ##
 
@@ -177,18 +183,23 @@ sys         12.75
 **Results**
 
 ``` shell
-MacOS:commands hdang$ find ../../3p/src/boost/ | wc
-   59458   59461 4019016
-MacOS:benchmark hdang$ fd . ../../3p/src/boost/ -H --no-ignore | wc
-   59457   59460 3959539
-MacOS:commands hdang$ fast-find --donot-ignore-git ../../3p/src/boost/ | wc
-   59457   59460 3959539
+ATH020224:unittests hdang$ ./verify.sh /Users/hdang/working/3p/src
+Find all files using GNU find
+Find all files using fast-find
+Find all files using fd
+\n==== Verify the output of fast-find ====
+1d0
+< /Users/hdang/working/3p/src
+\n==== Verify the output of fd ====
+1d0
+< /Users/hdang/working/3p/src
 ```
 
 **Analysis**
 
 * All three commands produce the same output. Note that the output of GNU find is off by one because it includes a given search path.
 * The output of fast-find and fd are identical.
+* Both fd and fast-find trim the slash at the end, however, GNU find does not.
 
 ### Manual tests ###
 
@@ -276,69 +287,69 @@ sys          0.32
 **Benchmark results**
 
 ``` shell
-MacOS:benchmark hdang$ ./fast-find -g all
+ATH020224:benchmark hdang$ ./fast-find -g all
 Celero
 Timer resolution: 0.001000 us
 -----------------------------------------------------------------------------------------------------------------------------------------------
      Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
 -----------------------------------------------------------------------------------------------------------------------------------------------
-all             | gnu_find        |               0 |              20 |               1 |         1.00000 |    486319.00000 |            2.06 |
-all             | fd_noignore     |               0 |              20 |               1 |         1.10689 |    538303.00000 |            1.86 |
-all             | fast_find       |               0 |              20 |               1 |         0.75659 |    367943.00000 |            2.72 |
-all             | fast_find_bfs   |               0 |              20 |               1 |         0.75314 |    366266.00000 |            2.73 |
+all             | find            |               0 |              10 |               1 |         1.00000 |    509638.00000 |            1.96 |
+all             | fd_noignore     |               0 |              10 |               1 |         1.10995 |    565671.00000 |            1.77 |
+all             | fast_find       |               0 |              10 |               1 |         0.75489 |    384719.00000 |            2.60 |
+all             | fast_find_bfs   |               0 |              10 |               1 |         0.77074 |    392799.00000 |            2.55 |
 Complete.
 ```
 
 **Analysis**
 
-* If we do not ignore the **.git** folder then fast-find is about 35% faster than GNU find and 47% faster than fd.
-* fast-find is faster than both commands because it does not use the system file traversal algorithms.
+* If we do not ignore the **.git** folder then fast-find is about 30% faster than GNU find and 47% faster than fd.
+* fast-find is faster than both commands because it does not use less system calls.
 
 ### Skip .git folder ###
 
 **Benchmark results**
 
 ``` shell
-MacOS:benchmark hdang$ ./fast-find -g ignore_git
+ATH020224:benchmark hdang$ ./fast-find -g ignore_git
 Celero
 Timer resolution: 0.001000 us
 -----------------------------------------------------------------------------------------------------------------------------------------------
      Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
 -----------------------------------------------------------------------------------------------------------------------------------------------
-ignore_git      | gnu_find        |               0 |              20 |               1 |         1.00000 |    497075.00000 |            2.01 |
-ignore_git      | fd              |               0 |              20 |               1 |         1.10455 |    549043.00000 |            1.82 |
-ignore_git      | fast_find_defau |               0 |              20 |               1 |         0.49275 |    244935.00000 |            4.08 |
-ignore_git      | fast_find_bfs   |               0 |              20 |               1 |         0.49387 |    245489.00000 |            4.07 |
+ignore_git      | find            |               0 |              10 |               1 |         1.00000 |    509479.00000 |            1.96 |
+ignore_git      | fd              |               0 |              10 |               1 |         1.09373 |    557231.00000 |            1.79 |
+ignore_git      | fast_find_defau |               0 |              10 |               1 |         0.50422 |    256892.00000 |            3.89 |
+ignore_git      | fast_find_bfs   |               0 |              10 |               1 |         0.49767 |    253551.00000 |            3.94 |
 Complete.
 ```
 
 **Analysis**
 
-* Our performance benchmark results has shown that GNU find is still faster than fd if fd can ignore git related files.
-* fast-find is 2x faster than both GNU find and fd if it can ignore **.git** folder.
+* Our performance benchmark results has shown that GNU find is still faster than fd even though fd has ignored all git related files.
+* fast-find is 2x faster than both GNU find and fd if it can ignore **.git** folder. Note that the performance gap between fast-find and fd might change if for folder with millions of files.
 
 ### Use regex to find files ###
 
 **Benchmark results**
 
 ``` shell
-MacOS:benchmark hdang$ ./fast-find -g regex
+ATH020224:benchmark hdang$ ./fast-find -g regex
 Celero
 Timer resolution: 0.001000 us
 -----------------------------------------------------------------------------------------------------------------------------------------------
      Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
 -----------------------------------------------------------------------------------------------------------------------------------------------
-regex           | find            |               0 |              20 |               1 |         1.00000 |    490978.00000 |            2.04 |
-regex           | fd              |               0 |              20 |               1 |         0.92083 |    452107.00000 |            2.21 |
-regex           | fast_find       |               0 |              20 |               1 |         0.54193 |    266078.00000 |            3.76 |
-regex           | fast_find_bfs   |               0 |              20 |               1 |         0.53615 |    263236.00000 |            3.80 |
+regex           | find            |               0 |              10 |               1 |         1.00000 |    502403.00000 |            1.99 |
+regex           | fd              |               0 |              10 |               1 |         2.82621 |   1419896.00000 |            0.70 |
+regex           | fast_find       |               0 |              10 |               1 |         0.53596 |    269268.00000 |            3.71 |
+regex           | fast_find_bfs   |               0 |              10 |               1 |         0.53349 |    268029.00000 |            3.73 |
 Complete.
 ```
 
 **Analysis**
 
-* fd is about 10% faster than GNU find in this benchmark and it is expected since fd can take the advantage of multi-cores systems.
-* The performance gap between fast-find and other two commands is decreased in this benchmark, however, fd is still 70% faster than fd.
+* fd is about 3x slower than GNU find and 5x slower than fast-find in this benchmark.
+* The performance gap between fast-find and fd will be dereased by the number of files and folders since fast-find is a single thread command.
 
 # Locate files and folders #
 

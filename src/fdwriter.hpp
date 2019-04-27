@@ -81,7 +81,6 @@ namespace ioutils {
                 std::string errmsg(strerror(errcode));
                 long nbytes = ::write(STDERR, errmsg.data(), errmsg.size());
                 ignore(nbytes);
-                assert(nbytes == errmsg.size());
             }
         }
     };

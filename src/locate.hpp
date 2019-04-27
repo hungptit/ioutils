@@ -16,8 +16,7 @@ namespace ioutils {
           public:
             UpdateDBStreamPolicy() : writer(StreamWriter::STDOUT) {}
 
-            template <typename Params>
-            UpdateDBStreamPolicy(Params &&params) : writer(params.database.data()) {}
+            template <typename Params> UpdateDBStreamPolicy(Params &&params) : writer(params.database.data()) {}
 
           protected:
             bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
@@ -30,20 +29,37 @@ namespace ioutils {
                 writer.eol();
             }
 
-            void process_symlink(const Path &parent, const char *stem = nullptr) {
-                process_file(parent, stem);
-            }
-            void process_fifo(const Path &parent, const char *stem = nullptr) {
-                process_file(parent, stem);
-            }
+            void process_symlink(const Path &parent, const char *stem = nullptr) { process_file(parent, stem); }
+
+            /**
+             * Just store the FIFO paths for now.
+             */
+            void process_fifo(const Path &parent, const char *stem = nullptr) { process_file(parent, stem); }
+
+            /**
+             * Store the path of character special for now. Not sure if users ever need to know about this type of paths.
+             */
             void process_chr(const Path &parent, const char *stem = nullptr) { process_file(parent, stem); }
+
+            /**
+             * Do not have a specific example for this type. Let store its path for now.
+             */
             void process_blk(const Path &parent, const char *stem = nullptr) { process_file(parent, stem); }
-            void process_socket(const Path &parent, const char *stem = nullptr) {
-                process_file(parent, stem);
-            }
-            void process_whiteout(const Path &parent, const char *stem = nullptr) {
-                process_file(parent, stem);
-            }
+
+            /**
+             * Treat socket as file for now. We are generally not interrested in sockets.
+             */
+            void process_socket(const Path &parent, const char *stem = nullptr) { process_file(parent, stem); }
+
+            /**
+             * A whiteout path is specific to MacOS. 
+             */
+            void process_whiteout(const Path &parent, const char *stem = nullptr) { process_file(parent, stem); }
+
+            /**
+             * TODO: We treat unknown as a file for now. This strategy seem to work well in MacOS.
+             */
+            void process_unknown(const Path &parent, const char *stem = nullptr) { process_file(parent, stem); }
 
             void process_dir(const std::string &path) {
                 writer.write(path.data(), path.size());
@@ -124,8 +140,7 @@ namespace ioutils {
 
     class PrintAllPolicy {
       public:
-        template <typename Params>
-        PrintAllPolicy(Params &&args) : prefix(args.prefix), console(StreamWriter::STDOUT) {}
+        template <typename Params> PrintAllPolicy(Params &&args) : prefix(args.prefix), console(StreamWriter::STDOUT) {}
         void process(const char *begin, const size_t len) { console.write(begin, len); }
 
       protected:

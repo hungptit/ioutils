@@ -13,19 +13,19 @@ namespace {
         // Search for files based on given constraints.
         if (params.regex.empty()) {
             using Policy = ioutils::find::SimplePolicy;
-            ioutils::FileSearch<Policy> search(params);
+            ioutils::filesystem::DefaultSearch<Policy> search(params);
             search.traverse(params.paths);
         } else {
             // Find desired files and folders
             if (!params.invert_match()) {
                 using Matcher = utils::hyperscan::RegexMatcher;
                 using Policy = ioutils::find::RegexPolicy<Matcher>;
-                ioutils::FileSearch<Policy> search(params);
+                ioutils::filesystem::DefaultSearch<Policy> search(params);
                 search.traverse(params.paths);
             } else {
                 using Matcher = utils::hyperscan::RegexMatcherInv;
                 using Policy = ioutils::find::RegexPolicy<Matcher>;
-                ioutils::FileSearch<Policy> search(params);
+                ioutils::filesystem::DefaultSearch<Policy> search(params);
                 search.traverse(params.paths);
             }
         }

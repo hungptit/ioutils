@@ -145,3 +145,19 @@ This [page](benchmark.md) has a performance benchmark results and analysis for G
 2. How can I download fast-find? 
 Precompiled binaries for fast-find, fast-updatedb, and fast-locate can be found [here](https://github.com/hungptit/tools).
 
+3. I am not sure if the output of fast-find is the same as that of GNU find?
+
+We tried our best to make sure that fast-find's output will be identical to the output of GNU find so it can be used as a drop-in replacement for GNU find. Below are the correctness test results of the [verify.sh](https://github.com/hungptit/ioutils/blob/master/unittests/verify.sh) script for a large folder with 377250 files and folders. You can run it using your folder to verify that fast-find will work correctly in most situations. Note that both fast-find and fd do not output the input folder paths.
+
+``` shell
+ATH020224:unittests hdang$ ./verify.sh ~/working
+Find all files using GNU find
+Find all files using fast-find
+Find all files using fd
+\n==== Verify the output of fast-find ====
+1d0
+< /Users/hdang/working
+\n==== Verify the output of fd ====
+1d0
+< /Users/hdang/working
+```
