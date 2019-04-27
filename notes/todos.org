@@ -3,4 +3,9 @@
   + JSON
   + XML
 * TODO Submit a proposal to CppCon?
-
+* TODO Support exploration level in dfs algorithm.
+* TODO Allow users to filter files by date
+  + Old than
+  + Newer than
+  + Between a given time lot
+  + 
