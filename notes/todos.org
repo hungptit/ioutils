@@ -3,7 +3,12 @@
   + JSON
   + XML
 * TODO Submit a proposal to CppCon?
-* TODO Allow users to filter files by date
+* TODO Search by attributes 
   + Old than
   + Newer than
   + Between a given time lot
+  + Readonly files
+  + Write only files
+  + Executable files
+  + File size is larger/smaller than a given threshold.
+* TODO Allow users to execute a command on matched files.

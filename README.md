@@ -1,6 +1,6 @@
 # Introduction #
 
-ioutils is a small and very fast file system library for Linux and Unix environments.
+ioutils provide very fast implementations for file traversal and reading/writing algorithms.
 
 # Features #
 
@@ -16,7 +16,7 @@ ioutils is a small and very fast file system library for Linux and Unix environm
 
 **What is the different between ioutils and other similar open source projects such as [GNU findutils](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd)?**
 
-* ioutils is written as a library so we can easily reuse it in other projects, for example ioutils is used in [fastgrep](https://github.com/hungptit/fastgrep).
+* ioutils is written as a library so we can easily reuse it in other projects, for example ioutils is used by [fastgrep](https://github.com/hungptit/fastgrep).
 
 * Core algorithms are created using policy-based design so we can have flexible and reusable algorithms without sacrificing the performance i.e all classes are generated at the compile time.
 

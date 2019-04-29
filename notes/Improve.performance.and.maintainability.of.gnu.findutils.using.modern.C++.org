@@ -1,33 +1,22 @@
 * Abstract
 * Introduction
 ** Why?
-We have already had [[https://www.gnu.org/software/findutils/][findutils]] why do ioutils is created? 
-ioutils is created because of the following reasons. 
-* Method
+* We need a library which provides some very fast file I/O functionality for some extreme use cases.
+* We need some capabilities that are missing from GNU find and GNU locate commands. 
+* How?
 ** What is the policy based designed pattern?
 ** How to write a fast file search algorithm in NIX environments?
    + Support filtering for example skip .git folder by default.
-   + Support search pattern, file extensions.
-** How to write a fast cached file locator
-   + Support search folder.
-   + Support search pattern, file extensions etc.
+   + Support regular expression matching by default.
+** How to write a fast cached file mechanism
 * Results
-  
-Benchmark results collected in Mac OS
-``` text
-hdang@015249 ~/w/i/benchmark> ./fast-find
-Celero
-Timer resolution: 0.001000 us
------------------------------------------------------------------------------------------------------------------------------------------------
-     Group      |   Experiment    |   Prob. Space   |     Samples     |   Iterations    |    Baseline     |  us/Iteration   | Iterations/sec  |
------------------------------------------------------------------------------------------------------------------------------------------------
-find            | gnu_find        |               0 |              10 |               1 |         1.00000 |    431944.00000 |            2.32 |
-find            | fast-find_to_consol |               0 |              10 |               1 |         0.37290 |    161072.00000 |            6.21 |
-find            | fast-find_dfs_store |               0 |              10 |               1 |         0.34578 |    149359.00000 |            6.70 |
-find            | fast-find_bfs_store |               0 |              10 |               1 |         0.35773 |    154519.00000 |            6.47 |
-Complete.
+
+** Benchmark results collected in Mac OS
+``` shell
+
 ```
 * Conclusions
-  + Our ioutls library is reusable and performant. Thanks to the powerfullness of the C++ template and Policy Based Design..
-  + The combination of the modern C++ design and low level system call allow us to improve both reusablity and performance of our library.
-  + Our performance analysis shows that our fast-find and fast-locate commands are faster than that of similar GNU commands i.e find and locate.
+  + Our ioutls library is reusable and performant. Thanks to the powerfullness of the C++ template and Policy Based Design.
+  + fast-find is faster than GNU find.
+  + fast-updatedb is 4x faster than GNU updatedb
+  + fast-locate is 10x faster  than GNU locate.
