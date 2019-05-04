@@ -200,7 +200,7 @@ namespace ioutils {
             template <typename Params>
             RegexPolicy(Params &&params)
                 : buffer(),
-                  matcher(params.regex, params.regex_mode),
+                  matcher(params.path_regex, params.regex_mode),
                   color(params.color()),
                   ignore_file(params.ignore_file()),
                   ignore_dir(params.ignore_dir()),

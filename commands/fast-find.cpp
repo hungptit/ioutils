@@ -11,7 +11,7 @@
 namespace {
     template <typename Params> void search(Params &&params) {
         // Search for files based on given constraints.
-        if (params.regex.empty()) {
+        if (params.path_regex.empty()) {
             using Policy = ioutils::find::SimplePolicy;
             ioutils::filesystem::DefaultSearch<Policy> search(params);
             search.traverse(params.paths);

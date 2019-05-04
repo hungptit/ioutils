@@ -24,18 +24,18 @@ namespace ioutils {
             IGNORE_WHITEOUT = 1 << 12,  // Ignore whiteout files
             IGNORE_UNKNOWN = 1 << 13,   // Ignore unknown paths
             DONOT_IGNORE_GIT = 1 << 14, // Ignore git folders.
-            IGNORE_ERROR = 1 << 15,     // Ignore git folders.
+            IGNORE_ERROR = 1 << 15,     // Do not print out errors.
         };
 
         struct Params {
             static constexpr int EXPLORE_ALL = -1;
             Params()
-                : flags(0), regex_mode(HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH), level(EXPLORE_ALL), regex(), paths() {}
+                : flags(0), regex_mode(HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH), level(EXPLORE_ALL), path_regex(), paths() {}
 
             int flags;
             int regex_mode;
             int level = -1;
-            std::string regex;
+            std::string path_regex;
             std::vector<std::string> paths;
 
             bool verbose() const { return (flags & PARAMS::VERBOSE) > 0; }
@@ -66,7 +66,7 @@ namespace ioutils {
                     fmt::print("\033[1;34mfollow-symlink: \033[1;32m{}\n", follow_symlink());
                     fmt::print("\033[1;34mdfs: \033[1;32m{}\n", dfs());
                     fmt::print("\033[1;34mlevel: \033[1;32m{}\n", level);
-                    fmt::print("\033[1;34mregex: \033[1;32m\"{}\"\n", regex);
+                    fmt::print("\033[1;34mregex: \033[1;32m\"{}\"\n", path_regex);
                     fmt::print("\033[1;34mpath: \033[1;32m[");
                     if (!paths.empty()) {
                         size_t idx = 0;
@@ -86,7 +86,7 @@ namespace ioutils {
                     fmt::print("follow-symlink: {}\n", follow_symlink());
                     fmt::print("dfs: {}\n", dfs());
                     fmt::print("level: {}\n", level);
-                    fmt::print("regex: \"{}\"\n", regex);
+                    fmt::print("regex: \"{}\"\n", path_regex);
                     fmt::print("path: [");
                     if (!paths.empty()) {
                         size_t idx = 0;
@@ -150,7 +150,7 @@ namespace ioutils {
                 clara::Opt(dfs)["--dfs"]("Use DFS for traversing.") |
                 clara::Opt(bfs)["--bfs"]("Use BFS for traversing. Note that BFS algorithm does not work "
                                          "well for large folders.") |
-                clara::Opt(params.regex, "path-regex")["-e"]["--path-regex"]("Search pattern.") |
+                clara::Opt(params.path_regex, "path-regex")["-e"]["--path-regex"]("Search pattern.") |
                 clara::Opt(params.level, "level")["--level"]("The search depth.") |
 
                 // Unsupported options
