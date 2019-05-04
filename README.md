@@ -10,15 +10,17 @@ ioutils provide very fast implementations for file traversal and reading/writing
 
 * A small set of high performance file related functions and classes.
 
-* The fast-find command line utility [can be 2x faster](benchmark.md) than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands. Our performance benchmark shows that fast-find can be 2x faster than both [GNU find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd).
+* The fast-find command is a drop-in replacement for GNU find. This command [can be 2x faster](benchmark.md) than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands.
 
-* The fast-locate command [is 10x faster](benchmark.md) than [GNU locate](https://www.gnu.org/software/findutils/) command.
+* The fast-locate command id a drop-in replacement for GNU locate. This command [is 10x faster](benchmark.md) than [GNU locate](https://www.gnu.org/software/findutils/) command.
 
 **What is the different between ioutils and other similar open source projects such as [GNU findutils](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd)?**
 
 * ioutils is written as a library so we can easily reuse it in other projects, for example ioutils is used by [fastgrep](https://github.com/hungptit/fastgrep).
 
 * Core algorithms are created using policy-based design so we can have flexible and reusable algorithms without sacrificing the performance i.e all classes are generated at the compile time.
+
+* All commands support regular expression pattern matching by default.
 
 # Usage #
 
