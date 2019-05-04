@@ -4,6 +4,9 @@
 * Memory: 16 GB
 * Hard drive: Fast SSD drive.
 * OS: Darwin Kernel Version 18.2.0
+* fd 7.3.0
+* find (GNU findutils) 4.6.0
+* fast-find (master)
 
 Notes:
 * All automated performance benchmark results are collected on a SSD drive with a warm up cache.
@@ -115,7 +118,7 @@ MacOS:ioutils hdang$ /usr/bin/time -l fd . -H --no-ignore / -j1 > 3.log
 
 #### Find files using given regular expression ####
 
-This benchmark will try to simulate a refular user workflow i.e match the whole path with the given regular expression instead of matching to the stem only. fast-find command does support this option by default, however, we do need to specify a **--full-path** option so fd can match the whole path.
+This benchmark will try to simulate a regular user workflow i.e match the whole path with the given regular expression instead of matching to the stem only. fast-find command does support this option by default, however, we do need to specify a **--full-path** option so fd can match the whole path. **Note that the gap between fast-find and other commands will be increased with the complexity of the input regular expression pattern.**
 
 **fd**
 
@@ -176,13 +179,13 @@ sys         13.46
 
 * The performance gap between fd and fast-find is decreased to about 25%, however, fd uses 6x times more system resources than that of fast-find. 
 
-## Small folder i.e boost libraries source code with more than 50K files and folders ##
+## Small and medium folders with 50K and 200K files and folders ##
 
 ### Correctness tests ###
 
 **Results**
 
-*A folder with about 200K of files and folders*
+*A medium folder with about 200K of files and folders*
 
 ``` shell
 MacOS:commands hdang$ ../unittests/verify.sh ../../3p/src
@@ -200,7 +203,7 @@ Find all files using fd
 < ../../3p/src
 ```
 
-*A folder with about 50K of files and folders*
+*A small folder with about 50K of files and folders*
 
 ``` shell
 MacOS:commands hdang$ ../unittests/verify.sh ../../3p/src/boost
@@ -230,25 +233,25 @@ Find all files using fd
 **GNU find**
 
 ``` shell
-MacOS:benchmark hdang$ /usr/bin/time -lp find ../../3p/src/boost/ | wc
-real         1.18
-user         0.07
-sys          0.92
-   1413120  maximum resident set size
+MacOS:benchmark hdang$ /usr/bin/time -lp gfind ../../3p/src/boost/ | wc
+real         0.62
+user         0.15
+sys          0.45
+   1904640  maximum resident set size
          0  average shared memory size
          0  average unshared data size
          0  average unshared stack size
-       355  page reclaims
-         1  page faults
+       474  page reclaims
+         0  page faults
          0  swaps
          0  block input operations
          0  block output operations
          0  messages sent
          0  messages received
          0  signals received
-      1592  voluntary context switches
-        43  involuntary context switches
-   59458   59461 4019016
+         2  voluntary context switches
+        13  involuntary context switches
+   69341   69343 4695375
 ```
 
 **fd**
@@ -302,7 +305,7 @@ sys          0.32
 **Analysis**
 
 * Both GNU find and fast-find use the similar amount of memory, however, fd uses 7x more memory than both GNU find and fast-find.
-* fast-find is 3x faster than GNU find and 10% faster than fd in our manual tests.
+* fast-find is 60% faster than GNU find and 10% faster than fd in our manual tests.
 * fast-find uses less system resources than GNU find i.e 3x.
 * fd use 6x more system resource than that of fast-find.
 
