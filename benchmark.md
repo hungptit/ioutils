@@ -46,7 +46,7 @@ This performance benchmark will measure the performance of all commands by findi
 **fd**
 
 ``` shell
-ATH020224:ioutils hdang$ /usr/bin/time -l fd . -H --no-ignore / > 3.log
+MacOS:ioutils hdang$ /usr/bin/time -l fd . -H --no-ignore / > 3.log
        19.08 real        12.35 user        62.09 sys
  291508224  maximum resident set size
          0  average shared memory size
@@ -67,7 +67,7 @@ ATH020224:ioutils hdang$ /usr/bin/time -l fd . -H --no-ignore / > 3.log
 **fd with one thread**
 
 ``` shell
-ATH020224:ioutils hdang$ /usr/bin/time -l fd . -H --no-ignore / -j1 > 3.log
+MacOS:ioutils hdang$ /usr/bin/time -l fd . -H --no-ignore / -j1 > 3.log
        36.66 real         8.42 user        28.17 sys
  180875264  maximum resident set size
          0  average shared memory size
@@ -120,7 +120,7 @@ This benchmark will try to simulate a refular user workflow i.e match the whole 
 **fd**
 
 ``` shell
-ATH020224:commands hdang$ /usr/bin/time -lp fd --full-path "zstd/.*doc/README[.]md$" /
+MacOS:commands hdang$ /usr/bin/time -lp fd --full-path "zstd/.*doc/README[.]md$" /
 /Users/hdang/working/zstd/doc/README.md
 /Users/hdang/working/contribs/zstd/doc/README.md
 /Users/hdang/working/3p/src/zstd/doc/README.md
@@ -148,7 +148,7 @@ sys         93.30
 *Note that we need to use --ignore-error flag to suppress all error related to file/folder permissions*.
 
 ``` shell
-ATH020224:commands hdang$ /usr/bin/time -lp ./fast-find --ignore-error -e "zstd/.*doc/README[.]md$" /
+MacOS:commands hdang$ /usr/bin/time -lp ./fast-find --ignore-error -e "zstd/.*doc/README[.]md$" /
 /Users/hdang/working/backup/projects/projects/others/coverage/3p/zstd/doc/README.md
 /Users/hdang/working/zstd/doc/README.md
 /Users/hdang/working/contribs/zstd/doc/README.md
@@ -182,17 +182,40 @@ sys         13.46
 
 **Results**
 
+*A folder with about 200K of files and folders*
+
 ``` shell
-ATH020224:unittests hdang$ ./verify.sh /Users/hdang/working/3p/src
+MacOS:commands hdang$ ../unittests/verify.sh ../../3p/src
 Find all files using GNU find
+        2.18 real         0.48 user         1.54 sys
 Find all files using fast-find
+        1.26 real         0.16 user         1.09 sys
 Find all files using fd
+        1.63 real         1.48 user         8.48 sys
 \n==== Verify the output of fast-find ====
 1d0
-< /Users/hdang/working/3p/src
+< ../../3p/src
 \n==== Verify the output of fd ====
 1d0
-< /Users/hdang/working/3p/src
+< ../../3p/src
+```
+
+*A folder with about 50K of files and folders*
+
+``` shell
+MacOS:commands hdang$ ../unittests/verify.sh ../../3p/src/boost
+Find all files using GNU find
+        0.63 real         0.16 user         0.46 sys
+Find all files using fast-find
+        0.47 real         0.06 user         0.40 sys
+Find all files using fd
+        0.79 real         0.51 user         3.03 sys
+\n==== Verify the output of fast-find ====
+1d0
+< ../../3p/src/boost
+\n==== Verify the output of fd ====
+1d0
+< ../../3p/src/boost
 ```
 
 **Analysis**
@@ -200,6 +223,7 @@ Find all files using fd
 * All three commands produce the same output. Note that the output of GNU find is off by one because it includes a given search path.
 * The output of fast-find and fd are identical.
 * Both fd and fast-find trim the slash at the end, however, GNU find does not.
+* The benchmark results show that fast-find is the fastest command and it also uses less system resources than both find and fd.
 
 ### Manual tests ###
 
@@ -287,7 +311,7 @@ sys          0.32
 **Benchmark results**
 
 ``` shell
-ATH020224:benchmark hdang$ ./fast-find -g all
+MacOS:benchmark hdang$ ./fast-find -g all
 Celero
 Timer resolution: 0.001000 us
 -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -310,7 +334,7 @@ Complete.
 **Benchmark results**
 
 ``` shell
-ATH020224:benchmark hdang$ ./fast-find -g ignore_git
+MacOS:benchmark hdang$ ./fast-find -g ignore_git
 Celero
 Timer resolution: 0.001000 us
 -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -333,7 +357,7 @@ Complete.
 **Benchmark results**
 
 ``` shell
-ATH020224:benchmark hdang$ ./fast-find -g regex
+MacOS:benchmark hdang$ ./fast-find -g regex
 Celero
 Timer resolution: 0.001000 us
 -----------------------------------------------------------------------------------------------------------------------------------------------

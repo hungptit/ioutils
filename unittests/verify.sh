@@ -9,15 +9,15 @@ set +x
 
 # Find all files in a given folder using GNU find.
 echo "Find all files using GNU find"
-find $src | sort -s > $data1
+/usr/bin/time gfind $src | sort -s > $data1
 
 # Find all files using fast-find
 echo "Find all files using fast-find"
-fast-find $src --donot-ignore-git | sort -s > $data2
+/usr/bin/time fast-find $src --donot-ignore-git | sort -s > $data2
 
 # Find all files using fd
 echo "Find all files using fd"
-fd . $src -H --no-ignore | sort -s > $data3
+/usr/bin/time fd . $src -H --no-ignore | sort -s > $data3
 
 # Verify the output of fast-find
 echo "\n==== Verify the output of fast-find ===="
