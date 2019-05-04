@@ -113,7 +113,7 @@ MacOS:ioutils hdang$ /usr/bin/time -l fd . -H --no-ignore / -j1 > 3.log
 
 * Both GNU find and fast-find output more paths than fd.
 * fd is the fastest command in this performance benchmark. It is 30% faster than fast-find, however, fd uses 4x more CPU resources and 150x more memory than that of fast-find.
-* If we use fd with only one thread then it is 46% slower than fast-find and uses 150x more memory.
+* If we use fd with only one thread then it is 46% slower than fast-find and uses 100x more memory.
 * GNU find is 2x slower than fast-find and it is also 3x slower than fd.
 
 #### Find files using given regular expression ####
