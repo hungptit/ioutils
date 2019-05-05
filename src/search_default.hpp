@@ -107,10 +107,19 @@ namespace ioutils {
                                     filesystem::is_valid_dir(info->d_name) && Policy::is_valid_dir(info->d_name);
                                 if (is_valid_dir) {
                                     std::string p;
-                                    if (dir.path != "/") {
+                                    if (dir.path.size() == 1) {
+                                        if (dir.path[0] == '/') {
+                                            p.push_back('/'); // Skip dir.path to make sure that we do not display "//"
+                                        } if (dir.path[0] == '.') {
+                                            // Use relative paths
+                                        } else {
+                                            p.append(dir.path);
+                                            p.push_back('/');
+                                        }
+                                    } else {
                                         p.append(dir.path);
+                                        p.push_back('/');
                                     }
-                                    p.push_back('/');
                                     p.append(info->d_name);
                                     Policy::process_dir(p);
                                     next.emplace_back(Path{-1, p});

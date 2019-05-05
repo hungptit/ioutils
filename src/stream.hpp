@@ -18,7 +18,6 @@ namespace ioutils {
             while ((nbytes = ::read(fd, read_buffer, BUFFER_SIZE)) > 0) {
                 Policy::process(read_buffer, nbytes);
             }
-
             if (nbytes < 0) {
                 fmt::print(stderr, "Cannot read data from given file descriptor: {}\n",
                            strerror(errno));
