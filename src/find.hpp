@@ -6,14 +6,14 @@
 namespace ioutils {
     namespace find {
         // Reference: https://misc.flogisoft.com/bash/tip_colors_and_formatting
-        static const std::string FIFO_COLOR = "\033[2;32m";    // Normal, Green
+        static const std::string FIFO_COLOR = "\033[1;32m";    // Normal, Green
         static const std::string DIR_COLOR = "\033[1;91m";     // Bold, Light red
-        static const std::string CHR_COLOR = "\033[2;33m";     // Normal, Yellow
-        static const std::string SYMLINK_COLOR = "\033[2;34m"; // Blink, Blue
+        static const std::string CHR_COLOR = "\033[1;33m";     // Normal, Yellow
+        static const std::string SYMLINK_COLOR = "\033[1;34m"; // Blink, Blue
         static const std::string BLK_COLOR = "\033[1;35m";     // Bold, Magenta
-        static const std::string SOCK_COLOR = "\033[2;36m";    // Normal, Cyan
-        static const std::string WHT_COLOR = "\033[2;37m";     // Normal, Light gray
-        static const std::string FILE_COLOR = "\033[2;97m";    // Normal, white
+        static const std::string SOCK_COLOR = "\033[1;36m";    // Normal, Cyan
+        static const std::string WHT_COLOR = "\033[1;37m";     // Normal, Light gray
+        static const std::string FILE_COLOR = "\033[1;97m";    // Normal, white
         static const std::string RESET_COLOR = "\033[0m";      // Reset
 
         struct SimplePolicy {
@@ -40,13 +40,14 @@ namespace ioutils {
             }
 
           protected:
-            bool is_valid_dir(const char *dname) const {
-                return donot_ignore_git ? 1 : (strcmp(dname, ".git") != 0);
-            }
+            bool is_valid_dir(const char *dname) const { return donot_ignore_git ? 1 : (strcmp(dname, ".git") != 0); }
 
             void process_file(const Path &parent, const char *stem) {
                 if (ignore_file) return;
-                writer.write(parent.path.data(), parent.path.size());
+                if (color) {
+                    writer.write(FILE_COLOR.data(), FILE_COLOR.size());
+                }
+                if (parent.path != "/") writer.write(parent.path.data(), parent.path.size());
                 writer.sep();
                 writer.write(stem, strlen(stem));
                 writer.eol();
@@ -55,6 +56,9 @@ namespace ioutils {
 
             void process_file(const Path &parent) {
                 if (ignore_file) return;
+                if (color) {
+                    writer.write(FILE_COLOR.data(), FILE_COLOR.size());
+                }
                 writer.write(parent.path.data(), parent.path.size());
                 writer.eol();
                 ++number_of_files;
@@ -65,7 +69,7 @@ namespace ioutils {
                 if (color) {
                     writer.write(SYMLINK_COLOR.data(), SYMLINK_COLOR.size());
                 }
-                writer.write(parent.path.data(), parent.path.size());
+                if (parent.path != "/") writer.write(parent.path.data(), parent.path.size());
                 if (stem != nullptr) {
                     writer.sep();
                     writer.write(stem, strlen(stem));
@@ -162,7 +166,7 @@ namespace ioutils {
             bool ignore_socket;
             bool ignore_whiteout;
             bool ignore_unknown;
-            
+
             bool donot_ignore_git;
 
             StreamWriter writer;
@@ -183,7 +187,7 @@ namespace ioutils {
 
             // Print out a given path.
             void process_path(const Path &parent, const char *stem) {
-                writer.write(parent.path.data(), parent.path.size());
+                if (parent.path != "/") writer.write(parent.path.data(), parent.path.size());
                 if (stem != nullptr) {
                     writer.sep();
                     writer.write(stem, strlen(stem));
@@ -216,15 +220,25 @@ namespace ioutils {
                 buffer.reserve(1023);
             }
 
-          protected:
-            bool is_valid_dir(const char *dname) const {
-                return donot_ignore_git ? 1 : (strcmp(dname, ".git") != 0);
+            ~RegexPolicy() {
+                if (color) {
+                    writer.write(RESET_COLOR.data(), RESET_COLOR.size());
+                }
             }
+
+          protected:
+            bool is_valid_dir(const char *dname) const { return donot_ignore_git ? 1 : (strcmp(dname, ".git") != 0); }
 
             void process_file(const Path &parent, const char *stem) {
                 if (ignore_file) return;
-                buffer = parent.path + "/" + stem;
+                buffer.clear();
+                if (parent.path != "/") buffer.append(parent.path);
+                buffer.push_back(SEP);
+                buffer.append(stem);
                 if (matcher.is_matched(buffer.data(), buffer.size())) {
+                    if (color) {
+                        writer.write(FILE_COLOR.data(), FILE_COLOR.size());
+                    }
                     writer.write(buffer.data(), buffer.size());
                     writer.eol();
                 }
@@ -233,6 +247,9 @@ namespace ioutils {
             void process_file(const Path &parent) {
                 if (ignore_file) return;
                 if (matcher.is_matched(parent.path.data(), parent.path.size())) {
+                    if (color) {
+                        writer.write(FILE_COLOR.data(), FILE_COLOR.size());
+                    }                    
                     writer.write(parent.path.data(), parent.path.size());
                     writer.eol();
                 }
@@ -240,7 +257,8 @@ namespace ioutils {
 
             void process_symlink(const Path &parent, const char *stem) {
                 if (ignore_symlink) return;
-                buffer = parent.path;
+                buffer.clear();
+                if (parent.path != "/") buffer.append(parent.path);
                 buffer.push_back(SEP);
                 buffer.append(stem);
                 if (!matcher.is_matched(buffer.data(), buffer.size())) return;

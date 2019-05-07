@@ -30,7 +30,11 @@ namespace ioutils {
         struct Params {
             static constexpr int EXPLORE_ALL = -1;
             Params()
-                : flags(0), regex_mode(HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH), level(EXPLORE_ALL), path_regex(), paths() {}
+                : flags(0),
+                  regex_mode(HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH),
+                  level(EXPLORE_ALL),
+                  path_regex(),
+                  paths() {}
 
             int flags;
             int regex_mode;
@@ -147,8 +151,8 @@ namespace ioutils {
                     "Don't print out file I/O errors such as \"Permission denied\".") |
 
                 clara::Opt(color)["-c"]["--color"]("Print out color text.") |
-                clara::Opt(dfs)["--dfs"]("Use DFS for traversing.") |
-                clara::Opt(bfs)["--bfs"]("Use BFS for traversing. Note that BFS algorithm does not work "
+                clara::Opt(dfs)["--dfs"]("Use pre-order DFS algorithm for traversing.") |
+                clara::Opt(bfs)["--bfs"]("Use BFS algorithm for traversing. Note that BFS algorithm does not work "
                                          "well for large folders.") |
                 clara::Opt(params.path_regex, "path-regex")["-e"]["--path-regex"]("Search pattern.") |
                 clara::Opt(params.level, "level")["--level"]("The search depth.") |

@@ -79,9 +79,14 @@ namespace {
         auto result = cli.parse(clara::Args(argc, argv));
         if (!result) {
             fmt::print(stderr, "Invalid option: {}\n", result.errorMessage());
-            exit(1);
+            exit(EXIT_FAILURE);
         }
 
+        if (version) {
+            copyright();
+            exit(EXIT_SUCCESS);
+        }
+        
         // Print out the help document.
         if (help) {
             std::ostringstream oss;

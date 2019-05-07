@@ -83,7 +83,8 @@ namespace ioutils {
                 struct stat props;
                 int fd = ::open(dir.path.data(), O_RDONLY);
                 if (fd < 0) {
-                    if (!ignore_error) fmt::print(stderr, "fast-find: Cannot open '{}': {}.\n", dir.path, strerror(errno));
+                    if (!ignore_error)
+                        fmt::print(stderr, "fast-find: Cannot open '{}': {}.\n", dir.path, strerror(errno));
                     return;
                 }
 
@@ -107,15 +108,9 @@ namespace ioutils {
                                     filesystem::is_valid_dir(info->d_name) && Policy::is_valid_dir(info->d_name);
                                 if (is_valid_dir) {
                                     std::string p;
-                                    if (dir.path.size() == 1) {
-                                        if (dir.path[0] == '/') {
-                                            p.push_back('/'); // Skip dir.path to make sure that we do not display "//"
-                                        } if (dir.path[0] == '.') {
-                                            // Use relative paths
-                                        } else {
-                                            p.append(dir.path);
-                                            p.push_back('/');
-                                        }
+                                    if (dir.path == "/") {
+                                        p.push_back('/');
+                                    } else if (dir.path == ".") {
                                     } else {
                                         p.append(dir.path);
                                         p.push_back('/');
