@@ -10,9 +10,14 @@
 #include <vector>
 
 namespace {
+    void copyright() {
+        fmt::print("{}\n", "fast-updatedb version 0.2.0");
+        fmt::print("{}\n", "Copyright by Hung Dang <hungptit at gmail dot com>");
+    }
+
     struct InputParams {
         int flags = 0;
-        int level = -1;
+        int maxdepth = std::numeric_limits<int>::max();
         std::vector<std::string> paths; // Input databases
         std::string database;
         bool stats = 0;
@@ -35,9 +40,11 @@ namespace {
         InputParams params;
         std::vector<std::string> paths;
         bool help = false;
+        bool version = false;
         auto cli = clara::Help(help) |
                    clara::Opt(params.database, "database")["-d"]["--database"]("The file information database.") |
                    clara::Opt(params.verbose)["-v"]["--verbose"]("Display verbose information") |
+                   clara::Opt(version)["--version"]("Display the fast-updatedb version") |
                    clara::Arg(paths, "paths")("Search paths.");
 
         auto result = cli.parse(clara::Args(argc, argv));
@@ -51,6 +58,12 @@ namespace {
             std::ostringstream oss;
             oss << cli;
             fmt::print("{}", oss.str());
+            copyright();
+            exit(EXIT_SUCCESS);
+        }
+
+        if (version) {
+            copyright();
             exit(EXIT_SUCCESS);
         }
 

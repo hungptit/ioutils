@@ -10,7 +10,7 @@
 
 namespace {
     void copyright() {
-        fmt::print("\n{}\n", "fast-locate version 0.2.0");
+        fmt::print("{}\n", "fast-locate version 0.2.0");
         fmt::print("{}\n", "Copyright by Hung Dang <hungptit at gmail dot com>");
     }
 

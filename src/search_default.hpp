@@ -31,7 +31,7 @@ namespace ioutils {
                   follow_link(params.follow_symlink()),
                   donot_ignore_git(params.donot_ignore_git()),
                   ignore_error(params.ignore_error()),
-                  level(params.level) {
+                  maxdepth(params.maxdepth) {
                 current.reserve(512);
                 next.reserve(512);
             }
@@ -71,7 +71,8 @@ namespace ioutils {
                         visit(current_path);
                     }
                     ++current_level;
-                    if ((level > -1) && (current_level > level)) {
+                    fmt::print("max depth ====> {} - {}\n", current_level, maxdepth);
+                    if (current_level > maxdepth) {
                         break; // Stop if we have traverse to the desired depth.
                     }
                     std::swap(current, next);
@@ -191,7 +192,7 @@ namespace ioutils {
             bool follow_link;
             bool donot_ignore_git;
             bool ignore_error;
-            int level = -1;
+            int maxdepth;
             std::vector<std::string> unvisited_paths;
             static constexpr char SEP = '/';
         };

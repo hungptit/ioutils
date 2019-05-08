@@ -8,6 +8,11 @@
 
 namespace ioutils {
     namespace search {
+        void copyright() {
+            fmt::print("{}\n", "fast-find version 0.2.0");
+            fmt::print("{}\n", "Hung Dang <hungptit@gmail.com>");
+        }
+        
         enum PARAMS : uint32_t {
             VERBOSE = 1,                // Display verbose information.
             INVERT_MATCH = 1 << 1,      // Display paths that do not match given pattern.
@@ -32,13 +37,13 @@ namespace ioutils {
             Params()
                 : flags(0),
                   regex_mode(HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH),
-                  level(EXPLORE_ALL),
+                  maxdepth(std::numeric_limits<int>::max()),
                   path_regex(),
                   paths() {}
 
             int flags;
             int regex_mode;
-            int level = -1;
+            int maxdepth;
             std::string path_regex;
             std::vector<std::string> paths;
 
@@ -69,7 +74,7 @@ namespace ioutils {
                     fmt::print("\033[1;34mignore-symlink: \033[1;32m{}\n", ignore_symlink());
                     fmt::print("\033[1;34mfollow-symlink: \033[1;32m{}\n", follow_symlink());
                     fmt::print("\033[1;34mdfs: \033[1;32m{}\n", dfs());
-                    fmt::print("\033[1;34mlevel: \033[1;32m{}\n", level);
+                    fmt::print("\033[1;34mmaxdepth: \033[1;32m{}\n", maxdepth);
                     fmt::print("\033[1;34mregex: \033[1;32m\"{}\"\n", path_regex);
                     fmt::print("\033[1;34mpath: \033[1;32m[");
                     if (!paths.empty()) {
@@ -89,7 +94,7 @@ namespace ioutils {
                     fmt::print("ignore-symlink: {}\n", ignore_symlink());
                     fmt::print("follow-symlink: {}\n", follow_symlink());
                     fmt::print("dfs: {}\n", dfs());
-                    fmt::print("level: {}\n", level);
+                    fmt::print("maxdepth: {}\n", maxdepth);
                     fmt::print("regex: \"{}\"\n", path_regex);
                     fmt::print("path: [");
                     if (!paths.empty()) {
@@ -127,13 +132,15 @@ namespace ioutils {
             bool inverse_match = false;
             bool dfs = true;
             bool bfs = false;
-
+            
             bool ignore_error = false;
 
+            bool version = false;
             std::string begin_time, end_time;
 
             auto cli =
-                clara::Help(help) | clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information") |
+                clara::Help(help) | clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information.") |
+                clara::Help(version) | clara::Opt(version)["--version"]("Display fast-find version.") |
                 clara::Opt(ignore_case)["-i"]["--ignore-case"]("Ignore case") |
                 clara::Opt(inverse_match)["--invert-match"]("Display paths that do not match a given path regex.") |
                 clara::Opt(ignore_file)["--ignore-file"]("Ignore files.") |
@@ -154,8 +161,8 @@ namespace ioutils {
                 clara::Opt(dfs)["--dfs"]("Use pre-order DFS algorithm for traversing.") |
                 clara::Opt(bfs)["--bfs"]("Use BFS algorithm for traversing. Note that BFS algorithm does not work "
                                          "well for large folders.") |
-                clara::Opt(params.path_regex, "path-regex")["-e"]["--path-regex"]("Search pattern.") |
-                clara::Opt(params.level, "level")["--level"]("The search depth.") |
+                clara::Opt(params.path_regex, "path-regex")["-e"]["-E"]["--regex"]("Search pattern.") |
+                clara::Opt(params.maxdepth, "maxdepth")["--maxdepth"]("The maximum search depth.") |
 
                 // Unsupported options
                 clara::Opt(follow_link, "follow-link")["--follow-link"]("Follow symbolic links. (WIP)") |
@@ -176,9 +183,13 @@ namespace ioutils {
             if (help) {
                 std::ostringstream oss;
                 oss << cli;
-                fmt::print("{}\n", "fast-find version 0.1.0");
-                fmt::print("{}\n", "Hung Dang <hungptit@gmail.com>");
                 fmt::print("{}", oss.str());
+                copyright();
+                exit(EXIT_SUCCESS);
+            }
+
+            if (version) {
+                copyright();
                 exit(EXIT_SUCCESS);
             }
 
@@ -196,7 +207,7 @@ namespace ioutils {
             params.regex_mode = HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH | (ignore_case ? HS_FLAG_CASELESS : 0);
 
             // Use BFS if if users want to specify the level of exploration.
-            if (params.level > -1) {
+            if (params.maxdepth < std::numeric_limits<int>::max()) {
                 bfs = true;
             }
 
