@@ -71,7 +71,6 @@ namespace ioutils {
                         visit(current_path);
                     }
                     ++current_level;
-                    fmt::print("max depth ====> {} - {}\n", current_level, maxdepth);
                     if (current_level > maxdepth) {
                         break; // Stop if we have traverse to the desired depth.
                     }
