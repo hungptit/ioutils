@@ -62,7 +62,9 @@ namespace {
         bool exact_match = false;
         bool regex_match = false;
         bool timer = false;
-
+        std::vector<std::string> dbs;
+        std::set<std::string> lookup;
+        
         auto cli =
             clara::Help(help) | clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information") |
             clara::Opt(timer, "timer")["--timer"]("Display the execution runtime.") |
@@ -73,7 +75,7 @@ namespace {
             clara::Opt(regex_match)["-r"]["--regex"]("Use regular expression matching algorithm") |
             clara::Opt(exact_match)["-x"]["--exact-match"]("Use exact match algorithm") |
             clara::Opt(params.prefix, "prefix")["--prefix"]("Path prefix.") |
-            clara::Opt(params.databases, "database")["-d"]["--database"]("The file information database.") |
+            clara::Opt(dbs, "database")["-d"]["--database"]("The file information database.") |
             clara::Arg(params.pattern, "pattern")("Search pattern");
 
         auto result = cli.parse(clara::Args(argc, argv));
@@ -96,12 +98,19 @@ namespace {
             exit(EXIT_SUCCESS);
         }
 
-        if (params.databases.empty()) {
+        if (dbs.empty()) {
             auto default_db = std::getenv("FAST_LOCATE_DB");
             if (default_db == nullptr) {
                 params.databases.emplace_back(".database");
             } else {
                 params.databases.push_back(default_db);
+            }
+        } else {
+            for (auto item : dbs) {
+                lookup.emplace(item);
+            }
+            for (auto item : lookup) {
+                params.databases.push_back(item);
             }
         }
 
@@ -140,21 +149,19 @@ namespace {
 
 int main(int argc, char *argv[]) {
     auto params = parse_input_arguments(argc, argv);
-    for (auto db : params.databases) {
-        if (params.pattern.empty()) {
-            using GrepAlg = ioutils::FileReader<ioutils::PrintAllPolicy>;
-            GrepAlg grep(params);
-            for (auto db : params.databases) {
-                grep(db.data());
-            }
+    if (params.pattern.empty()) {
+        using GrepAlg = ioutils::FileReader<ioutils::PrintAllPolicy>;
+        GrepAlg grep(params);
+        for (auto db : params.databases) {
+            grep(db.data());
+        }
+    } else {
+        if (!params.invert_match()) {
+            using Matcher = utils::hyperscan::RegexMatcher;
+            locate<Matcher>(params);
         } else {
-            if (!params.invert_match()) {
-                using Matcher = utils::hyperscan::RegexMatcher;
-                locate<Matcher>(params);
-            } else {
-                using Matcher = utils::hyperscan::RegexMatcherInv;
-                locate<Matcher>(params);
-            }
+            using Matcher = utils::hyperscan::RegexMatcherInv;
+            locate<Matcher>(params);
         }
     }
     return EXIT_SUCCESS;
