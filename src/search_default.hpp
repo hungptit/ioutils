@@ -150,20 +150,22 @@ namespace ioutils {
                             }
                             case DT_UNKNOWN: {
                                 // Handle situations where d_type is not cached.
-                                temporary_path.clear();
-                                temporary_path.append(dir.path);
-                                temporary_path.push_back(SEP);
-                                temporary_path.append(info->d_name);
-                                struct stat unknown_info;
-                                if (stat(temporary_path.data(), &unknown_info) != 0) {
-                                    fmt::print(stderr, "fast-find: '{}': {}.\n", temporary_path, strerror(errno));
-                                } else {
-                                    auto umode = unknown_info.st_mode & S_IFMT;
-                                    if (umode == S_IFDIR) {
-                                        next.emplace_back(Path{-1, temporary_path});
-                                        Policy::process_dir(temporary_path);
+                                if (filesystem::is_valid_dir(info->d_name) && Policy::is_valid_dir(info->d_name)) {
+                                    temporary_path.clear();
+                                    temporary_path.append(dir.path);
+                                    temporary_path.push_back(SEP);
+                                    temporary_path.append(info->d_name);
+                                    struct stat unknown_info;
+                                    if (stat(temporary_path.data(), &unknown_info) != 0) {
+                                        fmt::print(stderr, "fast-find: '{}': {}.\n", temporary_path, strerror(errno));
                                     } else {
-                                        Policy::process_unknown(dir, info->d_name);
+                                        auto umode = unknown_info.st_mode & S_IFMT;
+                                        if (umode == S_IFDIR) {
+                                            next.emplace_back(Path{-1, temporary_path});
+                                            Policy::process_dir(temporary_path);
+                                        } else {
+                                            Policy::process_unknown(dir, info->d_name);
+                                        }
                                     }
                                 }
                                 break;
