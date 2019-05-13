@@ -107,17 +107,18 @@ namespace ioutils {
                                 const bool is_valid_dir =
                                     filesystem::is_valid_dir(info->d_name) && Policy::is_valid_dir(info->d_name);
                                 if (is_valid_dir) {
-                                    std::string p;
+                                    temporary_path.clear();
                                     if (dir.path == "/") {
-                                        p.push_back('/');
+										temporary_path.push_back(SEP); // Should not add SEP two times.
                                     } else if (dir.path == ".") {
+										// Use relative path to improve usability.
                                     } else {
-                                        p.append(dir.path);
-                                        p.push_back('/');
+                                        temporary_path.append(dir.path);
+										temporary_path.push_back(SEP);
                                     }
-                                    p.append(info->d_name);
-                                    Policy::process_dir(p);
-                                    next.emplace_back(Path{-1, p});
+                                    temporary_path.append(info->d_name);
+                                    Policy::process_dir(temporary_path);
+                                    next.emplace_back(Path{-1, temporary_path});
                                 }
                                 break;
                             }
@@ -149,7 +150,24 @@ namespace ioutils {
                                 break;
                             }
                             case DT_UNKNOWN: {
-                                Policy::process_unknown(dir, info->d_name);
+                                // Handle situations where d_type is not cached.
+                                temporary_path.clear();
+                                temporary_path.append(dir.path);
+                                temporary_path.push_back(SEP);
+                                temporary_path.append(info->d_name);
+                                struct stat unknown_info;
+                                auto uerrcode = stat(temporary_path.data(), &unknown_info);
+                                if (uerrcode != 0) {
+                                    fmt::print(stderr, "fast-find: '{}': {}.\n", temporary_path, strerror(errno));
+                                } else {
+                                    auto umode = unknown_info.st_mode & S_IFMT;
+                                    if (umode == S_IFDIR) {
+                                        next.emplace_back(Path{-1, temporary_path});
+                                        Policy::process_dir(temporary_path);
+                                    } else {
+                                        Policy::process_unknown(dir, info->d_name);
+                                    }
+                                }
                                 break;
                             }
                             default:
@@ -193,6 +211,7 @@ namespace ioutils {
             bool ignore_error;
             int maxdepth;
             std::vector<std::string> unvisited_paths;
+            std::string temporary_path;
             static constexpr char SEP = '/';
         };
     } // namespace filesystem
