@@ -109,8 +109,8 @@ namespace ioutils {
                                 if (is_valid_dir) {
                                     temporary_path.clear();
                                     if (dir.path == "/") {
-                                        temporary_path.push_back(SEP);
-                                    } else if (dir.path == ".") {
+                                        temporary_path.push_back(SEP); // Should not add SEP two times.
+                                    } else if (dir.path == ".") {      // Use relative path to improve usability.
                                     } else {
                                         temporary_path.append(dir.path);
                                         temporary_path.push_back(SEP);
