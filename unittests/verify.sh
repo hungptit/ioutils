@@ -9,7 +9,7 @@ set +x
 
 # Find all files in a given folder using GNU find.
 echo "Find all files using GNU find"
-/usr/bin/time gfind $src | sort -s > $data1
+/usr/bin/time find $src | sort -s > $data1
 
 # Find all files using fast-find
 echo "Find all files using fast-find"
