@@ -4,15 +4,13 @@
 #include "ioutils.hpp"
 #include "locate.hpp"
 #include "utils/matchers.hpp"
+#include "utils/memchr.hpp"
 #include "utils/regex_matchers.hpp"
 #include <string>
-#include "utils/memchr.hpp"
 
 namespace {
-    void copyright() {
-        fmt::print("{}\n", "fast-locate version 0.2.0");
-        fmt::print("{}\n", "Copyright by Hung Dang <hungptit at gmail dot com>");
-    }
+    void disp_version() { fmt::print("{}\n", "fast-locate version 1.0"); }
+    void copyright() { fmt::print("{}\n", "Copyright by Hung Dang <hungptit at gmail dot com>"); }
 
     enum PARAMS : uint32_t {
         VERBOSE = 1,
@@ -64,19 +62,17 @@ namespace {
         bool timer = false;
         std::vector<std::string> dbs;
         std::set<std::string> lookup;
-        
-        auto cli =
-            clara::Help(help) | clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information") |
-            clara::Opt(timer, "timer")["--timer"]("Display the execution runtime.") |
-            clara::Opt(version)["--version"]("Display the version of fast-locate.") |
-            clara::Opt(ignore_case)["-i"]["--ignore-case"]("Ignore case.") |
-            clara::Opt(invert_match)["-u"]["--invert-match"](
-                "Display lines that do not match given pattern.") |
-            clara::Opt(regex_match)["-r"]["--regex"]("Use regular expression matching algorithm") |
-            clara::Opt(exact_match)["-x"]["--exact-match"]("Use exact match algorithm") |
-            clara::Opt(params.prefix, "prefix")["--prefix"]("Path prefix.") |
-            clara::Opt(dbs, "database")["-d"]["--database"]("The file information database.") |
-            clara::Arg(params.pattern, "pattern")("Search pattern");
+
+        auto cli = clara::Help(help) | clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information") |
+                   clara::Opt(timer, "timer")["--timer"]("Display the execution runtime.") |
+                   clara::Opt(version)["--version"]("Display the version of fast-locate.") |
+                   clara::Opt(ignore_case)["-i"]["--ignore-case"]("Ignore case.") |
+                   clara::Opt(invert_match)["-u"]["--invert-match"]("Display lines that do not match given pattern.") |
+                   clara::Opt(regex_match)["-r"]["--regex"]("Use regular expression matching algorithm") |
+                   clara::Opt(exact_match)["-x"]["--exact-match"]("Use exact match algorithm") |
+                   clara::Opt(params.prefix, "prefix")["--prefix"]("Path prefix.") |
+                   clara::Opt(dbs, "database")["-d"]["--database"]("The file information database.") |
+                   clara::Arg(params.pattern, "pattern")("Search pattern");
 
         auto result = cli.parse(clara::Args(argc, argv));
         if (!result) {
@@ -85,10 +81,10 @@ namespace {
         }
 
         if (version) {
-            copyright();
+            disp_version();
             exit(EXIT_SUCCESS);
         }
-        
+
         // Print out the help document.
         if (help) {
             std::ostringstream oss;
@@ -125,10 +121,9 @@ namespace {
 
         // Update flags and regex_mode
         exact_match = regex_match ? !regex_match : exact_match;
-        params.flags = verbose * VERBOSE | invert_match * INVERT_MATCH | exact_match * EXACT_MATCH |
-                       ignore_case * IGNORE_CASE;
-        params.regex_mode =
-            (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH) | (params.ignore_case() ? HS_FLAG_CASELESS : 0);
+        params.flags =
+            verbose * VERBOSE | invert_match * INVERT_MATCH | exact_match * EXACT_MATCH | ignore_case * IGNORE_CASE;
+        params.regex_mode = (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH) | (params.ignore_case() ? HS_FLAG_CASELESS : 0);
 
         // Display input arguments in JSON format if verbose flag is on
         if (params.verbose()) {

@@ -8,11 +8,9 @@
 
 namespace ioutils {
     namespace search {
-        void copyright() {
-            fmt::print("{}\n", "fast-find version 0.2.0");
-            fmt::print("{}\n", "Hung Dang <hungptit@gmail.com>");
-        }
-        
+        void disp_version() { fmt::print("{}\n", "fast-find version 1.0"); }
+        void copyright() { fmt::print("{}\n", "Hung Dang <hungptit@gmail.com>"); }
+
         enum PARAMS : uint32_t {
             VERBOSE = 1,                // Display verbose information.
             INVERT_MATCH = 1 << 1,      // Display paths that do not match given pattern.
@@ -132,7 +130,7 @@ namespace ioutils {
             bool inverse_match = false;
             bool dfs = true;
             bool bfs = false;
-            
+
             bool ignore_error = false;
 
             bool version = false;
@@ -189,7 +187,7 @@ namespace ioutils {
             }
 
             if (version) {
-                copyright();
+                disp_version();
                 exit(EXIT_SUCCESS);
             }
 

@@ -10,10 +10,8 @@
 #include <vector>
 
 namespace {
-    void copyright() {
-        fmt::print("{}\n", "fast-updatedb version 0.2.0");
-        fmt::print("{}\n", "Copyright by Hung Dang <hungptit at gmail dot com>");
-    }
+    void disp_version() { fmt::print("{}\n", "fast-updatedb version 1.0"); }
+    void copyright() { fmt::print("{}\n", "Copyright by Hung Dang <hungptit at gmail dot com>"); }
 
     struct InputParams {
         int flags = 0;
@@ -63,7 +61,7 @@ namespace {
         }
 
         if (version) {
-            copyright();
+            disp_version();
             exit(EXIT_SUCCESS);
         }
 
