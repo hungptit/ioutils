@@ -31,7 +31,7 @@ namespace ioutils {
                   follow_link(params.follow_symlink()),
                   donot_ignore_git(params.donot_ignore_git()),
                   ignore_error(params.ignore_error()),
-                  level(params.level) {
+                  maxdepth(params.maxdepth) {
                 current.reserve(512);
                 next.reserve(512);
             }
@@ -71,7 +71,7 @@ namespace ioutils {
                         visit(current_path);
                     }
                     ++current_level;
-                    if ((level > -1) && (current_level > level)) {
+                    if (current_level > maxdepth) {
                         break; // Stop if we have traverse to the desired depth.
                     }
                     std::swap(current, next);
@@ -108,10 +108,13 @@ namespace ioutils {
                                     filesystem::is_valid_dir(info->d_name) && Policy::is_valid_dir(info->d_name);
                                 if (is_valid_dir) {
                                     temporary_path.clear();
-                                    if (dir.path != "/") {
+                                    if (dir.path == "/") {
+                                        temporary_path.push_back(SEP); // Should not add SEP two times.
+                                    } else if (dir.path == ".") {      // Use relative path to improve usability.
+                                    } else {
                                         temporary_path.append(dir.path);
+                                        temporary_path.push_back(SEP);
                                     }
-                                    temporary_path.push_back(SEP);
                                     temporary_path.append(info->d_name);
                                     Policy::process_dir(temporary_path);
                                     next.emplace_back(Path{-1, temporary_path});
@@ -147,21 +150,22 @@ namespace ioutils {
                             }
                             case DT_UNKNOWN: {
                                 // Handle situations where d_type is not cached.
-                                temporary_path.clear();
-                                temporary_path.append(dir.path);
-                                temporary_path.push_back(SEP);
-                                temporary_path.append(info->d_name);
-                                struct stat unknown_info;
-                                auto uerrcode = stat(temporary_path.data(), &unknown_info);
-                                if (uerrcode != 0) {
-                                    fmt::print(stderr, "fast-find: '{}': {}.\n", temporary_path, strerror(errno));
-                                } else {
-                                    auto umode = unknown_info.st_mode & S_IFMT;
-                                    if (umode == S_IFDIR) {
-                                        next.emplace_back(Path{-1, temporary_path});
-                                        Policy::process_dir(temporary_path);
+                                if (filesystem::is_valid_dir(info->d_name) && Policy::is_valid_dir(info->d_name)) {
+                                    temporary_path.clear();
+                                    temporary_path.append(dir.path);
+                                    temporary_path.push_back(SEP);
+                                    temporary_path.append(info->d_name);
+                                    struct stat unknown_info;
+                                    if (stat(temporary_path.data(), &unknown_info) != 0) {
+                                        fmt::print(stderr, "fast-find: '{}': {}.\n", temporary_path, strerror(errno));
                                     } else {
-                                        Policy::process_unknown(dir, info->d_name);
+                                        auto umode = unknown_info.st_mode & S_IFMT;
+                                        if (umode == S_IFDIR) {
+                                            next.emplace_back(Path{-1, temporary_path});
+                                            Policy::process_dir(temporary_path);
+                                        } else {
+                                            Policy::process_unknown(dir, info->d_name);
+                                        }
                                     }
                                 }
                                 break;
@@ -205,7 +209,7 @@ namespace ioutils {
             bool follow_link;
             bool donot_ignore_git;
             bool ignore_error;
-            int level = -1;
+            int maxdepth;
             std::vector<std::string> unvisited_paths;
             std::string temporary_path;
             static constexpr char SEP = '/';
