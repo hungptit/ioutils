@@ -12,15 +12,15 @@ ioutils provide very fast implementations for file traversal and reading/writing
 
 * The fast-find command is a drop-in replacement for GNU find. This command [can be 2x faster](benchmark.md) than both [find](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd) commands.
 
-* The fast-locate command id a drop-in replacement for GNU locate. This command [is 10x faster](benchmark.md) than [GNU locate](https://www.gnu.org/software/findutils/) command.
+* The fast-locate command is a drop-in replacement for GNU locate. This command [is 10x faster](benchmark.md) than [GNU locate](https://www.gnu.org/software/findutils/) command.
 
 **What is the different between ioutils and other similar open source projects such as [GNU findutils](https://www.gnu.org/software/findutils/) and [fd](https://github.com/sharkdp/fd)?**
 
-* ioutils is written as a library so we can easily reuse it in other projects, for example ioutils is used by [fastgrep](https://github.com/hungptit/fastgrep).
+* ioutils is written as a library so we can easily reuse it in other projects, for example ioutils is used by [fastgrep](https://github.com/hungptit/fastgrep), and [codesearch](https://github.com/hungptit/tools).
 
-* Core algorithms are created using policy-based design so we can have flexible and reusable algorithms without sacrificing the performance i.e all classes are generated at the compile time.
+* Core algorithms are templatized using policy-based design so we can have flexible and reusable algorithms without sacrificing the performance i.e all classes are generated at the compile time.
 
-* All commands support regular expression pattern matching by default.
+* All commands support regular expression pattern matching syntax by default.
 
 # Usage #
 
@@ -74,10 +74,10 @@ sys     0m0.121s
 
 *Note: fast-find does support caseless matching using ignore-case flag.*
 
-## Use --level to control the level of exploration i.e BFS depth ##
+## Use --maxdepth to control the level of exploration ##
 
 ``` shell
-hdang ~/w/i/commands> fast-find ../ --level 1 -e '[.]cpp$'
+hdang ~/w/i/commands> fast-find ../ --maxdepth 1 -e '[.]cpp$'
 ../benchmark/read_data.cpp
 ../benchmark/fast-find.cpp
 ../benchmark/file_read.cpp
@@ -142,14 +142,14 @@ fast-locate
 # FAQs
 
 1. Where are benchmark results? 
-This [page](benchmark.md) has a performance benchmark results and analysis for GNU find, fd, and fast-find commands.
+This [page](benchmark.md) has performance benchmark results and analysis for GNU find, fd, and fast-find commands.
 
-2. How can I download fast-find? 
-Precompiled binaries for fast-find, fast-updatedb, and fast-locate can be found [here](https://github.com/hungptit/tools).
+2. How can I download pre-compiled binaries? 
+Portable binaries for fast-find, fast-updatedb, and fast-locate can be found [here](https://github.com/hungptit/tools).
 
 3. I am not sure if the output of fast-find is the same as that of GNU find?
 
-We tried our best to make sure that fast-find's output will be identical to the output of GNU find so it can be used as a drop-in replacement for GNU find. Below are the correctness test results of the [verify.sh](https://github.com/hungptit/ioutils/blob/master/unittests/verify.sh) script for a large folder with 377250 files and folders. You can run it using your folder to verify that fast-find will work correctly in most situations. Note that both fast-find and fd do not output the input folder paths.
+We tried our best to make sure that fast-find's output will be identical to the output of GNU find so it can be used as a drop-in replacement for GNU find. Below are the correctness test results obtained using our [verification script](https://github.com/hungptit/ioutils/blob/master/unittests/verify.sh) for a large folder with 377250 files and folders. You can run it using your desired folder to verify that fast-find will work correctly in most situations. *Note that both fast-find and fd do not output the input folder paths*.
 
 ``` shell
 ATH020224:unittests hdang$ ./verify.sh ~/working
