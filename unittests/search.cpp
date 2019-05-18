@@ -108,7 +108,7 @@ TEST_CASE("Utility function", "basic") {
 
         SECTION("Include all with the given level") {
             ioutils::search::Params params;
-            params.level = 0;
+            params.maxdepth = 0;
             ioutils::filesystem::DefaultSearch<ioutils::StorePolicy> search(params);
             fmt::print("DFS - StorePolicy:\n");
             search.traverse(std::vector<std::string>{p});

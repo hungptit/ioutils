@@ -7,22 +7,65 @@
 #include <unistd.h>
 
 namespace ioutils {
-    void remove_trailing_slash(std::string &s) {
-        if (s.empty()) return; // Return early for an empty input.
-        constexpr char SLASH = '/';
-        while (!s.empty()) {
-            if (s.back() == SLASH) {
-                s.pop_back();
-            } else {
-                break;
-            }
-        }
+    namespace path {
+        /**
+         * This function will simplify the given path string so that the displayed path makes sense to users .
+         *
+         * Runtime: O(n)
+         * Memory: O(n)
+         */
+        std::string simplify_path(const std::string &path) {
+            constexpr char SLASH = '/';
+            const int N = static_cast<int>(path.size());
+            if (path.empty()) return "";
+            std::vector<std::string> tokens;
+            int begin = 0;
+            int end = N - 1;
+            bool relative_path = path[0] != SLASH;
 
-        // Make sure that a given path has only one slash at the end.
-        if (s.empty()) {
-            s.push_back(SLASH);
+            while (end >= 0 && path[end] == SLASH) --end;
+            while (begin < end && (path[begin] == SLASH)) ++begin;
+
+            auto ptr = begin;
+            while (begin <= end) {
+                while (ptr <= end && path[ptr] != SLASH) ++ptr;
+                auto stem = path.substr(begin, ptr - begin);
+                if (stem == ".") {
+                    // Ignore the current stem
+                } else if (stem == "..") {
+                    if (tokens.empty()) {
+                        if (relative_path) {
+                            tokens.push_back("..");
+                        }
+                    } else {
+                        if (tokens.back() == "..") {
+                            tokens.push_back("..");
+                        } else {
+                            tokens.pop_back();
+                        }
+                    }
+                } else {
+                    tokens.push_back(stem);
+                }
+                while (ptr <= end && (path[ptr] == SLASH)) {
+                    ++ptr;
+                }
+                begin = ptr++;
+            }
+
+            std::string results;
+            if (!relative_path) results.push_back(SLASH);
+            if (tokens.empty()) return results;
+            results.append(tokens[0]);
+            if (tokens.size() > 1) {
+                for (size_t idx = 1; idx < tokens.size(); ++idx) {
+                    results.push_back(SLASH);
+                    results.append(tokens[idx]);
+                }
+            }
+            return results;
         }
-    }
+    } // namespace path
 
     namespace search {
         // Find all paths/files that match the given expansion. For

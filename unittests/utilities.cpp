@@ -1,3 +1,5 @@
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest/doctest.h"
 #include <fstream>
 #include <iostream>
 
@@ -7,22 +9,25 @@
 #include "utilities.hpp"
 #include "fdwriter.hpp"
 
-#define CATCH_CONFIG_MAIN
-#include "catch/catch.hpp"
-using Catch::Matchers::Equals;
-
-TEST_CASE("Path related functions", "basic") {
-    std::string s0("/foo/foo");
-    std::string s1("/foo/foo/////");
-    std::string s2("/foo/foo");
-    ioutils::remove_trailing_slash(s1);
-    CHECK_THAT(s1, Equals(s0));
-
-    ioutils::remove_trailing_slash(s2);
-    CHECK_THAT(s2, Equals(s0));
+TEST_CASE("Simplify paths") {
+    SUBCASE("Case 1") { CHECK(ioutils::path::simplify_path("") == ""); }
+    SUBCASE("Case 2") { CHECK(ioutils::path::simplify_path("/") == "/"); }
+    SUBCASE("Case 3") { CHECK(ioutils::path::simplify_path("////////.") == "/"); }
+    SUBCASE("Case 4") { CHECK(ioutils::path::simplify_path("////////") == "/"); }
+    SUBCASE("Case 5") { CHECK(ioutils::path::simplify_path("//home/.//.///.") == "/home"); }
+    SUBCASE("Case 6") { CHECK(ioutils::path::simplify_path("//home/.//.///..") == "/"); }
+    SUBCASE("Case 7") { CHECK(ioutils::path::simplify_path("//..") == "/"); }
+    SUBCASE("Case 8") { CHECK(ioutils::path::simplify_path("//../home") == "/home"); }
+    SUBCASE("Case 9") { CHECK(ioutils::path::simplify_path("//home/boo/../goo//..//.//.///..") == "/"); }
+    SUBCASE("Case 10") { CHECK(ioutils::path::simplify_path("/..//home/boo/../goo////.//.///..") == "/home"); }
+    SUBCASE("Case 11") { CHECK(ioutils::path::simplify_path("/..//home/../boo/../goo//..//.//.///..") == "/"); }
+    SUBCASE("Case 11") { CHECK(ioutils::path::simplify_path("/a//b////c/d//././/..") == "/a/b/c"); }
+    SUBCASE("Case 12") { CHECK(ioutils::path::simplify_path("/..//a//b////c/d//././/..") == "/a/b/c"); }
+    SUBCASE("Case 12") { CHECK(ioutils::path::simplify_path("../src////") == "../src"); }
+    SUBCASE("Case 12") { CHECK(ioutils::path::simplify_path("../../../foo/../src////") == "../../../src"); }    
 }
 
-TEST_CASE("Console", "basic") {
+TEST_CASE("Console") {
     ioutils::StreamWriter console(ioutils::StreamWriter::STDOUT);
     std::string s1("Hello");
     std::string s2(" world!\n");

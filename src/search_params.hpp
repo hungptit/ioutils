@@ -196,8 +196,7 @@ namespace ioutils {
                 params.paths.push_back(".");
             } else {
                 for (auto p : paths) {
-                    remove_trailing_slash(p);
-                    params.paths.emplace_back(p);
+                    params.paths.emplace_back(path::simplify_path(p));
                 }
             }
 
