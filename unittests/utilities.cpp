@@ -29,6 +29,7 @@ TEST_CASE("Simplify paths") {
     SUBCASE("Case 14") { CHECK(ioutils::path::simplify_path("..") == ".."); }    
     SUBCASE("Case 15") { CHECK(ioutils::path::simplify_path("../") == ".."); }    
     SUBCASE("Case 16") { CHECK(ioutils::path::simplify_path("././") == "."); }    
+    SUBCASE("Case 16") { CHECK(ioutils::path::simplify_path("////////") == "/"); }    
 }
 
 TEST_CASE("Console") {

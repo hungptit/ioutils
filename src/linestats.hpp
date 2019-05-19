@@ -14,7 +14,7 @@ namespace ioutils {
         template<typename Params> FileStats(Params && params) {
             
         }
-        void process(const char *begin, const size_t len) {
+        void process(const char *begin, const size_t len, const size_t) {
             // Count the number of lines
             const char *ptr = begin;
             const char *end = ptr + len;

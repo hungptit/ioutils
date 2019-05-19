@@ -45,7 +45,7 @@ namespace ioutils {
                 };
 
                 // Apply a given policy to read_buffer.
-                Policy::process(read_buffer, nbytes);
+                Policy::process(read_buffer, nbytes, BUFFER_SIZE);
             }
 
             Policy::finalize(); // Clear policy's states.
@@ -103,7 +103,7 @@ namespace ioutils {
             }
 
             // Process mapped buffer
-            Policy::process(begin, length);
+            Policy::process(begin, length, length);
 
             // Cleanup
             munmap(begin, length);

@@ -37,7 +37,8 @@ namespace ioutils {
             void process_fifo(const Path &parent, const char *stem = nullptr) { process_file(parent, stem); }
 
             /**
-             * Store the path of character special for now. Not sure if users ever need to know about this type of paths.
+             * Store the path of character special for now. Not sure if users ever need to know about this type of
+             * paths.
              */
             void process_chr(const Path &parent, const char *stem = nullptr) { process_file(parent, stem); }
 
@@ -52,7 +53,7 @@ namespace ioutils {
             void process_socket(const Path &parent, const char *stem = nullptr) { process_file(parent, stem); }
 
             /**
-             * A whiteout path is specific to MacOS. 
+             * A whiteout path is specific to MacOS.
              */
             void process_whiteout(const Path &parent, const char *stem = nullptr) { process_file(parent, stem); }
 
@@ -79,7 +80,8 @@ namespace ioutils {
               linebuf(),
               prefix(params.prefix),
               console(StreamWriter::STDOUT) {}
-        void process(const char *begin, const size_t len) {
+
+        void process(const char *begin, const size_t len, const size_t) {
             const char *start = begin;
             const char *end = begin + len;
             const char *ptr = begin;
@@ -141,7 +143,7 @@ namespace ioutils {
     class PrintAllPolicy {
       public:
         template <typename Params> PrintAllPolicy(Params &&args) : prefix(args.prefix), console(StreamWriter::STDOUT) {}
-        void process(const char *begin, const size_t len) { console.write(begin, len); }
+        void process(const char *begin, const size_t len, const size_t) { console.write(begin, len); }
 
       protected:
         void set_filename(const char *) {}
