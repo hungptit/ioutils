@@ -53,10 +53,10 @@ namespace ioutils {
                 begin = ptr++;
             }
 
-            std::string results;
-            if (!relative_path) results.push_back(SLASH);
-            if (tokens.empty()) return results;
-            results.append(tokens[0]);
+            if (tokens.empty()) {
+                return relative_path ? "." : "/";
+            }
+            std::string results = relative_path ? tokens[0] : ("/" + tokens[0]);
             if (tokens.size() > 1) {
                 for (size_t idx = 1; idx < tokens.size(); ++idx) {
                     results.push_back(SLASH);
