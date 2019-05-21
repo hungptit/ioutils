@@ -1,6 +1,6 @@
 # Introduction #
 
-ioutils provide very fast implementations for file traversal and reading/writing algorithms.
+ioutils provides very fast implementations for file traversal and reading/writing algorithms.
 
 # Features #
 
