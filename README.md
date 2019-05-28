@@ -4,7 +4,7 @@ ioutils provides very fast implementations for file traversal and reading/writin
 
 # Features #
 
-* Very fast file read algorithms.
+* Very fast file read/write algorithms.
 
 * Very fast file traversal algorithms.
 
