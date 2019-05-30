@@ -9,7 +9,7 @@
 namespace ioutils {
     namespace search {
         void disp_version() { fmt::print("{}\n", "fast-find version 1.0"); }
-        void copyright() { fmt::print("{}\n", "Hung Dang <hungptit@gmail.com>"); }
+		void copyright() { fmt::print("{}\n", "Copyright by Hung Dang <hungptit at gmail dot com>"); }
 
         enum PARAMS : uint32_t {
             VERBOSE = 1,                // Display verbose information.
