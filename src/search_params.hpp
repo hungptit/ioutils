@@ -9,7 +9,14 @@
 namespace ioutils {
     namespace search {
         void disp_version() { fmt::print("{}\n", "fast-find version 1.0"); }
-        void copyright() { fmt::print("{}\n", "Copyright by Hung Dang <hungptit at gmail dot com>"); }
+        void copyright() { fmt::print("\n{}\n", "Report bugs or enhancement requests to hungptit@gmail.com"); }
+        void usage() {
+            fmt::print("\nExamples:\n");
+            fmt::print("\t1. Find all files and folders from given paths:\n");
+            fmt::print("\t\tfast-find /\n");
+            fmt::print("\t2. Find all files that match our desired pattern:\n");
+            fmt::print("\t\tfast-find ../src/ -e 'reader'\n");
+        }
 
         enum PARAMS : uint32_t {
             VERBOSE = 1,                // Display verbose information.
@@ -174,6 +181,7 @@ namespace ioutils {
             auto result = cli.parse(clara::Args(argc, argv));
             if (!result) {
                 fmt::print(stderr, "Invalid option: {}\n", result.errorMessage());
+                usage();
                 exit(EXIT_FAILURE);
             }
 
@@ -182,6 +190,7 @@ namespace ioutils {
                 std::ostringstream oss;
                 oss << cli;
                 fmt::print("{}", oss.str());
+                usage();
                 copyright();
                 exit(EXIT_SUCCESS);
             }

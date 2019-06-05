@@ -88,13 +88,13 @@ namespace {
 
     // Read from file in chunks
     struct AppendPolicy {
-        void process(const char *buffer, const size_t len) { data.append(buffer, len); }
+        void process(const char *buffer, const size_t len, const size_t) { data.append(buffer, len); }
         void finalize(){}       // Do not need to do anything for the append only policy.
         std::string data;
     };
 
     struct ProducerPolicy {
-        void process(const char *buffer, const size_t len) {
+        void process(const char *buffer, const size_t len, const size_t) {
             data.emplace_back(std::string(buffer, len));
         }
         std::deque<std::string> data;

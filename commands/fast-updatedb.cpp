@@ -11,8 +11,14 @@
 
 namespace {
     void disp_version() { fmt::print("{}\n", "fast-updatedb version 1.0"); }
-    void copyright() { fmt::print("{}\n", "Copyright by Hung Dang <hungptit at gmail dot com>"); }
-
+    void copyright() { fmt::print("\n{}\n", "Report bugs or enhancement requests to hungptit@gmail.com"); }
+    void usage() {
+        fmt::print("\nExamples:\n");
+        fmt::print("\t1. Build a database for all files from given paths:\n");
+        fmt::print("\t\tfast-updatedb -d my_db /\n");
+        fmt::print("\t2. Build the file information database for given paths and save to the default path :\n");
+        fmt::print("\t\tfast-updatedb ../src/\n");
+    }
     struct InputParams {
         int flags = 0;
         int maxdepth = std::numeric_limits<int>::max();
@@ -48,6 +54,7 @@ namespace {
         auto result = cli.parse(clara::Args(argc, argv));
         if (!result) {
             fmt::print(stderr, "Error in command line: {}\n", result.errorMessage());
+            usage();
             exit(1);
         }
 
@@ -56,6 +63,7 @@ namespace {
             std::ostringstream oss;
             oss << cli;
             fmt::print("{}", oss.str());
+            usage();
             copyright();
             exit(EXIT_SUCCESS);
         }

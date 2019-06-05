@@ -17,7 +17,7 @@ namespace ioutils {
 
         template <typename Policy> struct LineStats_std : public Policy {
             LineStats_std() : Policy() {}
-            void process(const char *buffer, size_t len) {
+            void process(const char *buffer, size_t len, const size_t) {
                 for (size_t idx = 0; idx < len; ++idx) {
                     if (buffer[idx] == EOL) {
                         ++Policy::lines;
@@ -28,7 +28,7 @@ namespace ioutils {
 
         template <typename Policy> struct LineStats : public Policy {
             LineStats() : Policy() {}
-            void process(const char *buffer, size_t len) {
+            void process(const char *buffer, size_t len, const size_t) {
                 const char *end = buffer + len;
                 const char *ptr = buffer;
                 while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {

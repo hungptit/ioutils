@@ -10,7 +10,14 @@
 
 namespace {
     void disp_version() { fmt::print("{}\n", "fast-locate version 1.0"); }
-    void copyright() { fmt::print("{}\n", "Copyright by Hung Dang <hungptit at gmail dot com>"); }
+    void copyright() { fmt::print("\n{}\n", "Report bugs or enhancement requests to hungptit@gmail.com"); }
+    void usage() {
+        fmt::print("\nExamples:\n");
+        fmt::print("\t1. Locate files using the default database:\n");
+        fmt::print("\t\tfast-locate 'boos.*qvm.*string.hpp$'\n");
+        fmt::print("\t2. Locate files using the specified database:\n");
+        fmt::print("\t\tfast-locate -d my_db 'boos.*qvm.*string.hpp$'\n");
+    }
 
     enum PARAMS : uint32_t {
         VERBOSE = 1,
@@ -92,6 +99,7 @@ namespace {
             std::ostringstream oss;
             oss << cli;
             fmt::print("{}", oss.str());
+            usage();
             copyright();
             exit(EXIT_SUCCESS);
         }
