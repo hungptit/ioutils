@@ -1,0 +1,3 @@
+* Config 
+  1. Stores the database configuration information i.e key file and data files.
+  2. 
