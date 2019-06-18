@@ -8,7 +8,7 @@
 
 namespace ioutils {
     // A reader class which reads data in blocks.
-    constexpr size_t READ_TRUNK_SIZE = 1 << 17; // This is an optimum trunk size.
+    constexpr size_t READ_TRUNK_SIZE = 1 << 17; // This is an optimum chunk size.
     template <typename Policy, size_t BUFFER_SIZE = READ_TRUNK_SIZE>
     struct FileReader : public Policy {
         template <typename... Args>
@@ -18,7 +18,7 @@ namespace ioutils {
             // Cache the file name
             Policy::set_filename(datafile);
 
-            // Read data by trunks
+            // Read data by chunks
             char read_buffer[BUFFER_SIZE];
             int fd = ::open(datafile, O_RDONLY | O_NOCTTY);
 

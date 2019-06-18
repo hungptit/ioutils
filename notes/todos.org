@@ -12,3 +12,42 @@
   + Executable files
   + File size is larger/smaller than a given threshold.
 * TODO Allow users to execute a command on matched files.
+* TODO A tiny database for append only data
+** Config
+   1) Key file
+   2) Options
+   3) A list of data files
+** TODO Reader [0%]
+*** Requirements [0%]
+    1. [ ] Allow users to read data for given keys
+    2. [ ] We do not return the data, users need to overload the read method to handle reading logic.
+    3. [ ] Should be cache friendly.
+    4. [ ] Support different file sizes i.e upto hundred GBs.
+    5. [ ] Value might be compressed by default.
+*** [ ] APIs
+    1. [ ] Constructor
+       + Create a map from key -> offset and file_fid. 
+    2. Destructor
+    3. read(key): User need to overload this method for their own usage.
+       + Return false if we cannot read data.
+    4. read(keys): Read multiple keys from the database. We will need to sort the offset to make sure that that the 
+       read complexity is linear.
+    5. find(key): Check if we store a given key or not. The return value is true or false.
+    6. size(): Return the size of our database.
+    7. regex(pattern): Find all keys that match the given pattern.
+** TODO Writer [0%]
+   1. [ ] Constructor
+   2. [ ] Destructor
+   3. write(key, value):
+      + Return: True if we 
+   4. sort(): Sort the data to maximize sequential read performance.
+** TODO DBGenerator
+   1. [ ] Constructor:
+      + A list of data fiels
+   2. Destructor
+      + Close all files
+   3. generate()
+      + Create a new config file
+        - Key file
+        - A list of data files
+      + Create a new key files.
