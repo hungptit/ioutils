@@ -1,0 +1,6 @@
+* More efficient algorithm for reading the file content
+  1. Read the first chunk
+  2. Process data
+  3. Move the left over data to the front
+  4. If we see the overflow then cache data into an internal string.
+  5. Come back to the step 1.

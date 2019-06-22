@@ -13,7 +13,6 @@
 
 #include "fdwriter.hpp"
 #include "filesystem.hpp"
-#include "fmt/format.h"
 #include "utils/regex_matchers.hpp"
 
 namespace ioutils {
@@ -84,13 +83,13 @@ namespace ioutils {
                 int fd = ::open(dir.path.data(), O_RDONLY);
                 if (fd < 0) {
                     if (!ignore_error)
-                        fmt::print(stderr, "fast-find: Cannot open '{}': {}.\n", dir.path, strerror(errno));
+                        fprintf(stderr, "fast-find: Cannot open '%s': %s.\n", dir.path.c_str(), strerror(errno));
                     return;
                 }
 
                 int retval = fstat(fd, &props);
                 if (retval < 0) {
-                    if (!ignore_error) fmt::print(stderr, "fast-find: '{}': {}.\n", dir.path, strerror(errno));
+                    if (!ignore_error) fprintf(stderr, "fast-find: '%s': %s.\n", dir.path.c_str(), strerror(errno));
                     ::close(fd);
                     return;
                 }
@@ -157,7 +156,8 @@ namespace ioutils {
                                     temporary_path.append(info->d_name);
                                     struct stat unknown_info;
                                     if (stat(temporary_path.data(), &unknown_info) != 0) {
-                                        fmt::print(stderr, "fast-find: '{}': {}.\n", temporary_path, strerror(errno));
+                                        fprintf(stderr, "fast-find: '%s': %s.\n", temporary_path.c_str(),
+                                                strerror(errno));
                                     } else {
                                         auto umode = unknown_info.st_mode & S_IFMT;
                                         if (umode == S_IFDIR) {
@@ -171,7 +171,7 @@ namespace ioutils {
                                 break;
                             }
                             default:
-                                fmt::print(stderr, "Unrecorgnized path: {}\n", dir.path);
+                                fprintf(stderr, "Unrecorgnized path: %s\n", dir.path.c_str());
                                 break;
                             }
                         }
@@ -197,7 +197,7 @@ namespace ioutils {
                     } else {
                         // https://stackoverflow.com/questions/47078417/readdir-returning-dirent-with-d-type-dt-unknown-for-directories-and
                         Policy::process_unknown(dir);
-                        fmt::print(stderr, "Unrecorgnized path: {}\n", dir.path);
+                        fprintf(stderr, "Unrecorgnized path: %s\n", dir.path.c_str());
                     }
                     ::close(fd);
                 }

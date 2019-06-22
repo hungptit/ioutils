@@ -1,6 +1,5 @@
 #pragma once
 
-#include "fmt/format.h"
 #include <stdio.h>
 #include <unistd.h>
 
@@ -19,7 +18,7 @@ namespace ioutils {
                 Policy::process(read_buffer, nbytes, BUFFER_SIZE);
             }
             if (nbytes < 0) {
-                fmt::print(stderr, "Cannot read data from given file descriptor: {}\n",
+                fprintf(stderr, "Cannot read data from given file descriptor: %s\n",
                            strerror(errno));
             }
         }

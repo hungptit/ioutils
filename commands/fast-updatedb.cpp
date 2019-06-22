@@ -4,7 +4,6 @@
 #include "search.hpp"
 #include "utilities.hpp"
 #include "utils/timeutils.hpp"
-#include "writer.hpp"
 #include <set>
 #include <string>
 #include <vector>

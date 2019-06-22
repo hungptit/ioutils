@@ -3,6 +3,7 @@
 #include "fmt/format.h"
 #include "ioutils.hpp"
 #include "locate.hpp"
+#include "stream_reader.hpp"
 #include "utils/matchers.hpp"
 #include "utils/memchr.hpp"
 #include "utils/regex_matchers.hpp"

@@ -1,14 +1,25 @@
 #pragma once
+#include "warnings.hpp"
+#include <cassert>
 #include <cstring>
 #include <fcntl.h>
 #include <stdexcept>
 #include <string>
 #include <sys/errno.h>
 #include <unistd.h>
-#include <cassert>
-#include "warnings.hpp"
 
 namespace ioutils {
+    ssize_t write(const char *buffer, const size_t buflen, const char *outfile) {
+        int fd = ::open(outfile, O_CREAT | O_WRONLY, S_IRWXU);
+        if (fd < 0) {
+            fprintf(stderr, "Cannot open file '%s' to write.", outfile);
+            return 0;
+        }
+        auto result = ::write(fd, buffer, buflen);
+        close(fd);
+        return result;
+    }
+
     class StreamWriter {
       public:
         static constexpr int STDOUT = STDOUT_FILENO;
@@ -60,17 +71,14 @@ namespace ioutils {
 
         void put(const char ch) { buffer.push_back(ch); }
 
-        void eol() {
-            buffer.push_back(EOL);
-        }
+        void eol() { buffer.push_back(EOL); }
 
-        void sep() {
-            buffer.push_back(SEP);
-        }
+        void sep() { buffer.push_back(SEP); }
 
       private:
         const char EOL = '\n';
         const char SEP = '/';
+
         int fd;
         int buflen;
         std::string buffer;
