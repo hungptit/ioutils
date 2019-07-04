@@ -87,7 +87,7 @@ namespace ioutils {
             const char *ptr = begin;
 #ifdef USE_AVX2
             while ((ptr = utils::avx2::memchr(ptr, EOL, end - ptr))) {
-#elif
+#else
             while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
 #endif
                 if (linebuf.empty()) {
@@ -118,7 +118,7 @@ namespace ioutils {
         StreamWriter console;
         static constexpr char EOL = '\n';
 
-        virtual void process_line(const char *begin, const size_t len) {
+        void process_line(const char *begin, const size_t len) {
             if (matcher.is_matched(begin, len)) {
                 if (prefix.empty()) {
                     console.write(begin, len);

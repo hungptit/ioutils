@@ -16,7 +16,7 @@ int test_gnu_locate_regex(const std::string &command, const std::string &regex) 
 
 int test_locate_regex(const std::string &command, const std::string &regex) {
     const std::string dbfile = ".database";
-    std::string buffer = command + " -d " + dbfile + " " + regex +  " > /tmp/fast-locate.log";
+    std::string buffer = command + " -d " + dbfile + " " + regex + " > /tmp/fast-locate.log";
     return system(buffer.data());
 }
 
@@ -24,9 +24,15 @@ const std::string pattern1{"zstd/.*doc/README[.]md$"};
 
 CELERO_MAIN
 
+#ifdef __APPLE__
+std::string locate_command = "glocate";
+#else
+std::string locate_command = "locate";
+#endif
+
 // Find all files in the boost source code
 BASELINE(mid, gnu_locate, number_of_samples, number_of_operations) {
-    test("glocate -d locate_db_mid --regex ", pattern1);
+    test(locate_command + " -d locate_db_mid --regex ", pattern1);
 }
 
 BENCHMARK(mid, fast_locate, number_of_samples, number_of_operations) {
@@ -35,7 +41,7 @@ BENCHMARK(mid, fast_locate, number_of_samples, number_of_operations) {
 
 // Find all files in the boost source code
 BASELINE(big, gnu_locate, number_of_samples, number_of_operations) {
-    test("glocate -d locate_db_big --regex ", pattern1);
+    test(locate_command + " -d locate_db_big --regex ", pattern1);
 }
 
 BENCHMARK(big, fast_locate, number_of_samples, number_of_operations) {
