@@ -13,10 +13,6 @@
 #include <unistd.h>
 #include <vector>
 
-#include "cereal/types/deque.hpp"
-#include "cereal/types/string.hpp"
-#include "cereal/types/vector.hpp"
-
 namespace ioutils {
     namespace filesystem {
         namespace {
@@ -94,12 +90,6 @@ namespace ioutils {
         std::time_t status_change_time;
         std::string extension;
         std::string path;
-
-        template <typename Archive> void serialize(Archive &ar) {
-            ar(CEREAL_NVP(st_mode), CEREAL_NVP(st_size), CEREAL_NVP(last_access_time),
-               CEREAL_NVP(modification_time), CEREAL_NVP(status_change_time),
-               CEREAL_NVP(extension), CEREAL_NVP(path));
-        }
     };
 
     // A struct that hold folder information during the traversal.
