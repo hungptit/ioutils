@@ -16,7 +16,7 @@ if [ ! -d "lib" ]; then
 fi
 popd
 
-Run all unittests
+# Run all unittests
 pushd $root_dir/unittests/
 cmake ./ > /dev/null
 make -j5
@@ -29,7 +29,7 @@ cmake ./ > /dev/null
 make -j5
 popd
 
-Build all benchmarks
+# Build all benchmarks
 pushd $root_dir/benchmark
 cmake ./ > /dev/null
 make -j5
