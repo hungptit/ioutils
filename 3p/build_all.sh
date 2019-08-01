@@ -20,3 +20,6 @@ printf "Build utils"
 pushd src/utils/
 ./install.sh ../../
 popd
+
+printf "Build hyperscan"
+./build_using_cmake.sh hyperscan
