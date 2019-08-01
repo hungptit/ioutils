@@ -2,7 +2,7 @@ PROJECT(TOOLS)
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 
 set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../")
-set(EXTERNAL_DIR "${ROOT_DIR}/../3p")
+set(EXTERNAL_DIR "${ROOT_DIR}/3p")
 message("ROOT_DIR: ${ROOT_DIR}")
 
 # set(CMAKE_INSTALL_PREFIX "${ROOT_DIR}")
@@ -78,17 +78,17 @@ set(LIB_CELERO "${EXTERNAL_DIR}/lib/static/libcelero.a")
 
 # This option make sure that we use the local boost version. Note that if the
 # system boost is installed then CMake might use that boost version.
-# set(Boost_USE_STATIC_LIBS ON)
-# set(Boost_USE_MULTITHREADED ON)
-# set(Boost_USE_STATIC_RUNTIME OFF)
-# set(Boost_NO_SYSTEM_PATHS FALSE)
-# if (Boost_NO_SYSTEM_PATHS)
-#   set(BOOST_ROOT "${EXTERNAL_DIR}")
-#   set(BOOST_INCLUDE_DIRS "${BOOST_ROOT}/include")
-#   set(BOOST_LIBRARY_DIRS "${BOOST_ROOT}/lib")
-# endif (Boost_NO_SYSTEM_PATHS)
-# # message(${BOOST_ROOT})
-# find_package(Boost REQUIRED system filesystem iostreams program_options)
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
+set(Boost_NO_SYSTEM_PATHS FALSE)
+if (Boost_NO_SYSTEM_PATHS)
+  set(BOOST_ROOT "${EXTERNAL_DIR}")
+  set(BOOST_INCLUDE_DIRS "${BOOST_ROOT}/include")
+  set(BOOST_LIBRARY_DIRS "${BOOST_ROOT}/lib")
+endif (Boost_NO_SYSTEM_PATHS)
+# message(${BOOST_ROOT})
+find_package(Boost REQUIRED system filesystem iostreams)
 
 # Include folder
 include_directories ("${EXTERNAL_DIR}/include")

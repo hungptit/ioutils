@@ -17,11 +17,11 @@ fi
 popd
 
 # Run all unittests
-pushd $root_dir/unittests/
-cmake ./ > /dev/null
-make -j5
-make test
-popd
+# pushd $root_dir/unittests/
+# cmake ./ > /dev/null
+# make -j5
+# make test
+# popd
 
 # Build ioutils command
 pushd $root_dir/commands
@@ -30,7 +30,7 @@ make -j5
 popd
 
 # Build all benchmarks
-pushd $root_dir/benchmark
-cmake ./ > /dev/null
-make -j5
-popd
+# pushd $root_dir/benchmark
+# cmake ./ > /dev/null
+# make -j5
+# popd
