@@ -107,7 +107,7 @@ include_directories ("${BOOST_INCLUDE_DIRS}")
 # Hyperscan
 SET(LIB_HS "${EXTERNAL_DIR}/lib/libhs.a")
 SET(LIB_HS_RUNTIME "${EXTERNAL_DIR}/lib/libhs_runtime.a")
-message("${Boost_LIBRARIES}")
+message("Boost libraries: ${BOOST_LIBRARIES}")
 
 set(COMMAND_SRC_FILES read_data tempdir utilities writer)
 foreach (src_file ${COMMAND_SRC_FILES})
