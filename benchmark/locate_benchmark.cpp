@@ -1,7 +1,7 @@
 #include "celero/Celero.h"
 
 constexpr int number_of_samples = 10;
-constexpr int number_of_operations = 1;
+constexpr int number_of_operations = 5;
 
 int test(const std::string &command, const std::string &regex) {
     std::string buffer = command + regex + " > /tmp/output.log";
