@@ -3,6 +3,7 @@
 #include "fmt/format.h"
 #include "ioutils.hpp"
 #include "locate.hpp"
+#include "fdreader.hpp"
 #include "utils/matchers.hpp"
 #include "utils/memchr.hpp"
 #include "utils/regex_matchers.hpp"
@@ -146,7 +147,7 @@ namespace {
     }
 
     template <typename Matcher, typename Params> void locate(Params &&params) {
-        using GrepAlg = ioutils::FileReader<ioutils::LocateStreamPolicy<Matcher>>;
+        using GrepAlg = ioutils::StreamReader<ioutils::LocateStreamPolicy<Matcher>>;
         GrepAlg grep(params);
         for (auto db : params.databases) {
             grep(db.data());
@@ -157,7 +158,7 @@ namespace {
 int main(int argc, char *argv[]) {
     auto params = parse_input_arguments(argc, argv);
     if (params.pattern.empty()) {
-        using GrepAlg = ioutils::FileReader<ioutils::PrintAllPolicy>;
+        using GrepAlg = ioutils::StreamReader<ioutils::PrintAllPolicy>;
         GrepAlg grep(params);
         for (auto db : params.databases) {
             grep(db.data());

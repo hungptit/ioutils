@@ -9,9 +9,6 @@
 #include <unistd.h>
 namespace ioutils {
     namespace locate {
-        /**
-         * This policy will write the output to the given file.
-         */
         struct UpdateDBStreamPolicy {
           public:
             UpdateDBStreamPolicy() : writer(StreamWriter::STDOUT) {}
@@ -74,6 +71,7 @@ namespace ioutils {
 
     template <typename Matcher> class LocateStreamPolicy {
       public:
+        static constexpr int BUFFER_SIZE = 1 << 17;
         template <typename Params>
         LocateStreamPolicy(Params &&params)
             : matcher(params.pattern, params.regex_mode),
@@ -81,7 +79,7 @@ namespace ioutils {
               prefix(params.prefix),
               console(StreamWriter::STDOUT) {}
 
-        void process(const char *begin, const size_t len, const size_t) {
+        void process(const char *begin, const size_t len) {
             const char *start = begin;
             const char *end = begin + len;
             const char *ptr = begin;
@@ -105,9 +103,13 @@ namespace ioutils {
                 if (ptr >= end) break;
             }
 
-            // Update the line buffer with leftover data.
-            if (ptr == nullptr) {
-                linebuf.append(start, end - start);
+            if (len < BUFFER_SIZE) {
+                process_line(start, end - start);
+            } else {
+                // Update the line buffer with leftover data.
+                if (ptr == nullptr) {
+                    linebuf.append(start, end - start);
+                }
             }
         }
 
@@ -143,11 +145,12 @@ namespace ioutils {
     class PrintAllPolicy {
       public:
         template <typename Params> PrintAllPolicy(Params &&args) : prefix(args.prefix), console(StreamWriter::STDOUT) {}
-        void process(const char *begin, const size_t len, const size_t) { console.write(begin, len); }
+        void process(const char *begin, const size_t len) { console.write(begin, len); }
 
       protected:
         void set_filename(const char *) {}
         void finalize() {}
+        static constexpr int BUFFER_SIZE = 1 << 17;
 
       private:
         std::string prefix;
