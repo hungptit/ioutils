@@ -2,7 +2,6 @@
 #include "doctest/doctest.h"
 #include <fstream>
 #include <iostream>
-
 #include "fmt/format.h"
 
 #include "ioutils.hpp"
@@ -24,12 +23,12 @@ TEST_CASE("Simplify paths") {
     SUBCASE("Case 11") { CHECK(ioutils::path::simplify_path("/a//b////c/d//././/..") == "/a/b/c"); }
     SUBCASE("Case 12") { CHECK(ioutils::path::simplify_path("/..//a//b////c/d//././/..") == "/a/b/c"); }
     SUBCASE("Case 12") { CHECK(ioutils::path::simplify_path("../src////") == "../src"); }
-    SUBCASE("Case 12") { CHECK(ioutils::path::simplify_path("../../../foo/../src////") == "../../../src"); }    
-    SUBCASE("Case 13") { CHECK(ioutils::path::simplify_path(".") == "."); }    
-    SUBCASE("Case 14") { CHECK(ioutils::path::simplify_path("..") == ".."); }    
-    SUBCASE("Case 15") { CHECK(ioutils::path::simplify_path("../") == ".."); }    
-    SUBCASE("Case 16") { CHECK(ioutils::path::simplify_path("././") == "."); }    
-    SUBCASE("Case 16") { CHECK(ioutils::path::simplify_path("////////") == "/"); }    
+    SUBCASE("Case 12") { CHECK(ioutils::path::simplify_path("../../../foo/../src////") == "../../../src"); }
+    SUBCASE("Case 13") { CHECK(ioutils::path::simplify_path(".") == "."); }
+    SUBCASE("Case 14") { CHECK(ioutils::path::simplify_path("..") == ".."); }
+    SUBCASE("Case 15") { CHECK(ioutils::path::simplify_path("../") == ".."); }
+    SUBCASE("Case 16") { CHECK(ioutils::path::simplify_path("././") == "."); }
+    SUBCASE("Case 16") { CHECK(ioutils::path::simplify_path("////////") == "/"); }
 }
 
 TEST_CASE("Console") {

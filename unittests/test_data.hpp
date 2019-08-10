@@ -1,6 +1,7 @@
 #pragma once
 
 #include "temporary_dir.hpp"
+#include <iostream>
 
 namespace {
     using namespace boost;

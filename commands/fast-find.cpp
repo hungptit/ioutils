@@ -1,6 +1,5 @@
 #include "clara.hpp"
 #include "find.hpp"
-#include "fmt/format.h"
 #include "search.hpp"
 #include "search_params.hpp"
 #include "search_policies.hpp"

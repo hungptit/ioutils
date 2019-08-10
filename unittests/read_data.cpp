@@ -6,11 +6,10 @@
 #include "reader.hpp"
 #include "read_policies.hpp"
 
-#define CATCH_CONFIG_MAIN
-#include "catch/catch.hpp"
-using Catch::Matchers::Equals;
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest/doctest.h"
 
-TEST_CASE("Simple reader", "basic") {
+TEST_CASE("Simple reader") {
     const std::string datafile("data.log");
     auto results = ioutils::read(datafile.c_str());
     fmt::print("{}\n", results);
@@ -19,5 +18,5 @@ TEST_CASE("Simple reader", "basic") {
     using Policy = ioutils::AppendPolicy<std::string>;
     ioutils::FileReader<Policy, 1 << 16> reader;
     reader(datafile.c_str());
-    CHECK_THAT(results, Equals(reader.get_data()));
+    CHECK(results == reader.get_data());
 }
