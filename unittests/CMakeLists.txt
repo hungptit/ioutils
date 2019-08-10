@@ -89,20 +89,25 @@ set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 set(Boost_NO_SYSTEM_PATHS FALSE)
 if (Boost_NO_SYSTEM_PATHS)
-  set(BOOST_ROOT "${EXTERNAL_DIR}")
+  # set(BOOST_ROOT "${EXTERNAL_DIR}")
+  # set(BOOST_ROOT "/usr/local/Cellar/boost/1.70.0/")
   set(BOOST_INCLUDE_DIRS "${BOOST_ROOT}/include")
   set(BOOST_LIBRARY_DIRS "${BOOST_ROOT}/lib")
+  message("${BOOST_LIBRARY_DIRS}")
 endif (Boost_NO_SYSTEM_PATHS)
-# message(${BOOST_ROOT})
+message("${BOOST_ROOT}")
+
 find_package(Boost REQUIRED system filesystem)
 
 # Include folder
 include_directories ("${EXTERNAL_DIR}/include")
 include_directories ("${ROOT_DIR}/src")
+include_directories ("${BOOST_INCLUDE_DIRS}")
 
 # Hyperscan
 SET(LIB_HS "${EXTERNAL_DIR}/lib/libhs.a")
 SET(LIB_HS_RUNTIME "${EXTERNAL_DIR}/lib/libhs_runtime.a")
+message("Boost libraries: ${BOOST_LIBRARIES}")
 
 set(COMMAND_SRC_FILES read_data tempdir utilities writer)
 foreach (src_file ${COMMAND_SRC_FILES})

@@ -13,13 +13,12 @@
 
 #include "fmt/format.h"
 
-#define CATCH_CONFIG_MAIN
-#include "catch/catch.hpp"
-using Catch::Matchers::Equals;
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest/doctest.h"
 
 using namespace std;
 
-TEST_CASE("Valid dir", "basic") {
+TEST_CASE("Valid dir") {
     CHECK(!ioutils::filesystem::is_valid_dir("."));
     CHECK(!ioutils::filesystem::is_valid_dir(".."));
     CHECK(ioutils::filesystem::is_valid_dir(".git"));
@@ -28,13 +27,13 @@ TEST_CASE("Valid dir", "basic") {
     CHECK(ioutils::filesystem::is_valid_dir(".gitboo"));
 }
 
-TEST_CASE("Utility function", "basic") {
+TEST_CASE("Utility function") {
     TestData test(false);
     filesystem::path tmpdir = test.get_path();
     std::string p = tmpdir.string();
     struct stat props;
 
-    SECTION("Path related functions") {
+    SUBCASE("Path related functions") {
         stat(p.data(), &props);
         CHECK(filesystem::exists(p));
         CHECK(ioutils::filesystem::exists(p.data()));
@@ -50,15 +49,15 @@ TEST_CASE("Utility function", "basic") {
         CHECK(!ioutils::filesystem::is_symlink(props.st_mode));
     }
 
-    SECTION("Search for files using DFS algorithm and print results") {
+    SUBCASE("Search for files using DFS algorithm and print results") {
         // TODO: Update this.
         // ioutils::filesystem::DefaultSearch<ioutils::find::SimplePolicy> search;
         // fmt::print("DFS - ConsolePolicy:\n");
         // search.traverse(p);
     }
 
-    SECTION("Search for files in a given folder using DFS algorithm and store results") {
-        SECTION("Ignore dir") {
+    SUBCASE("Search for files in a given folder using DFS algorithm and store results") {
+        SUBCASE("Ignore dir") {
             ioutils::search::Params params;
             params.flags |= ioutils::search::IGNORE_DIR;
             ioutils::filesystem::DefaultSearch<ioutils::StorePolicy> search(params);
@@ -69,7 +68,7 @@ TEST_CASE("Utility function", "basic") {
             }
         }
 
-        SECTION("Ignore files") {
+        SUBCASE("Ignore files") {
             ioutils::search::Params params;
             params.flags |= ioutils::search::IGNORE_DIR;
             params.flags |= ioutils::search::IGNORE_FILE;
@@ -81,7 +80,7 @@ TEST_CASE("Utility function", "basic") {
             }
         }
 
-        SECTION("Ignore files") {
+        SUBCASE("Ignore files") {
             ioutils::search::Params params;
             params.flags |= ioutils::search::IGNORE_DIR;
             params.flags |= ioutils::search::IGNORE_FILE;
@@ -94,7 +93,7 @@ TEST_CASE("Utility function", "basic") {
             }
         }
 
-        SECTION("Include all") {
+        SUBCASE("Include all") {
             ioutils::search::Params params;
             params.flags = ioutils::search::DFS;
             ioutils::filesystem::DefaultSearch<ioutils::StorePolicy> search(params);
@@ -106,7 +105,7 @@ TEST_CASE("Utility function", "basic") {
             }
         }
 
-        SECTION("Include all with the given level") {
+        SUBCASE("Include all with the given level") {
             ioutils::search::Params params;
             params.maxdepth = 0;
             ioutils::filesystem::DefaultSearch<ioutils::StorePolicy> search(params);
@@ -119,14 +118,14 @@ TEST_CASE("Utility function", "basic") {
         }
     }
 
-    SECTION("Search for files in a given folder and return a list of files") {
+    SUBCASE("Search for files in a given folder and return a list of files") {
         ioutils::search::Params params;
         ioutils::filesystem::DefaultSearch<ioutils::find::SimplePolicy> search(params);
         fmt::print("DFS - SimplePolicy:\n");
         search.bfs(p);
     }
 
-    SECTION("Search for files in a given folder using BFS algorithm and store results") {
+    SUBCASE("Search for files in a given folder using BFS algorithm and store results") {
         ioutils::search::Params params;
         ioutils::filesystem::DefaultSearch<ioutils::StorePolicy> search(params);
         fmt::print("BFS - StorePolicy:\n");
@@ -138,7 +137,7 @@ TEST_CASE("Utility function", "basic") {
     }
 }
 
-TEST_CASE("Search with regex", "basic") {
+TEST_CASE("Search with regex") {
     TestData test(false);
     filesystem::path tmpdir = test.get_path();
     std::string p = tmpdir.string();

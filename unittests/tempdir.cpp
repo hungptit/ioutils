@@ -4,12 +4,11 @@
 #include "fmt/format.h"
 #include "temporary_dir.hpp"
 
-#define CATCH_CONFIG_MAIN
-#include "catch/catch.hpp"
-using Catch::Matchers::Equals;
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest/doctest.h"
 
 using namespace boost;
-TEST_CASE("Default constructor", "basic") {
+TEST_CASE("Default constructor") {
     filesystem::path p;
 
     {
@@ -30,7 +29,7 @@ TEST_CASE("Default constructor", "basic") {
     CHECK(p.string() != tmpdir.get_path().string());
 }
 
-TEST_CASE("With given parent folder", "basic") {
+TEST_CASE("With given parent folder") {
     filesystem::path p;
 
     {

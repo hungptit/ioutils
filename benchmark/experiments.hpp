@@ -1,13 +1,11 @@
 #pragma once
-
-#include "fmt/format.h"
 #include <string>
 
 namespace ioutils {
     namespace experiments {
         struct LineStatsBase {
             LineStatsBase() : lines(0) {}
-            void print() const { fmt::print("Number of lines: {}\n", lines); }
+            void print() const { fprint("Number of lines: %d\n", lines); }
 
           protected:
             void finalize() const {}
