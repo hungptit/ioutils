@@ -127,6 +127,7 @@ namespace ioutils {
         std::string prefix;
         StreamWriter console;
         static constexpr char EOL = '\n';
+        char read_buffer[BUFFER_SIZE];
 
         void process_line(const char *begin, const size_t len) {
             if (matcher.is_matched(begin, len)) {
@@ -159,6 +160,7 @@ namespace ioutils {
         void set_filename(const char *) {}
         void finalize() {}
         static constexpr int BUFFER_SIZE = 1 << 17;
+        char read_buffer[BUFFER_SIZE];
 
       private:
         std::string prefix;

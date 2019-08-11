@@ -30,6 +30,9 @@ include(CXXFeatureCheck)
 
 set(CMAKE_BUILD_TYPE Debug)
 
+SET(CMAKE_CXX_COMPILER clang++)
+# SET(CMAKE_CXX_COMPILER g++-9)
+
 # set (CMAKE_BUILD_TYPE Release)
 # add_cxx_compiler_flag(-O3)
 
@@ -87,10 +90,10 @@ set(LIB_JEMALLOC "${EXTERNAL_DIR}/lib/libjemalloc.a")
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-set(Boost_NO_SYSTEM_PATHS FALSE)
+set(Boost_NO_SYSTEM_PATHS TRUE)
 if (Boost_NO_SYSTEM_PATHS)
   # set(BOOST_ROOT "${EXTERNAL_DIR}")
-  # set(BOOST_ROOT "/usr/local/Cellar/boost/1.70.0/")
+  set(BOOST_ROOT "/usr/local/Cellar/boost/1.70.0/")
   set(BOOST_INCLUDE_DIRS "${BOOST_ROOT}/include")
   set(BOOST_LIBRARY_DIRS "${BOOST_ROOT}/lib")
   message("${BOOST_LIBRARY_DIRS}")
