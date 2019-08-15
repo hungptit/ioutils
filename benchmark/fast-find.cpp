@@ -17,82 +17,71 @@ const std::string find_cmd = "gfind ";
 const std::string find_cmd = "find ";
 #endif
 
+const std::string tmp_file = "/tmp/output.log";
+
 int test(const std::string &command, const std::string &path) {
-    std::string buffer = command + path + " > /tmp/output.log";
+    std::string buffer = command + path + " > " + tmp_file;
     return system(buffer.data());
 }
 
-int test_find_regex(const std::string &command, const std::string &regex,
-                    const std::string &path) {
-    std::string buffer = command + " " + path + " | grep -E " + regex + " > /tmp/output.log";
+int test_find_regex(const std::string &command, const std::string &regex, const std::string &path) {
+    std::string buffer = command + " " + path + " | grep -E " + regex + " > " + tmp_file;
     return system(buffer.data());
 }
 
-int test_fast_find_regex(const std::string &command, const std::string &regex,
-                     const std::string &path) {
-    std::string buffer = command + " -e " + regex + " " + path + " > /tmp/output.log";
+int test_fast_find_regex(const std::string &command, const std::string &regex, const std::string &path) {
+    std::string buffer = command + " -e " + regex + " " + path + " > " + tmp_file;
     return system(buffer.data());
 }
 
-int test_fd_regex(const std::string &command, const std::string &regex,
-                  const std::string &path) {
-    std::string buffer = command + "." + path + " | grep -E " + regex + "> /tmp/output.log";
+int test_fd_regex(const std::string &command, const std::string &regex, const std::string &path) {
+    std::string buffer = command + " " + regex + " " + path + " > " + tmp_file;
     return system(buffer.data());
 }
 
-const std::string pattern1{"\'/\\w+options.c(p)*$\'"};
-// const std::string pattern1{"zstd/.*doc/README[.]md$"};
+// const std::string pattern1{"\'/\\w+options.c(p)*$\'"};
+const std::string pattern1{" zstd/.*doc/README[.]md$ "};
 
 CELERO_MAIN
 
-// Find all files in the boost source code
-BASELINE(all, find, number_of_samples, number_of_operations) {
-    test(find_cmd, "../../3p/src/boost");
-}
+// Find all files in mid size folder.
+const std::string mid_size_path(std::getenv("TEST_DIR"));
+BASELINE(all, find, number_of_samples, number_of_operations) { test(find_cmd, mid_size_path); }
 
-BENCHMARK(all, fd_noignore, number_of_samples, number_of_operations) {
-    test("fd -H --no-ignore . ", "../../3p/src/boost");
-}
+BENCHMARK(all, fd_noignore, number_of_samples, number_of_operations) { test("fd -H --no-ignore . ", mid_size_path); }
 
 BENCHMARK(all, fast_find, number_of_samples, number_of_operations) {
-    test("../commands/fast-find --donot-ignore-git ", "../../3p/src/boost");
+    test("../commands/fast-find --donot-ignore-git ", mid_size_path);
 }
 
 BENCHMARK(all, fast_find_bfs, number_of_samples, number_of_operations) {
-    test("../commands/fast-find --bfs --donot-ignore-git ", "../../3p/src/boost");
+    test("../commands/fast-find --bfs --donot-ignore-git ", mid_size_path);
 }
 
 // Find all files and ignore .git folder
-BASELINE(ignore_git, find, number_of_samples, number_of_operations) {
-    test(find_cmd, "../../3p/src/boost");
-}
+BASELINE(ignore_git, find, number_of_samples, number_of_operations) { test(find_cmd, mid_size_path); }
 
-BENCHMARK(ignore_git, fd, number_of_samples, number_of_operations) {
-    test("fd  . ", "../../3p/src/boost");
-}
+BENCHMARK(ignore_git, fd, number_of_samples, number_of_operations) { test("fd  . ", mid_size_path); }
 
 BENCHMARK(ignore_git, fast_find_default, number_of_samples, number_of_operations) {
-    test("../commands/fast-find ", "../../3p/src/boost");
+    test("../commands/fast-find ", mid_size_path);
 }
 
 BENCHMARK(ignore_git, fast_find_bfs, number_of_samples, number_of_operations) {
-    test("../commands/fast-find --bfs ", "../../3p/src/boost");
+    test("../commands/fast-find --bfs ", mid_size_path);
 }
-
 
 // Find all files using a regex that does not match any results
-BASELINE(regex, find, number_of_samples, number_of_operations) {
-    test_find_regex(find_cmd, pattern1, " ../../3p/src/boost");
-}
+BASELINE(regex, find, number_of_samples, number_of_operations) { test_find_regex(find_cmd, pattern1, mid_size_path); }
 
 BENCHMARK(regex, fd, number_of_samples, number_of_operations) {
-    test_fd_regex("fd --full-path ", pattern1, " ../../3p/src/boost");
+    test_fd_regex("fd --full-path ", pattern1, mid_size_path);
 }
 
 BENCHMARK(regex, fast_find, number_of_samples, number_of_operations) {
-    test_fast_find_regex("../commands/fast-find ", pattern1, " ../../3p/src/boost");
+    test_fast_find_regex("../commands/fast-find ", pattern1, mid_size_path);
 }
 
 BENCHMARK(regex, fast_find_bfs, number_of_samples, number_of_operations) {
-    test_fast_find_regex("../commands/fast-find --bfs", pattern1, " ../../3p/src/boost");
+    test_fast_find_regex("../commands/fast-find --bfs", pattern1, mid_size_path);
 }
