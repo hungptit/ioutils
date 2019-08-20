@@ -1,0 +1,133 @@
+% Created 2019-08-20 Tue 15:29
+% Intended LaTeX compiler: pdflatex
+\documentclass[bigger]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{listings}
+\author{Hung Dang}
+\date{\textit{<2019-08-20 Tue>}}
+\title{ioutils: A blazing fast file I/O library.}
+\hypersetup{
+    pdfauthor={Hung Dang},
+    pdftitle={ioutils: A blazing fast file I/O library.},
+    pdflang={English}
+}
+
+\begin{document}
+\maketitle
+% \tableofcontents
+\section{Introduction}
+\begin{frame}
+    \frametitle{Motivations}
+    \begin{itemize}
+    \item Have usable find and locate commands that support regular
+        expression pattern matching by default.
+    \item Can reuse file traversal, reading, writing algorithms in
+        other projects with minimal effort.
+    \item Have a better control over used resources.
+    \item Have fun with template meta-programming.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{How can we do more work at compile time?}
+    \begin{itemize}
+        \item Take advantage of policy-based design approach.
+        \item Generate code at the compile time for different user constraints.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Why do we need to rewrite file traversal algorithms?}
+    \begin{itemize}
+    \item Can control our memory usage.
+    \item Can filter search paths early using user's constraints.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Depth-first search algorithm}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Bread-first search algorithm}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Regular expression pattern matching algorithms}
+    \begin{itemize}
+    \item std::regex is slow and may not suitable for data intensive
+        applications.
+    \item Use Google re2 or hyperscan if you can because they can offer O(n)
+        algorithms for regular expression pattern matching.
+    \end{itemize}
+\end{frame}
+
+% Output results
+\begin{frame}
+    \frametitle{How can we display the results?}
+    \begin{itemize}
+        \item std::cout
+        \item fmt::print
+        \item write
+    \end{itemize}
+\end{frame}
+
+% How to read data from a file fast.
+\begin{frame}
+    \frametitle{What is the fastest way to read data from a file?}
+    \begin{itemize}
+        \item Use std::iostream
+        \item Use memory mapped files.
+        \item Use fread
+        \item Use read
+    \end{itemize}
+\end{frame}
+
+% Benchmark results
+\begin{frame}
+    \frametitle{Benchmark results}
+    \begin{itemize}
+    \item fast-find
+    \item fast-updatedb
+    \item fast-locate
+    \end{itemize}
+\end{frame}
+
+% Future work
+\begin{frame}
+    \frametitle{Future work}
+    \begin{itemize}
+    \item Support username and group filter.
+    \item Support timestamp filter.
+    \item Support threads.
+    \end{itemize}
+\end{frame}
+
+% Acknowledgments
+\begin{frame}
+    \frametitle{Acknowledgments}
+    \begin{itemize}
+    \item Zac Bentley (Klavio) and Tue Ly (Google) for insightful
+        discussions and suggestions.
+    \item Mia Moretti (AthenaHealth) for suggestions to improve the
+        usability of all commands.
+    \end{itemize}
+\end{frame}
+
+% Q/A
+\begin{frame}
+    \frametitle{Q/A}
+\end{frame}
+\end{document}
