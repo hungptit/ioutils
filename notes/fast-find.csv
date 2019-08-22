@@ -1,0 +1,18 @@
+command,benchmark,number-of-files,real-time
+GNU find,boost,154695,
+GNU find,llvm,154695,
+GNU find,working,279072,
+GNU find,home,1159209,
+GNU find,root,2636862,
+
+fast-find,boost,154695,
+fast-find,llvm,154695,
+fast-find,working,279072,
+fast-find,home,1159209,
+fast-find,root,2636862,0,0,0,0
+
+fd,boost,154695,
+fd,llvm,154695,
+fd,working,279072,
+fd,home,1159209,
+fd,root,2636862,

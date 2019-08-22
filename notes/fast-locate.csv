@@ -1,0 +1,5 @@
+Command,Benchmark,Number of files,Runtime,Used memory
+GNU locate,mid,48174,0.10,1155072
+GNU locate,large,2428725,6.99,1273856
+fast-locate,mid,48174,0.01,3055616
+fast-locate,large,2428725,0.18,3055616
