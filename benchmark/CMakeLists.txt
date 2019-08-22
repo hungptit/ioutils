@@ -93,9 +93,8 @@ find_package(Boost REQUIRED system filesystem iostreams)
 
 # Include folder
 include_directories ("${EXTERNAL_DIR}/include")
-
-# Compile again the latest version of ioutils.
 include_directories ("${ROOT_DIR}/src")
+include_directories ("${Boost_INCLUDE_DIRS}")
 
 # set(COMMAND_SRC_FILES read_data)
 # foreach (src_file ${COMMAND_SRC_FILES})

@@ -1,0 +1,4 @@
+command,real,user,system,used_memory
+GNU find,0.49, 0.03, 0.37,2371584
+fast-find,0.25,0.01,0.09,1318912
+fd,1.20,0.75,0.89,13971456

@@ -26,72 +26,165 @@
 
 \begin{document}
 \maketitle
+
 % \tableofcontents
-\section{Introduction}
 \begin{frame}
     \frametitle{Motivations}
     \begin{itemize}
-    \item Have usable find and locate commands that support regular
-        expression pattern matching by default.
-    \item Can reuse file traversal, reading, writing algorithms in
-        other projects with minimal effort.
-    \item Have a better control over used resources.
-    \item Have fun with template meta-programming.
+        \pause
+    \item Support regular expression pattern matching by default.
+        \pause
+    \item Can reuse file traversal, reading, and writing algorithms in
+        other projects with a minimal effort.
+        \pause
+    \item Work out of the box in all Linux and macOS environments i.e
+        all commands are portable.
+        \pause
+    \item Add more nuclear weapons to my Emacs setup.
     \end{itemize}
 \end{frame}
 
 \begin{frame}
-    \frametitle{How can we do more work at compile time?}
+    \frametitle{Used packages and tools}
     \begin{itemize}
-        \item Take advantage of policy-based design approach.
-        \item Generate code at the compile time for different user constraints.
+    \item Packages
+        \begin{itemize}
+        \item AquaHash
+        \item Celero
+        \item Clara
+        \item doctest
+        \item Google benchmark
+        \item hyperscan
+        \item fmt
+        \item utils
+        \item boost
+        \end{itemize}
+    \item Tools
+        \begin{itemize}
+        \item cmake
+        \item perf
+        \item strace
+        \item clang, bash, python
+        \end{itemize}
     \end{itemize}
 \end{frame}
 
+% Compile time vs run-time
+\begin{frame}
+    \frametitle{How can we do more work at compile time?}
+    \pause
+    \begin{itemize}
+    \item Consider the policy-based design.
+        \pause
+        \begin{quote}
+            Policy-based design, also known as policy-based class design or
+            policy-based programming, is the term used in Modern C++ Design for a
+            design approach based on an idiom for C++ known as policies. It has
+            been described as a compile-time variant of the strategy pattern, and
+            has connections with C++ template meta-programming. (Wikipedia)
+        \end{quote}
+    \item Generate code at the compile time for different user constraints.
+    \end{itemize}
+\end{frame}
+
+% File traversal algorithms
 \begin{frame}
     \frametitle{Why do we need to rewrite file traversal algorithms?}
     \begin{itemize}
-    \item Can control our memory usage.
-    \item Can filter search paths early using user's constraints.
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Depth-first search algorithm}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Bread-first search algorithm}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Regular expression pattern matching algorithms}
-    \begin{itemize}
-    \item std::regex is slow and may not suitable for data intensive
-        applications.
-    \item Use Google re2 or hyperscan if you can because they can offer O(n)
-        algorithms for regular expression pattern matching.
+    \item Can control our resource consumption.
+        \pause
+    \item Can filter/prune search paths using input constraints.
+        \pause
+    \item File traversal algorithms
+        \begin{itemize}
+            \pause
+        \item Depth-first search algorithm.
+            \pause
+        \item Breath-first search algorithm.
+        \end{itemize}
     \end{itemize}
 \end{frame}
 
 % Output results
 \begin{frame}
-    \frametitle{How can we display the results?}
-    \begin{itemize}
-        \item std::cout
-        \item fmt::print
-        \item write
-    \end{itemize}
+    \frametitle{How can we display the results fast?}
+    \begin{enumerate}
+    \item Use C++ iostream
+        \pause
+        \begin{itemize}
+        \item Does not take a segment of a string.
+        \end{itemize}
+        \pause
+    \item Use fmt library
+        \pause
+        \begin{itemize}
+        \item Does not take a segment of a string.
+        \end{itemize}
+        \pause
+    \item Use printf and puts functions.
+        \pause
+        \begin{itemize}
+        \item Does not take a segment of a string.
+        \end{itemize}
+        \pause
+    \item Use low level C APIs
+    \end{enumerate}
 \end{frame}
 
 % How to read data from a file fast.
 \begin{frame}
     \frametitle{What is the fastest way to read data from a file?}
+    \begin{enumerate}
+    \item Use std::iostream
+        \pause
+    \item Use memory mapped files.
+        \pause
+    \item Use fread
+        \pause
+    \item Use read function to read data in chunks.
+        \pause
+        \begin{itemize}
+        \item This is the fastest way to read the content of a file
+            (see Daniel Lemire and Andrew Gallant blogs for detail analysis).
+        \end{itemize}
+    \end{enumerate}
+\end{frame}
+
+% Regular expression matching algorithm
+\begin{frame}
+    \frametitle{Which regular expression pattern matching library
+        should we use?}
     \begin{itemize}
-        \item Use std::iostream
-        \item Use memory mapped files.
-        \item Use fread
-        \item Use read
+        \pause
+    \item std::regex is slow and may not suitable for data intensive
+        applications.
+        \pause
+    \item Use Google re2 or hyperscan if you can because they can offer O(n)
+        algorithms for regular expression pattern matching.
+    \end{itemize}
+\end{frame}
+
+% Portable
+\begin{frame}
+    \frametitle{How can we make all commands portable?}
+    \pause
+    \begin{itemize}
+    \item Use header only packages or packages that provide
+        statically linked libraries.
+        \pause
+    \item All commands are linked using the -static flag i.e the final
+        output of a binary blob.
+    \end{itemize}
+\end{frame}
+
+% Other constraints
+\begin{frame}
+    \frametitle{Other constraints}
+    \begin{itemize}
+        \pause
+    \item Reduce the binary size.
+        \pause
+    \item Use error codes instead of exceptions in the critical code.
     \end{itemize}
 \end{frame}
 
@@ -100,7 +193,9 @@
     \frametitle{Benchmark results}
     \begin{itemize}
     \item fast-find
+        \pause
     \item fast-updatedb
+        \pause
     \item fast-locate
     \end{itemize}
 \end{frame}
@@ -111,7 +206,7 @@
     \begin{itemize}
     \item Support username and group filter.
     \item Support timestamp filter.
-    \item Support threads.
+    \item Have a better support for symbolic linked paths.
     \end{itemize}
 \end{frame}
 
@@ -119,10 +214,9 @@
 \begin{frame}
     \frametitle{Acknowledgments}
     \begin{itemize}
-    \item Zac Bentley (Klavio) and Tue Ly (Google) for insightful
-        discussions and suggestions.
-    \item Mia Moretti (AthenaHealth) for suggestions to improve the
-        usability of all commands.
+    \item Zac Bentley and Tue Ly.
+    \item Mia Moretti.
+    \item Jared Briskman.
     \end{itemize}
 \end{frame}
 
@@ -131,3 +225,11 @@
     \frametitle{Q/A}
 \end{frame}
 \end{document}
+
+% Bibliography
+\begin{frame}
+    \frametitle{References}
+    \begin{thebibliography}{10}
+    \bibitem{lemire_blog}[Daniel Lemire blog] https://lemire.me/blog/
+    \end{thebibliography}
+\end{frame}
