@@ -1,24 +1,23 @@
 #pragma once
+#include "warnings.hpp"
+#include <cassert>
 #include <cstring>
 #include <fcntl.h>
 #include <stdexcept>
 #include <string>
 #include <sys/errno.h>
 #include <unistd.h>
-#include <cassert>
-#include "warnings.hpp"
 
 namespace ioutils {
     class StreamWriter {
       public:
         static constexpr int STDOUT = STDOUT_FILENO;
         static constexpr int STDERR = STDERR_FILENO;
-        static constexpr size_t BUFFER_SIZE = 1 << 16;
+        static constexpr size_t BUFFER_SIZE = 1 << 17;
 
-        static StreamWriter stdout() { return StreamWriter(STDOUT); }
-        static StreamWriter stderr() { return StreamWriter(STDERR); }
-
-        StreamWriter(const int fides, const int len = BUFFER_SIZE) : fd(fides), buflen(len) { buffer.reserve(buflen); }
+        StreamWriter(const int fides = STDOUT_FILENO, const int len = BUFFER_SIZE) : fd(fides), buflen(len) {
+            buffer.reserve(buflen);
+        }
 
         StreamWriter(const char *fname, const int len = BUFFER_SIZE) {
             fd = ::open(fname, O_CREAT | O_WRONLY, S_IRWXU);
@@ -31,42 +30,32 @@ namespace ioutils {
         }
 
         ~StreamWriter() {
-            if (!buffer.empty()) {
-                long nbytes = ::write(fd, buffer.data(), buffer.size());
-                if (nbytes != (long)buffer.size()) {
-                    handle_error();
-                }
-            }
-
-            // Close the output file if needed.
+            flush();
             if (fd > STDERR) {
-                ::close(fd);
+                ::close(fd); // Close the output file if needed.
             }
         }
 
         void write(const char *begin, const size_t len) {
-            // Flush the buffer it reaches the threshold.
-            if ((buffer.size() + len) > BUFFER_SIZE) {
+            if ((buffer.size() + len) > BUFFER_SIZE) flush();
+            buffer.append(begin, len);
+        }
+
+        void flush() {
+            if (!buffer.empty()) {
                 long nbytes = ::write(fd, buffer.data(), buffer.size());
                 if (nbytes != (long)buffer.size()) {
                     handle_error();
                 }
                 buffer.clear();
             }
-
-            // Append data to the buffer.
-            buffer.append(begin, len);
         }
 
         void put(const char ch) { buffer.push_back(ch); }
 
-        void eol() {
-            buffer.push_back(EOL);
-        }
+        void eol() { buffer.push_back(EOL); }
 
-        void sep() {
-            buffer.push_back(SEP);
-        }
+        void sep() { buffer.push_back(SEP); }
 
       private:
         const char EOL = '\n';
