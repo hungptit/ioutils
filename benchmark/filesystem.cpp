@@ -8,8 +8,7 @@
 #include <unistd.h>
 
 #include "search.hpp"
-
-#include "boost/filesystem.hpp"
+#include <filesystem>
 #include <benchmark/benchmark.h>
 
 const std::string fname("filesystem.cpp");
@@ -41,14 +40,13 @@ void use_access(benchmark::State &state) {
 }
 BENCHMARK(use_access);
 
-// Use boost
-void use_boost(benchmark::State &state) {
+void use_std(benchmark::State &state) {
     for (auto _ : state) {
-        boost::filesystem::path p(fname);
-        benchmark::DoNotOptimize(boost::filesystem::exists(p));
+        std::filesystem::path p(fname);
+        benchmark::DoNotOptimize(std::filesystem::exists(p));
     }
 }
-BENCHMARK(use_boost);
+BENCHMARK(use_std);
 
 const std::string stem("This");
 

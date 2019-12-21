@@ -7,21 +7,21 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest/doctest.h"
 
-using namespace boost;
+namespace fs = std::filesystem;
 TEST_CASE("Default constructor") {
-    filesystem::path p;
+    fs::path p;
 
     {
         ioutils::TemporaryDirectory tmpdir;
         fmt::print("{}\n", tmpdir.get_path().string());
-        p = tmpdir.get_path();
+        const auto p = tmpdir.get_path();
 
         // The temporary folder must exist.
-        CHECK(filesystem::exists(tmpdir.get_path()));
+        CHECK(fs::exists(tmpdir.get_path()));
     }
 
     // The temporary folder must be destroyed already.
-    CHECK(!filesystem::exists(p));
+    CHECK(!fs::exists(p));
     fmt::print("{}\n", p.string());
 
     // The folder's name is randomized.
@@ -30,7 +30,7 @@ TEST_CASE("Default constructor") {
 }
 
 TEST_CASE("With given parent folder") {
-    filesystem::path p;
+    fs::path p;
 
     {
         ioutils::TemporaryDirectory tmpdir("./");
@@ -38,11 +38,11 @@ TEST_CASE("With given parent folder") {
         p = tmpdir.get_path();
 
         // The temporary folder must exist.
-        CHECK(filesystem::exists(tmpdir.get_path()));
+        CHECK(fs::exists(tmpdir.get_path()));
     }
 
     // The temporary folder must be destroyed already.
-    CHECK(!filesystem::exists(p));
+    CHECK(!fs::exists(p));
     fmt::print("{}\n", p.string());
 
     // The folder's name is randomized.
