@@ -82,9 +82,6 @@ add_cxx_compiler_flag(-static)
 ENABLE_TESTING()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Libraries used by rocksdb
-set(LIB_JEMALLOC "${EXTERNAL_DIR}/lib/libjemalloc.a")
-
 # This option make sure that we use the local boost version. Note that if the
 # system boost is installed then CMake might use that boost version.
 set(Boost_USE_STATIC_LIBS ON)
@@ -108,9 +105,8 @@ include_directories ("${ROOT_DIR}/src")
 include_directories ("${Boost_INCLUDE_DIRS}")
 
 # Hyperscan
-SET(LIB_HS "${EXTERNAL_DIR}/lib/libhs.a")
-SET(LIB_HS_RUNTIME "${EXTERNAL_DIR}/lib/libhs_runtime.a")
-message("Boost libraries: ${BOOST_LIBRARIES}")
+find_library(LIB_HS libhs.a "${EXTERNAL_DIR}/lib" NO_DEFAULT_PATH)
+find_library(LIB_HS_RUNTIME libhs_runtime.a "${EXTERNAL_DIR}/lib" NO_DEFAULT_PATH)
 
 set(COMMAND_SRC_FILES read_data tempdir utilities writer)
 foreach (src_file ${COMMAND_SRC_FILES})

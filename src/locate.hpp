@@ -70,15 +70,13 @@ namespace ioutils {
     } // namespace locate
 
     /**
+     * Assumptions:
      * 1. The path length should be less than 1K
      * 2. A path can contain any regular characters.
-     * 3.
-     *
      */
     template <typename Matcher> class LocateStreamPolicy {
       public:
         static constexpr int BUFFER_SIZE = 1 << 17;
-        static constexpr int PATH_MAX_SIZE = 1 << 12;
         template <typename Params>
         LocateStreamPolicy(Params &&params)
             : matcher(params.pattern, params.regex_mode),
@@ -117,6 +115,7 @@ namespace ioutils {
         std::string prefix;
         StreamWriter console;
         static constexpr char EOL = '\n';
+        static constexpr int PATH_MAX_SIZE = 1 << 12;
         char buffer[BUFFER_SIZE + PATH_MAX_SIZE];
         char *read_buffer = nullptr;
 

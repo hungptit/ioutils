@@ -23,9 +23,3 @@ popd
 
 printf "Build hyperscan"
 ./build_using_cmake.sh hyperscan
-
-# Copy libraries from lib64 to lib folder.
-if [ ! -d "lib" ]; then
-    mkdir lib
-fi
-cp lib64/*.a lib/

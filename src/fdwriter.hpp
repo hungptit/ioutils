@@ -58,8 +58,8 @@ namespace ioutils {
         void sep() { buffer.push_back(SEP); }
 
       private:
-        const char EOL = '\n';
-        const char SEP = '/';
+        static constexpr char EOL = '\n';
+        static constexpr char SEP = '/';
         int fd;
         int buflen;
         std::string buffer;

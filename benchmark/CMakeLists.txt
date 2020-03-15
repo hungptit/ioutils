@@ -74,7 +74,7 @@ ENABLE_TESTING()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Libraries used by rocksdb
-set(LIB_CELERO "${EXTERNAL_DIR}/lib/static/libcelero.a")
+find_library(LIB_CELERO libcelero.a "${EXTERNAL_DIR}/lib/static" NO_DEFAULT_PATH)
 
 # This option make sure that we use the local boost version. Note that if the
 # system boost is installed then CMake might use that boost version.
@@ -108,7 +108,7 @@ foreach (src_file ${COMMAND_SRC_FILES})
     TARGET_LINK_LIBRARIES(${src_file} ${LIB_CELERO})
 endforeach (src_file)
 
-SET(LIB_BENCHMARK "${EXTERNAL_DIR}/lib/libbenchmark.a")
+find_library(LIB_BENCHMARK libbenchmark.a "${EXTERNAL_DIR}/lib" NO_DEFAULT_PATH)
 set(COMMAND_SRC_FILES filesystem)
 foreach (src_file ${COMMAND_SRC_FILES})
     ADD_EXECUTABLE(${src_file} ${src_file}.cpp)

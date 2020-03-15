@@ -37,7 +37,7 @@ set(CMAKE_CXX_COMPILER "clang++")
 
 set (CMAKE_BUILD_TYPE Release)
 add_cxx_compiler_flag(-O3)
-add_cxx_compiler_flag(-march=native)
+# add_cxx_compiler_flag(-march=native)
 
 # Enable avx2 flag if specified.
 if (USE_AVX2)
@@ -80,8 +80,8 @@ include_directories ("${ROOT_DIR}/src")
 set(CMAKE_INSTALL_PREFIX "$ENV{HOME}")
 
 # Hyperscan
-SET(LIB_HS "${EXTERNAL_DIR}/lib/libhs.a")
-SET(LIB_HS_RUNTIME "${EXTERNAL_DIR}/lib/libhs_runtime.a")
+find_library(LIB_HS libhs.a "${EXTERNAL_DIR}/lib" NO_DEFAULT_PATH)
+find_library(LIB_HS_RUNTIME libhs_runtime.a "${EXTERNAL_DIR}/lib" NO_DEFAULT_PATH)
 
 set(SRC_FILES fast-updatedb fast-locate fast-find fast-wc)
 foreach (src_file ${SRC_FILES})
