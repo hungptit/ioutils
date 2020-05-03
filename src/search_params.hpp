@@ -39,18 +39,11 @@ namespace ioutils {
 
         struct Params {
             static constexpr int EXPLORE_ALL = -1;
-            Params()
-                : flags(0),
-                  regex_mode(HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH),
-                  maxdepth(std::numeric_limits<int>::max()),
-                  path_regex(),
-                  paths() {}
-
-            int flags;
-            int regex_mode;
-            int maxdepth;
-            std::string path_regex;
-            std::vector<std::string> paths;
+            int flags = 0;
+            int regex_mode = HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH;
+            int maxdepth = std::numeric_limits<int>::max();
+            std::string path_regex = {};
+            std::vector<std::string> paths = {};
 
             bool verbose() const { return (flags & PARAMS::VERBOSE) > 0; }
             bool invert_match() const { return (flags & PARAMS::INVERT_MATCH) > 0; }
