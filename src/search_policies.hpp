@@ -1,8 +1,8 @@
 #pragma once
 
 #include "filesystem.hpp"
-#include "resources.hpp"
 #include "fmt/format.h"
+#include "resources.hpp"
 
 namespace ioutils {
     class AllPassFilter {
@@ -33,15 +33,11 @@ namespace ioutils {
       protected:
         bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
 
-        void process_file(const Path &parent, const char *stem) const {
-            fmt::print("{0}/{1}\n", parent.path, stem);
-        }
+        void process_file(const Path &parent, const char *stem) const { fmt::print("{0}/{1}\n", parent.path, stem); }
 
         void process_file(const Path &parent) const { fmt::print("{0}/{1}\n", parent.path); }
 
-        void process_symlink(const Path &parent, const char *stem) const {
-            fmt::print("{0}/{1}\n", parent.path, stem);
-        }
+        void process_symlink(const Path &parent, const char *stem) const { fmt::print("{0}/{1}\n", parent.path, stem); }
 
         void process_dir(const std::string &p) const { fmt::print("{}\n", p); }
     };

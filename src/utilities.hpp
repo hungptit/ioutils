@@ -9,7 +9,8 @@
 namespace ioutils {
     namespace path {
         /**
-         * This function will simplify the given path string so that the displayed path makes sense to users .
+         * This function will simplify the given path string so that the displayed path
+         * makes sense to users .
          *
          * Runtime: O(n)
          * Memory: O(n)
@@ -75,8 +76,8 @@ namespace ioutils {
         // This class/algorithm should support full regular expression syntax.
         //
         // Algorithm:
-        // 1. Will move from left to right using '/' as a marker and will stop if the current
-        // path is invalid.
+        // 1. Will move from left to right using '/' as a marker and will stop if the
+        // current path is invalid.
 
         /**
            Situations that we need to handle:

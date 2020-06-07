@@ -44,9 +44,10 @@ namespace ioutils {
                     }
                 }
 
-                // If we cannot visit some folders because of too many open file problem then revisit them ntries
-                // times. This workaround may not fix all potential issues with this type of problem if the number of
-                // open file descriptors is limited.
+                // If we cannot visit some folders because of too many open file problem
+                // then revisit them ntries times. This workaround may not fix all potential
+                // issues with this type of problem if the number of open file descriptors
+                // is limited.
                 constexpr int ntries = 3;
                 for (int idx = 0; idx < ntries; ++idx) {
                     if (unvisited_paths.empty()) break;
@@ -66,8 +67,9 @@ namespace ioutils {
             }
 
             /**
-             * We do not support the maximum exploration depth in bfs because we need to make dfs and bfs
-             * compartible. If the exploration level is desired then travese will use bfs algorithm.
+             * We do not support the maximum exploration depth in bfs because we need to
+             * make dfs and bfs compartible. If the exploration level is desired then
+             * travese will use bfs algorithm.
              */
             void dfs(const std::string &p) {
                 int fd = ::open(p.data(), O_RDONLY);
@@ -143,7 +145,8 @@ namespace ioutils {
                                         if (errno == EMFILE) {
                                             /**
                                              * If we got hit too many files open issue
-                                             * then cache unvisited paths and traverse to these path later.
+                                             * then cache unvisited paths and traverse to these path
+                                             * later.
                                              */
                                             unvisited_paths.emplace_back(p);
                                             fmt::print(stderr, "fast-find -- Cache unvisited path: '{}': {}\n", p,

@@ -12,7 +12,8 @@ namespace ioutils {
 
         template <typename Params>
         StorePolicy(Params &&params)
-            : store_file(!params.ignore_file()), store_dir(!params.ignore_dir()),
+            : store_file(!params.ignore_file()),
+              store_dir(!params.ignore_dir()),
               store_symlink(!params.ignore_symlink()) {}
         const container_type &get_paths() const { return paths; }
 
@@ -40,37 +41,37 @@ namespace ioutils {
                 paths.emplace_back(parent.path + SEP + stem);
             }
         }
-        
+
         void process_symlink(const Path &parent) {
             if (store_symlink) {
                 paths.emplace_back(parent.path);
             }
         }
-        
+
         void process_dir(const std::string &p) {
             if (store_dir) {
                 paths.push_back(p);
             }
         }
 
-        void process_fifo(const Path &, const char *){}
-        void process_fifo(const Path &){}
-        
-        void process_chr(const Path &, const char *){}
-        void process_chr(const Path &){}
-        
-        void process_blk(const Path &, const char *){}
-        void process_blk(const Path &){}
-        
-        void process_socket(const Path &, const char *){}
-        void process_socket(const Path &){}
-        
-        void process_whiteout(const Path &, const char *){}
-        void process_whiteout(const Path &){}
-        
-        void process_unknown(const Path &, const char *){}
-        void process_unknown(const Path &){}
-        
+        void process_fifo(const Path &, const char *) {}
+        void process_fifo(const Path &) {}
+
+        void process_chr(const Path &, const char *) {}
+        void process_chr(const Path &) {}
+
+        void process_blk(const Path &, const char *) {}
+        void process_blk(const Path &) {}
+
+        void process_socket(const Path &, const char *) {}
+        void process_socket(const Path &) {}
+
+        void process_whiteout(const Path &, const char *) {}
+        void process_whiteout(const Path &) {}
+
+        void process_unknown(const Path &, const char *) {}
+        void process_unknown(const Path &) {}
+
         container_type paths;
     };
 } // namespace ioutils

@@ -4,7 +4,7 @@
 #include <fcntl.h>
 
 namespace ioutils {
-    namespace fast-locate {
+    namespace fast - locate {
         struct Policy {
           public:
             using container_type = std::vector<ioutils::Stats>;
@@ -62,5 +62,5 @@ namespace ioutils {
             struct stat statbuf;
             static constexpr int MODE_MASK = 0xfff;
         };
-    };
-}
+    }; // namespace fast-locate
+} // namespace ioutils

@@ -34,8 +34,8 @@ namespace ioutils {
             void process_fifo(const Path &parent, const char *stem = nullptr) { process_file(parent, stem); }
 
             /**
-             * Store the path of character special for now. Not sure if users ever need to know about this type of
-             * paths.
+             * Store the path of character special for now. Not sure if users ever need to
+             * know about this type of paths.
              */
             void process_chr(const Path &parent, const char *stem = nullptr) { process_file(parent, stem); }
 
@@ -55,7 +55,8 @@ namespace ioutils {
             void process_whiteout(const Path &parent, const char *stem = nullptr) { process_file(parent, stem); }
 
             /**
-             * TODO: We treat unknown as a file for now. This strategy seem to work well in MacOS.
+             * TODO: We treat unknown as a file for now. This strategy seem to work well
+             * in MacOS.
              */
             void process_unknown(const Path &parent, const char *stem = nullptr) { process_file(parent, stem); }
 
@@ -79,9 +80,7 @@ namespace ioutils {
         static constexpr int BUFFER_SIZE = 1 << 17;
         template <typename Params>
         LocateStreamPolicy(Params &&params)
-            : matcher(params.pattern, params.regex_mode),
-              prefix(params.prefix),
-              console(StreamWriter::STDOUT) {
+            : matcher(params.pattern, params.regex_mode), prefix(params.prefix), console(StreamWriter::STDOUT) {
             read_buffer = buffer;
         }
 
@@ -105,7 +104,8 @@ namespace ioutils {
                 const size_t leftover_bytes = end - start;
                 if (leftover_bytes > 0) {
                     memcpy(buffer, start, leftover_bytes);
-                    read_buffer = buffer + leftover_bytes;;
+                    read_buffer = buffer + leftover_bytes;
+                    ;
                 }
             }
         }
@@ -130,8 +130,8 @@ namespace ioutils {
             }
         }
 
-        // Note: Override this function to make FileReader happy. We do not care about the database name in
-        // fast-locate.
+        // Note: Override this function to make FileReader happy. We do not care about
+        // the database name in fast-locate.
         void set_filename(const char *) {}
     };
 

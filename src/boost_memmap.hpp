@@ -12,4 +12,4 @@ namespace ioutils {
         auto end = begin + mmap.size();
         return Container(begin, end);
     }
-}
+} // namespace ioutils

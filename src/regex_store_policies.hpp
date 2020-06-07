@@ -11,8 +11,11 @@ namespace ioutils {
       public:
         template <typename Params>
         RegexStorePolicy(Params &&params)
-            : buffer(), matcher(params.path_regex, params.regex_mode), paths(),
-              store_file(!params.ignore_file()), store_dir(!params.ignore_dir()),
+            : buffer(),
+              matcher(params.path_regex, params.regex_mode),
+              paths(),
+              store_file(!params.ignore_file()),
+              store_dir(!params.ignore_dir()),
               store_symlink(!params.ignore_symlink()) {
             buffer.reserve(1023);
         }
@@ -44,7 +47,7 @@ namespace ioutils {
                 paths.push_back(buffer);
             }
         }
-        
+
         void process_symlink(const Path &parent) {
             if (!store_symlink) return;
             if (matcher.is_matched(parent.path.data(), parent.path.size())) {
@@ -56,22 +59,22 @@ namespace ioutils {
 
         void process_fifo(const Path &, const char *) {}
         void process_fifo(const Path &) {}
-        
+
         void process_chr(const Path &, const char *) {}
         void process_chr(const Path &) {}
-        
+
         void process_blk(const Path &, const char *) {}
         void process_blk(const Path &) {}
-        
+
         void process_socket(const Path &, const char *) {}
         void process_socket(const Path &) {}
-        
+
         void process_whiteout(const Path &, const char *) {}
         void process_whiteout(const Path &) {}
-		
+
         void process_unknown(const Path &, const char *) {}
         void process_unknown(const Path &) {}
-        
+
         std::string buffer;
         Matcher matcher;
         std::vector<std::string> paths;

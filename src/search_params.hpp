@@ -157,7 +157,8 @@ namespace ioutils {
 
                 clara::Opt(color)["-c"]["--color"]("Print out color text.") |
                 clara::Opt(dfs)["--dfs"]("Use pre-order DFS algorithm for traversing.") |
-                clara::Opt(bfs)["--bfs"]("Use BFS algorithm for traversing. Note that BFS algorithm might be slower "
+                clara::Opt(bfs)["--bfs"]("Use BFS algorithm for traversing. Note that "
+                                         "BFS algorithm might be slower "
                                          "than DFS algorithm for large folders.") |
                 clara::Opt(params.path_regex, "path-regex")["-e"]["-E"]["--regex"]("Search pattern.") |
                 clara::Opt(params.maxdepth, "maxdepth")["--maxdepth"]("The maximum search depth.") |

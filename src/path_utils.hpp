@@ -26,8 +26,8 @@ namespace ioutils {
         // This class/algorithm should support full regular expression syntax.
         //
         // Algorithm:
-        // 1. Will move from left to right using '/' as a marker and will stop if the current
-        // path is invalid.
+        // 1. Will move from left to right using '/' as a marker and will stop if the
+        // current path is invalid.
         auto get_root_path(const char *begin, const char *end) {
             Params params;
             constexpr char FWD_SLASH = '/';
@@ -39,7 +39,7 @@ namespace ioutils {
 
             // Search '/' from left to right
             struct stat info;
-            while ((ptr = (const char*)memchr(ptr, FWD_SLASH, end - ptr))) {
+            while ((ptr = (const char *)memchr(ptr, FWD_SLASH, end - ptr))) {
                 current_path.append(pos, ptr - pos);
                 int errcode = stat(current_path.data(), &info);
                 if (errcode) {

@@ -79,7 +79,8 @@ namespace ioutils {
                 ++number_of_symlinks;
             }
 
-            // Note: The interface of this method is different because we cannot reuse caller's Path object.
+            // Note: The interface of this method is different because we cannot reuse
+            // caller's Path object.
             void process_dir(const std::string &parent) {
                 if (ignore_dir) return;
                 if (color) {
@@ -249,7 +250,7 @@ namespace ioutils {
                 if (matcher.is_matched(parent.path.data(), parent.path.size())) {
                     if (color) {
                         writer.write(FILE_COLOR.data(), FILE_COLOR.size());
-                    }                    
+                    }
                     writer.write(parent.path.data(), parent.path.size());
                     writer.eol();
                 }

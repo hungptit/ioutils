@@ -11,8 +11,7 @@ namespace ioutils {
     // the maximum/minimum length of lines.
     class FileStats {
       public:
-        template<typename Params> FileStats(Params && ) {
-        }
+        template <typename Params> FileStats(Params &&) {}
         void process(const char *begin, const size_t len, const size_t) {
             // Count the number of lines
             const char *ptr = begin;

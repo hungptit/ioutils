@@ -5,11 +5,9 @@
 #include <unistd.h>
 
 namespace ioutils {
-    template <typename Policy, size_t BUFFER_SIZE = 1 << 16>
-    struct StreamReader : public Policy {
+    template <typename Policy, size_t BUFFER_SIZE = 1 << 16> struct StreamReader : public Policy {
         // Need to support different policies.
-        template <typename... Args>
-        StreamReader(Args... args) : Policy(std::forward<Args>(args)...) {}
+        template <typename... Args> StreamReader(Args... args) : Policy(std::forward<Args>(args)...) {}
 
         // For stdin use STDIN_FILENO
         void operator()(int fd) {
@@ -19,8 +17,7 @@ namespace ioutils {
                 Policy::process(read_buffer, nbytes, BUFFER_SIZE);
             }
             if (nbytes < 0) {
-                fmt::print(stderr, "Cannot read data from given file descriptor: {}\n",
-                           strerror(errno));
+                fmt::print(stderr, "Cannot read data from given file descriptor: {}\n", strerror(errno));
             }
         }
     };

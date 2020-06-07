@@ -4,6 +4,7 @@
 #include <array>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <deque>
 #include <dirent.h>
 #include <fcntl.h>
@@ -12,7 +13,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <vector>
-#include <ctime>
 
 namespace ioutils {
     namespace filesystem {
@@ -24,16 +24,13 @@ namespace ioutils {
                 return (strcmp(p, lookup_table[N].data()) != 0) && is_valid_dir<N - 1>(p);
             }
 
-            template <> bool is_valid_dir<0>(const char *p) {
-                return strcmp(p, lookup_table[0].data()) != 0;
-            }
+            template <> bool is_valid_dir<0>(const char *p) { return strcmp(p, lookup_table[0].data()) != 0; }
         } // namespace
 
         bool is_valid_dir(const char *p) { return is_valid_dir<NumberOfStems>(p); }
 
         bool is_valid_dir_slow(const char *dname) {
-            return (strcmp(dname, ".") != 0) && (strcmp(dname, "..") != 0) &&
-                   (strcmp(dname, ".git") != 0);
+            return (strcmp(dname, ".") != 0) && (strcmp(dname, "..") != 0) && (strcmp(dname, ".git") != 0);
         }
 
         enum Error : int8_t {
@@ -95,11 +92,9 @@ namespace ioutils {
 
     // A struct that hold folder information during the traversal.
     struct Path {
-        template <typename T>
-        explicit Path(int val, T &&p) : fd(val), path(std::forward<T>(p)) {}
+        template <typename T> explicit Path(int val, T &&p) : fd(val), path(std::forward<T>(p)) {}
 
-        template <typename T>
-        explicit Path(T &&p) : fd(p.fd), path(std::forward<std::string>(p.path)) {}
+        template <typename T> explicit Path(T &&p) : fd(p.fd), path(std::forward<std::string>(p.path)) {}
 
         int fd; // The current path file descriptor
         std::string path;

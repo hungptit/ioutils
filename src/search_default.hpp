@@ -47,8 +47,9 @@ namespace ioutils {
             }
 
             /**
-             * We do not support the maximum exploration depth in bfs because we need to make dfs and bfs
-             * compartible. If the exploration level is desired then travese will use bfs algorithm.
+             * We do not support the maximum exploration depth in bfs because we need to
+             * make dfs and bfs compartible. If the exploration level is desired then
+             * travese will use bfs algorithm.
              */
             void dfs(const std::string &p) {
                 next.emplace_back(Path{-1, p});
