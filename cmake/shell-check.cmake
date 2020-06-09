@@ -1,0 +1,7 @@
+file(GLOB_RECURSE SRC 3p/build*.sh *.sh)
+find_program(SHELLCHECK NAMES shellcheck)
+if (SHELLCHECK)
+  add_custom_target(check COMMAND ${SHELLCHECK} ${SRC})
+else()
+  message(WARNING "Cannot find shellcheck")
+endif()
