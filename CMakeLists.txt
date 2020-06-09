@@ -7,13 +7,9 @@ if (NOT CMAKE_VERSION VERSION_LESS 3.0)
 endif()
 
 # Format C++ code
-file(GLOB_RECURSE CPP_SRC src/*hpp)
-message(${CPP_SRC})
-find_program(CLANG_FORMAT NAMES clang-format)
-message(${CLANG_FORMAT})
-
-add_custom_target( format-cpp COMMAND ${CLANG_FORMAT} -i ${CPP_SRC})
+include(cmake/clang-format.cmake)
 
 # Check shell script
+include(cmake/shell-check.cmake)
 
 
