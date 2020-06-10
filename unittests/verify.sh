@@ -9,21 +9,21 @@ set +x
 
 # Find all files in a given folder using GNU find.
 echo "Find all files using GNU find"
-/usr/bin/time find $src | sort -s > $data1
+/usr/bin/time find "$src" | sort -s > $data1
 
 # Find all files using fast-find
-echo "Find all files using fast-find"
-/usr/bin/time fast-find $src --donot-ignore-git | sort -s > $data2
+printf "Find all files using fast-find\n"
+/usr/bin/time fast-find "$src" --donot-ignore-git | sort -s > $data2
 
 # Find all files using fd
-echo "Find all files using fd"
-/usr/bin/time fd . $src -H --no-ignore | sort -s > $data3
+printf "Find all files using fd\n"
+/usr/bin/time fd . "$src" -H --no-ignore | sort -s > $data3
 
 # Verify the output of fast-find
-echo "\n==== Verify the output of fast-find ===="
-diff $data1 $data2
+printf "==== Verify the output of fast-find ====\n"
+diff "$data1" "$data2"
 
-echo "\n==== Verify the output of fd ===="
+printf "==== Verify the output of fd ====\n"
 # Verify the output of fd
 diff $data1 $data3
 

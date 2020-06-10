@@ -9,7 +9,7 @@ git submodule init
 git submodule update
 
 # # Build all required libraries
-pushd $root_dir/3p
+pushd "$root_dir/3p"
 sh build_all.sh
 if [ ! -d "lib" ]; then
     mv lib64 lib
@@ -17,20 +17,20 @@ fi
 popd
 
 # Run all unittests
-pushd $root_dir/unittests/
+pushd "$root_dir/unittests/"
 cmake ./ > /dev/null
 make -j5
 make test
 popd
 
 # Build ioutils command
-pushd $root_dir/commands
+pushd "$root_dir/commands"
 cmake ./ > /dev/null
 make -j5
 popd
 
 # Build all benchmarks
-pushd $root_dir/benchmark
+pushd "$root_dir/benchmark"
 cmake ./ > /dev/null
 make -j5
 popd

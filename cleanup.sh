@@ -9,11 +9,11 @@ git checkout master
 git pull
 
 # Cleanup merged branches
-merged_branches=`git branch --merge | ~/bin/fgrep --stdin --invert-match '(master|develop)'`
+merged_branches=$(git branch --merge | grep --stdin --invert-match 'master')
 for branch in $merged_branches; do
     echo "Delete branch '$branch'"
     sleep 1
-    git branch -d $branch
+    git branch -d "$branch"
 done
 
 set +x

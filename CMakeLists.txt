@@ -11,5 +11,3 @@ include(cmake/clang-format.cmake)
 
 # Check shell script
 include(cmake/shell-check.cmake)
-
-
