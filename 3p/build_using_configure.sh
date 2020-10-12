@@ -20,9 +20,22 @@ echo "====> Prefix folder: " "$APKG_PREFIX"
 echo "====> Build folder: " "$APKG_BUILD_FOLDER"
 rm -rf "$APKG_BUILD_FOLDER"
 mkdir "$APKG_BUILD_FOLDER"
+
 pushd "$APKG_BUILD_FOLDER"
-"$APKG_SRC"/configure --prefix "$APKG_PREFIX" "$EXTRA_CONFIG_OPTIONS"
-make "$BUILD_OPTS" "$EXTRA_MAKE_OPTIONS"
+
+if [[ -z "$EXTRA_CONFIG_OPTIONS" ]]; then
+    "$APKG_SRC"/configure --prefix "$APKG_PREFIX"
+else
+    "$APKG_SRC"/configure --prefix "$APKG_PREFIX" "$EXTRA_CONFIG_OPTIONS"
+fi
+
+if [[ -z "$EXTRA_MAKE_OPTIONS" ]]; then
+    make "$BUILD_OPTS"
+else
+    make "$BUILD_OPTS" "$EXTRA_MAKE_OPTIONS"
+fi
+    
 make install
 popd;
+
 rm -rf "$APKG_BUILD_FOLDER"               # Cleanup build directory.

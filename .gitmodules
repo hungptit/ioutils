@@ -26,3 +26,11 @@
 	path = 3p/src/hyperscan
 	url = https://github.com/intel/hyperscan.git
 	branch = master
+[submodule "3p/src/ragel"]
+	path = 3p/src/ragel
+	url = https://github.com/adriandt/ragel.git
+	branch = master
+[submodule "3p/src/colm"]
+	path = 3p/src/colm
+	url = https://github.com/adrian-thurston/colm.git
+	branch = master

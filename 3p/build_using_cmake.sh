@@ -19,11 +19,21 @@ rm -rf "$APKG_BUILD_FOLDER"
 mkdir -p "$APKG_BUILD_FOLDER"
 
 pushd "$APKG_BUILD_FOLDER"
-$CMAKE "$APKG_SRC" -DCMAKE_INSTALL_PREFIX="$APKG_PREFIX" "$CMAKE_RELEASE_BUILD" "$CMAKE_OPTIONS"
-make "$BUILD_OPTS" "$EXTRA_MAKE_OPTIONS"
-make install
+set -x
+if [[ -z "$CMAKE_OPTIONS" ]]; then
+    $CMAKE "$APKG_SRC" -DCMAKE_INSTALL_PREFIX="$APKG_PREFIX" "$CMAKE_RELEASE_BUILD"
+else
+    $CMAKE "$APKG_SRC" -DCMAKE_INSTALL_PREFIX="$APKG_PREFIX" "$CMAKE_RELEASE_BUILD" "$CMAKE_OPTIONS"
+fi
 
-# Return to the original folder.
+if [[ -z "$EXTRA_MAKE_OPTIONS" ]]; then
+    make "$BUILD_OPTS"
+else
+    make "$BUILD_OPTS" "$EXTRA_MAKE_OPTIONS"
+fi
+
+make install
+set +x
 popd
 
 # Cleanup build folder
