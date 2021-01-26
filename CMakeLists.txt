@@ -10,8 +10,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Use C++ 17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(CMAKE_CXX_EXTENSIONS OFF)
+add_compile_options(-pedantic)
+add_compile_options(-pedantic-errors)
+add_compile_options(-static)
+
+# Install required libraries
 include(FetchContent)
 
 find_program(CCACHE_PROGRAM ccache)
@@ -73,12 +78,12 @@ FetchContent_Declare(
 FetchContent_Populate(utils)
 
 # hyperscan
-FetchContent_Declare(
-  hyperscan
-  GIT_REPOSITORY https://github.com/intel/hyperscan.git
-  GIT_TAG master
-  GIT_SHALLOW TRUE)
-FetchContent_MakeAvailable(hyperscan)
+# FetchContent_Declare(
+#   hyperscan
+#   GIT_REPOSITORY https://github.com/intel/hyperscan.git
+#   GIT_TAG master
+#   GIT_SHALLOW TRUE)
+# FetchContent_MakeAvailable(hyperscan)
 
 # Add cmake-scripts
 FetchContent_Declare(
@@ -95,10 +100,6 @@ include(code-coverage)
 include(sanitizers)
 include(tools)
 include(dependency-graph)
-
-add_compile_options(-pedantic)
-add_compile_options(-pedantic-errors)
-add_compile_options(-static)
 
 include_directories("_deps/doctest-src/")
 include_directories("_deps/clara/include")
