@@ -102,8 +102,16 @@ include(tools)
 include(dependency-graph)
 
 include_directories("_deps/doctest-src/")
-include_directories("_deps/clara/include")
-include_directories("_deps/utils/src")
+include_directories("_deps/fmt-src/include")
+include_directories("_deps/utils-src/src")
+include_directories("_deps/clara-src/include/")
+
+# Hyperscan
+find_library(LIB_HS libhs.a "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
+find_library(LIB_HS_RUNTIME libhs_runtime.a "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
+
+# add_subdirectory(unittests)
+add_subdirectory(commands)
 
 # Install all header files to destination folder.
 if (NOT CMAKE_VERSION VERSION_LESS 3.0)

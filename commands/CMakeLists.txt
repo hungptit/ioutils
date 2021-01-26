@@ -79,10 +79,6 @@ include_directories ("${ROOT_DIR}/src")
 # Build all
 set(CMAKE_INSTALL_PREFIX "$ENV{HOME}")
 
-# Hyperscan
-find_library(LIB_HS libhs.a "${EXTERNAL_DIR}/lib" NO_DEFAULT_PATH)
-find_library(LIB_HS_RUNTIME libhs_runtime.a "${EXTERNAL_DIR}/lib" NO_DEFAULT_PATH)
-
 set(SRC_FILES fast-updatedb fast-locate fast-find fast-wc)
 foreach (src_file ${SRC_FILES})
   ADD_EXECUTABLE(${src_file} ${src_file}.cpp)

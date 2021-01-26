@@ -4,9 +4,9 @@
 #include "ioutils.hpp"
 #include "locate.hpp"
 #include "fdreader.hpp"
-#include "utils/matchers.hpp"
-#include "utils/memchr.hpp"
-#include "utils/regex_matchers.hpp"
+#include "matchers.hpp"
+#include "memchr.hpp"
+#include "regex_matchers.hpp"
 #include <string>
 
 namespace {

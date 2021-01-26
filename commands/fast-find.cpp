@@ -3,8 +3,8 @@
 #include "search.hpp"
 #include "search_params.hpp"
 #include "search_policies.hpp"
-#include "utils/matchers.hpp"
-#include "utils/regex_matchers.hpp"
+#include "matchers.hpp"
+#include "regex_matchers.hpp"
 #include <dirent.h>
 
 namespace {

@@ -3,7 +3,7 @@
 #include "fdwriter.hpp"
 #include "filesystem.hpp"
 #include "search.hpp"
-#include "utils/memchr.hpp"
+#include "memchr.hpp"
 #include <fcntl.h>
 #include <string>
 #include <unistd.h>
