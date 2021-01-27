@@ -1,4 +1,5 @@
 #include "celero/Celero.h"
+
 #include "fmt/format.h"
 #include "ioutils.hpp"
 #include <fstream>

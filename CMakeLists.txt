@@ -15,6 +15,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_compile_options(-pedantic)
 add_compile_options(-pedantic-errors)
 add_compile_options(-static)
+add_compile_options(-DFMT_HEADER_ONLY)
 
 # Install required libraries
 include(FetchContent)
@@ -26,15 +27,12 @@ endif()
 
 set(POSITION_INDEPENDENT_CODE ON)
 
-# Fetch required libraries
-
 # Add doctest
 FetchContent_Declare(
   doctest
   GIT_REPOSITORY https://github.com/onqtam/doctest.git
   GIT_TAG 2.4.4
   GIT_SHALLOW TRUE)
-
 set(DOCTEST_WITH_TESTS OFF)
 FetchContent_MakeAvailable(doctest)
 
@@ -44,7 +42,6 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/google/benchmark.git
   GIT_TAG v1.5.2
   GIT_SHALLOW TRUE)
-
 set(BENCHMARK_ENABLE_TESTING OFF)
 set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
 set(BENCHMARK_ENABLE_ASSEMBLY_TEST OFF)
@@ -56,12 +53,11 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/fmtlib/fmt.git
   GIT_TAG 7.1.3)
 set(BUILD_TESTING OFF)
-
 set(FMT_DOC OFF)
 set(FMT_TEST OFF)
 FetchContent_MakeAvailable(fmt)
 
-# Add Clara
+# clara
 FetchContent_Declare(
   clara
   GIT_REPOSITORY https://github.com/catchorg/Clara.git
@@ -76,14 +72,6 @@ FetchContent_Declare(
   GIT_TAG master
   GIT_SHALLOW TRUE)
 FetchContent_Populate(utils)
-
-# hyperscan
-# FetchContent_Declare(
-#   hyperscan
-#   GIT_REPOSITORY https://github.com/intel/hyperscan.git
-#   GIT_TAG master
-#   GIT_SHALLOW TRUE)
-# FetchContent_MakeAvailable(hyperscan)
 
 # Add cmake-scripts
 FetchContent_Declare(
@@ -105,21 +93,26 @@ include_directories("_deps/doctest-src/")
 include_directories("_deps/fmt-src/include")
 include_directories("_deps/utils-src/src")
 include_directories("_deps/clara-src/include/")
+include_directories("_deps/benchmark-src/include/")
+include_directories("src")
+include_directories("3p/include")
 
 # Hyperscan
 find_library(LIB_HS libhs.a "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
 find_library(LIB_HS_RUNTIME libhs_runtime.a "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
+find_library(LIB_HS_RUNTIME libhs_runtime.a "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
+
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # add_subdirectory(unittests)
 add_subdirectory(commands)
+add_subdirectory(benchmark)
+add_subdirectory(unittests)
 
 # Install all header files to destination folder.
 if (NOT CMAKE_VERSION VERSION_LESS 3.0)
   install(DIRECTORY src/ DESTINATION include/ioutils)
 endif()
 
-# Format C++ code
-include(cmake/clang-format.cmake)
-
-# Check shell script
-include(cmake/shell-check.cmake)
+set(CMAKE_INSTALL_PREFIX "$ENV{HOME}")
+ENABLE_TESTING()

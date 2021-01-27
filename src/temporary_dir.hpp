@@ -1,5 +1,5 @@
 #pragma once
-#include "utils/random_string.hpp"
+#include "random_string.hpp"
 #include <filesystem>
 
 namespace ioutils {

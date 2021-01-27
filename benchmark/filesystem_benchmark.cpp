@@ -65,5 +65,4 @@ void use_recursive(benchmark::State &state) {
 }
 BENCHMARK(use_recursive);
 
-
 BENCHMARK_MAIN();
