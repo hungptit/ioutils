@@ -59,8 +59,7 @@ namespace {
         }
         size_t length = info.st_size;
 
-        char *begin =
-            static_cast<char *>(mmap(nullptr, length, PROT_READ, MAP_PRIVATE, fd, 0u));
+        char *begin = static_cast<char *>(mmap(nullptr, length, PROT_READ, MAP_PRIVATE, fd, 0u));
 
         if (begin == MAP_FAILED) {
             handle_error("Cannot map ");
@@ -89,7 +88,7 @@ namespace {
     // Read from file in chunks
     struct AppendPolicy {
         void process(const char *buffer, const size_t len, const size_t) { data.append(buffer, len); }
-        void finalize(){}       // Do not need to do anything for the append only policy.
+        void finalize() {} // Do not need to do anything for the append only policy.
         std::string data;
     };
 
@@ -128,8 +127,7 @@ namespace {
             for (size_t blk = 0; blk < block_count; ++blk) {
                 long nbytes = ::read(fd, read_buffer, BUFFER_SIZE);
                 if (nbytes < 0) {
-                    const std::string msg =
-                        std::string("Cannot read from file \"") + std::string(datafile) + "\" ";
+                    const std::string msg = std::string("Cannot read from file \"") + std::string(datafile) + "\" ";
                     throw(std::runtime_error(msg));
                 };
 

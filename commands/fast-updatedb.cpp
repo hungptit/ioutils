@@ -1,10 +1,13 @@
 #include "clara.hpp"
 #include "fmt/format.h"
-#include "locate.hpp"
-#include "search.hpp"
-#include "utilities.hpp"
+
+#include "ioutils/locate.hpp"
+#include "ioutils/search.hpp"
+#include "ioutils/utilities.hpp"
+#include "ioutils/writer.hpp"
+
 #include "timeutils.hpp"
-#include "writer.hpp"
+
 #include <set>
 #include <string>
 #include <vector>

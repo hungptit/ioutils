@@ -1,10 +1,12 @@
 #include "clara.hpp"
-#include "find.hpp"
-#include "search.hpp"
-#include "search_params.hpp"
-#include "search_policies.hpp"
+
+#include "ioutils/find.hpp"
+#include "ioutils/search.hpp"
+#include "ioutils/search_params.hpp"
+#include "ioutils/search_policies.hpp"
 #include "matchers.hpp"
 #include "regex_matchers.hpp"
+
 #include <dirent.h>
 
 namespace {

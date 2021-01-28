@@ -1,8 +1,9 @@
 #include "clara.hpp"
-#include "filesystem.hpp"
 #include "fmt/format.h"
-#include "linestats.hpp"
-#include "reader.hpp"
+
+#include "ioutils/filesystem.hpp"
+#include "ioutils/linestats.hpp"
+#include "ioutils/reader.hpp"
 #include <string>
 
 namespace {

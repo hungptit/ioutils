@@ -55,7 +55,7 @@ FetchContent_Declare(
 set(BUILD_TESTING OFF)
 set(FMT_DOC OFF)
 set(FMT_TEST OFF)
-FetchContent_MakeAvailable(fmt)
+FetchContent_Populate(fmt)
 
 # clara
 FetchContent_Declare(
@@ -94,7 +94,7 @@ include_directories("_deps/fmt-src/include")
 include_directories("_deps/utils-src/src")
 include_directories("_deps/clara-src/include/")
 include_directories("_deps/benchmark-src/include/")
-include_directories("src")
+include_directories("include")
 include_directories("3p/include")
 
 # Hyperscan
@@ -116,3 +116,40 @@ endif()
 
 set(CMAKE_INSTALL_PREFIX "$ENV{HOME}")
 ENABLE_TESTING()
+
+# Formating and linting source code
+file(GLOB CPP_FILES include/*.hpp unittests/*.[ch]pp benchmark/*.[ch]pp commands/*.[ch]pp)
+message("${CPP_FILES}")
+
+find_program(CLANG_FORMAT NAMES clang-format)
+add_custom_command(
+  OUTPUT .fmt_cpp_stamp
+  DEPENDS ${CPP_FILES}
+  COMMAND ${CLANG_FORMAT} -i ${CPP_FILES}
+  COMMAND touch .fmt_cpp_stamp
+  COMMENT "Format C++ files with clang-format."
+  VERBATIM)
+
+file(GLOB CMAKE_FILES CMakeLists.txt src/CMakeLists.txt)
+find_program(CMAKE_FORMAT NAMES cmake-format)
+if(${CMAKE_FORMAT} STREQUAL "CMAKE_FORMAT-NOTFOUND")
+  add_custom_command(
+    OUTPUT .fmt_cmake_stamp
+    DEPENDS ${CMAKE_FILES}
+    COMMAND touch .fmt_cmake_stamp
+    COMMENT "Skip formatting CMake files."
+    VERBATIM)
+else()
+  add_custom_command(
+    OUTPUT .fmt_cmake_stamp
+    DEPENDS ${CMAKE_FILES}
+    COMMAND cmake-format -i ${CMAKE_FILES}
+    COMMAND touch .fmt_cmake_stamp
+    COMMENT "Format CMake files with cmake-format."
+    VERBATIM)
+endif()
+
+add_custom_target(
+  format
+  DEPENDS .fmt_cpp_stamp .fmt_cmake_stamp
+  COMMENT "Format C++ and CMake files.")

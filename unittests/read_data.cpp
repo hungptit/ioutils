@@ -3,8 +3,8 @@
 
 #include "fmt/format.h"
 #include "ioutils.hpp"
-#include "reader.hpp"
 #include "read_policies.hpp"
+#include "reader.hpp"
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest/doctest.h"

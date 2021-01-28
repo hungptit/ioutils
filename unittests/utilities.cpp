@@ -1,12 +1,12 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest/doctest.h"
+#include "fmt/format.h"
 #include <fstream>
 #include <iostream>
-#include "fmt/format.h"
 
+#include "fdwriter.hpp"
 #include "ioutils.hpp"
 #include "utilities.hpp"
-#include "fdwriter.hpp"
 
 TEST_CASE("Simplify paths") {
     SUBCASE("Case 1") { CHECK(ioutils::path::simplify_path("") == ""); }

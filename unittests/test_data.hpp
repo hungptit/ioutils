@@ -1,8 +1,9 @@
 #pragma once
 
-#include "temporary_dir.hpp"
-#include <iostream>
+#include "ioutils/temporary_dir.hpp"
+
 #include <fstream>
+#include <iostream>
 
 namespace {
     namespace fs = std::filesystem;
@@ -11,9 +12,7 @@ namespace {
         using path = fs::path;
         explicit TestData(const bool verbose = false) : temporary_dir() { init(verbose); }
 
-        auto get_path() {
-            return temporary_dir.get_path();
-        }
+        auto get_path() { return temporary_dir.get_path(); }
 
       private:
         ioutils::TemporaryDirectory temporary_dir;

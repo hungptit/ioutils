@@ -1,12 +1,15 @@
 #include "clara.hpp"
-#include "filesystem.hpp"
 #include "fmt/format.h"
-#include "ioutils.hpp"
-#include "locate.hpp"
-#include "fdreader.hpp"
+
+#include "ioutils/fdreader.hpp"
+#include "ioutils/filesystem.hpp"
+#include "ioutils/ioutils.hpp"
+#include "ioutils/locate.hpp"
+
 #include "matchers.hpp"
 #include "memchr.hpp"
 #include "regex_matchers.hpp"
+
 #include <string>
 
 namespace {

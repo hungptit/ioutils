@@ -37,7 +37,7 @@ namespace ioutils {
             IGNORE_ERROR = 1 << 15,     // Do not print out errors.
         };
 
-        struct Params {
+        struct InputParams {
             static constexpr int EXPLORE_ALL = -1;
             int flags = 0;
             int regex_mode = HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH;
@@ -107,8 +107,8 @@ namespace ioutils {
             }
         };
 
-        Params parse_input_arguments(int argc, char *argv[]) {
-            Params params;
+        InputParams parse_input_arguments(int argc, char *argv[]) {
+            InputParams params;
             std::vector<std::string> paths;
             bool help = false;
             bool verbose = false;
