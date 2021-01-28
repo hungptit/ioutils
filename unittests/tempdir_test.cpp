@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "fmt/format.h"
-#include "temporary_dir.hpp"
+#include "ioutils/temporary_dir.hpp"
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest/doctest.h"

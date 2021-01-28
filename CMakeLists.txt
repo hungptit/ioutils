@@ -123,6 +123,11 @@ find_library(LIB_HS_RUNTIME libhs_runtime.a "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib"
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
+# Exclude test files from the code coverage report.
+file(GLOB_RECURSE TEST_SRCS unittests/*_test.cpp)
+add_code_coverage_all_targets(EXCLUDE _deps/ ${TEST_SRCS})
+
+
 # add_subdirectory(unittests)
 add_subdirectory(commands)
 add_subdirectory(benchmark)
