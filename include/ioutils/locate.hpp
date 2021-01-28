@@ -2,8 +2,8 @@
 
 #include "fdwriter.hpp"
 #include "filesystem.hpp"
-#include "search.hpp"
 #include "memchr.hpp"
+#include "search.hpp"
 #include <fcntl.h>
 #include <string>
 #include <unistd.h>
@@ -135,18 +135,14 @@ namespace ioutils {
         void set_filename(const char *) {}
     };
 
-    class PrintAllPolicy {
-      public:
+    struct PrintAllPolicy {
         template <typename Params> PrintAllPolicy(Params &&args) : prefix(args.prefix), console(StreamWriter::STDOUT) {}
         void process(const char *begin, const size_t len) { console.write(begin, len); }
-
-      protected:
         void set_filename(const char *) {}
+
         static constexpr int BUFFER_SIZE = 1 << 17;
         char read_buffer[BUFFER_SIZE];
-
-      private:
-        std::string prefix;
+        std::string prefix = "";
         StreamWriter console;
     };
 } // namespace ioutils

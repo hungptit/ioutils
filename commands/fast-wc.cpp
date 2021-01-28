@@ -103,7 +103,7 @@ namespace {
 int main(int argc, char *argv[]) {
     auto params = parse_input_arguments(argc, argv);
     if (params.mmap()) {
-        using Reader = ioutils::MMapReader<ioutils::FileStats>;
+        using Reader = ioutils::MemoryMappedReader<ioutils::FileStats>;
         wc<Reader>(params);
     } else {
         constexpr int BUFFER_SIZE = 1 << 16;
