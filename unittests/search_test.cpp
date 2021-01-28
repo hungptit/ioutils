@@ -7,7 +7,6 @@
 #include "ioutils/locate.hpp"
 #include "ioutils/regex_store_policies.hpp"
 #include "ioutils/search_params.hpp"
-#include "ioutils/search_policies.hpp"
 #include "ioutils/simple_store_policy.hpp"
 #include "ioutils/temporary_dir.hpp"
 
