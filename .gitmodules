@@ -1,7 +1,3 @@
-[submodule "3p/src/Celero"]
-	path = 3p/src/Celero
-	url = https://github.com/DigitalInBlue/Celero.git
-	branch = master
 [submodule "3p/src/hyperscan"]
 	path = 3p/src/hyperscan
 	url = https://github.com/intel/hyperscan.git
