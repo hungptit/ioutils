@@ -12,9 +12,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
-add_compile_options(-pedantic)
-add_compile_options(-pedantic-errors)
-add_compile_options(-static)
 add_compile_options(-DFMT_HEADER_ONLY)
 
 # Install required libraries
@@ -72,6 +69,16 @@ FetchContent_Declare(
   GIT_TAG master
   GIT_SHALLOW TRUE)
 FetchContent_Populate(utils)
+
+# celero
+FetchContent_Declare(
+  celero
+  GIT_REPOSITORY https://github.com/DigitalInBlue/Celero.git
+  GIT_TAG master
+  GIT_SHALLOW TRUE)
+set (CELERO_COMPILE_DYNAMIC_LIBRARIES OFF )
+set(CELERO_ENABLE_EXPERIMENTS OFF)
+FetchContent_MakeAvailable(celero)
 
 # Add cmake-scripts
 FetchContent_Declare(

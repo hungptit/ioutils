@@ -1,13 +1,5 @@
 #include "celero/Celero.h"
-
-#include "fmt/format.h"
-#include "ioutils.hpp"
-#include <fstream>
 #include <iostream>
-
-#include "search.hpp"
-#include "search_policies.hpp"
-#include "simple_store_policy.hpp"
 
 constexpr int number_of_samples = 3;
 constexpr int number_of_operations = 1;
@@ -23,22 +15,22 @@ const std::string tmp_file = "/tmp/output.log";
 const std::string test_path(std::getenv("TEST_DIR"));
 
 int test(const std::string &command, const std::string &path) {
-    std::string buffer = command + path + " > " + tmp_file;
+    std::string buffer = command + path + " &> " + tmp_file;
     return system(buffer.data());
 }
 
 int test_find_regex(const std::string &command, const std::string &regex, const std::string &path) {
-    std::string buffer = command + " " + path + " | grep -E " + regex + " > " + tmp_file;
+    std::string buffer = command + " " + path + " | grep -E " + regex + " &> " + tmp_file;
     return system(buffer.data());
 }
 
 int test_fast_find_regex(const std::string &command, const std::string &regex, const std::string &path) {
-    std::string buffer = command + " -e " + regex + " " + path + " > " + tmp_file;
+    std::string buffer = command + " -e " + regex + " " + path + " &> " + tmp_file;
     return system(buffer.data());
 }
 
 int test_fd_regex(const std::string &command, const std::string &regex, const std::string &path) {
-    std::string buffer = command + " " + regex + " " + path + " > " + tmp_file;
+    std::string buffer = command + " " + regex + " " + path + " &> " + tmp_file;
     return system(buffer.data());
 }
 
