@@ -1,8 +1,12 @@
 ENABLE_TESTING()
 
-add_compile_options(-pedantic)
-add_compile_options(-pedantic-errors)
-add_compile_options(-static)
+if (MSVC)
+  add_compile_options(/W4 /WX)
+else()
+  add_compile_options(-Wall -Wextra -pedantic -Werror)
+endif()
+
+add_cxx_compiler_flag(-static)
 
 set(COMMAND_SRC_FILES read_data tempdir utilities writer)
 foreach (test_executable ${COMMAND_TEST_EXECUTABLES})

@@ -11,8 +11,20 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(CheckCXXCompilerFlag)
+include(AddCXXCompilerFlag)
+include(CXXFeatureCheck)
+
+option(USE_AVX2 "Support AVX2" ON)
+add_cxx_compiler_flag(-mavx2)
+
+set(ENABLE_ALL_WARNINGS ON)
+
 set(CMAKE_CXX_EXTENSIONS OFF)
 add_compile_options(-DFMT_HEADER_ONLY)
+
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # Install required libraries
 include(FetchContent)

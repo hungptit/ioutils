@@ -26,14 +26,14 @@
 
 set(COMMAND_SRC_FILES find_benchmark locate_benchmark)
 foreach (src_file ${COMMAND_SRC_FILES})
-    ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
-    TARGET_LINK_LIBRARIES(${src_file} celero)
+    add_executable(${src_file} ${src_file}.cpp)
+    target_link_libraries(${src_file} celero)
 endforeach (src_file)
 
 set(COMMAND_SRC_FILES filesystem_benchmark)
 foreach (src_file ${COMMAND_SRC_FILES})
-    ADD_EXECUTABLE(${src_file} ${src_file}.cpp)
-    TARGET_LINK_LIBRARIES(${src_file} benchmark::benchmark benchmark::benchmark_main)
+    add_executable(${src_file} ${src_file}.cpp)
+    target_link_libraries(${src_file} benchmark::benchmark benchmark::benchmark_main)
 endforeach (src_file)
 
 # set(COMMAND_SRC_FILES file_read)
