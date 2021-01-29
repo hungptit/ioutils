@@ -9,6 +9,27 @@
 #include <unistd.h>
 namespace ioutils {
     namespace locate {
+        struct UpdateDBInputArguments {
+            int flags = 0;
+            int maxdepth = std::numeric_limits<int>::max();
+            bool stats = 0;
+            bool verbose = 0;
+            std::string database;           // The output fast-locate database path
+            std::vector<std::string> paths; // Saearch paths
+
+            bool dfs() { return true; } // Use dfs traversal to explore folders.
+            bool donot_ignore_git() const { return true; }
+            bool follow_symlink() const { return false; }
+            bool ignore_error() const { return false; }
+
+            void print() const {
+                fmt::print("verbose: {}\n", verbose);
+                fmt::print("statistics: {}\n", stats);
+                fmt::print("Search paths: [\"{}\"]\n", fmt::join(paths, "\",\""));
+                fmt::print("Database: {}\n", database);
+            }
+        };
+
         struct UpdateDBStreamPolicy {
           public:
             UpdateDBStreamPolicy() : writer(StreamWriter::STDOUT) {}
@@ -145,4 +166,12 @@ namespace ioutils {
         std::string prefix = "";
         StreamWriter console;
     };
+
+    void updatedb(ioutils::locate::UpdateDBInputArguments &params) {
+        using Policy = ioutils::locate::UpdateDBStreamPolicy;
+        using Search = typename ioutils::filesystem::DefaultSearch<Policy>;
+        Search search(params);
+        search.traverse(params.paths);
+    }
+
 } // namespace ioutils

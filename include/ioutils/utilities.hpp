@@ -7,6 +7,8 @@
 #include <unistd.h>
 
 namespace ioutils {
+    void copyright() { fmt::print("\n{}\n", "Report bugs or enhancement requests to hungptit@gmail.com"); }
+
     namespace path {
         /**
          * This function will simplify the given path string so that the displayed path
