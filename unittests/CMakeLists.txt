@@ -6,7 +6,7 @@ endif()
 
 add_cxx_compiler_flag(-static)
 
-set(TEST_EXECUTABLE read_data_test tempdir_test utilities_test writer_test)
+set(TEST_EXECUTABLE read_data_test tempdir_test utilities_test writer_test )
 foreach (test_executable ${TEST_EXECUTABLE})
   ADD_EXECUTABLE(${test_executable} ${test_executable}.cpp)
   TARGET_LINK_LIBRARIES(${test_executable})
@@ -14,7 +14,7 @@ foreach (test_executable ${TEST_EXECUTABLE})
   ADD_TEST(${test_executable} ./${test_executable})
 endforeach (test_executable)
 
-set(TEST_EXECUTABLE search_test read_stdin_test)
+set(TEST_EXECUTABLE search_test read_stdin_test locate_test)
 foreach (test_executable ${TEST_EXECUTABLE})
   ADD_EXECUTABLE(${test_executable} ${test_executable}.cpp)
   TARGET_LINK_LIBRARIES(${test_executable} ${LIB_HS} ${LIB_HS_RUNTIME})

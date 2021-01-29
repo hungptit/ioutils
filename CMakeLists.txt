@@ -125,7 +125,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # Exclude test files from the code coverage report.
 file(GLOB_RECURSE TEST_SRCS unittests/*_test.cpp)
-add_code_coverage_all_targets(EXCLUDE _deps/ ${TEST_SRCS})
+add_code_coverage_all_targets(EXCLUDE 3p _deps/ ${TEST_SRCS})
 
 
 # add_subdirectory(unittests)

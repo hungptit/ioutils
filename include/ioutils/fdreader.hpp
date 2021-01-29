@@ -1,10 +1,12 @@
 #pragma once
 #include <fcntl.h>
 #include <stdio.h>
+#include <sys/errno.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <utility>
 
 namespace ioutils {
     template <typename Policy> struct StreamReader : public Policy {
@@ -34,3 +36,4 @@ namespace ioutils {
         }
     };
 } // namespace ioutils
+

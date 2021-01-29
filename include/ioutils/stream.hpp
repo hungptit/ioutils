@@ -5,9 +5,9 @@
 #include <unistd.h>
 
 namespace ioutils {
-    template <typename Policy, size_t BUFFER_SIZE = 1 << 16> struct StreamReader : public Policy {
+    template <typename Policy, size_t BUFFER_SIZE = 1 << 16> struct StdinReader : public Policy {
         // Need to support different policies.
-        template <typename... Args> StreamReader(Args... args) : Policy(std::forward<Args>(args)...) {}
+        template <typename... Args> StdinReader(Args... args) : Policy(std::forward<Args>(args)...) {}
 
         // For stdin use STDIN_FILENO
         void operator()(int fd) {

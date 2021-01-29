@@ -18,7 +18,7 @@ namespace ioutils {
             fmt::print("\t\tfast-find ../src/ -e 'reader'\n");
         }
 
-        enum PARAMS : uint32_t {
+        enum FileSearchFlags : uint32_t {
             VERBOSE = 1,                // Display verbose information.
             INVERT_MATCH = 1 << 1,      // Display paths that do not match given pattern.
             COLOR = 1 << 2,             // Display color text.
@@ -37,7 +37,7 @@ namespace ioutils {
             IGNORE_ERROR = 1 << 15,     // Do not print out errors.
         };
 
-        struct InputParams {
+        struct SearchInputArguments {
             static constexpr int EXPLORE_ALL = -1;
             int flags = 0;
             int regex_mode = HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH;
@@ -45,21 +45,21 @@ namespace ioutils {
             std::string path_regex = {};
             std::vector<std::string> paths = {};
 
-            bool verbose() const { return (flags & PARAMS::VERBOSE) > 0; }
-            bool invert_match() const { return (flags & PARAMS::INVERT_MATCH) > 0; }
-            bool color() const { return (flags & PARAMS::COLOR) > 0; }
-            bool ignore_file() const { return (flags & PARAMS::IGNORE_FILE) > 0; }
-            bool ignore_dir() const { return (flags & PARAMS::IGNORE_DIR) > 0; }
-            bool ignore_symlink() const { return (flags & PARAMS::IGNORE_SYMLINK) > 0; }
-            bool ignore_fifo() const { return (flags & PARAMS::IGNORE_FIFO) > 0; }
-            bool ignore_chr() const { return (flags & PARAMS::IGNORE_CHR) > 0; }
-            bool ignore_blk() const { return (flags & PARAMS::IGNORE_BLK) > 0; }
-            bool ignore_socket() const { return (flags & PARAMS::IGNORE_SOCKET) > 0; }
-            bool ignore_whiteout() const { return (flags & PARAMS::IGNORE_WHITEOUT) > 0; }
-            bool ignore_unknown() const { return (flags & PARAMS::IGNORE_UNKNOWN) > 0; }
-            bool donot_ignore_git() const { return (flags & PARAMS::DONOT_IGNORE_GIT) > 0; }
-            bool ignore_error() const { return (flags & PARAMS::IGNORE_ERROR) > 0; }
-            bool follow_symlink() { return (flags & PARAMS::FOLLOW_SYMLINK) > 0; }
+            bool verbose() const { return (flags & FileSearchFlags::VERBOSE) > 0; }
+            bool invert_match() const { return (flags & FileSearchFlags::INVERT_MATCH) > 0; }
+            bool color() const { return (flags & FileSearchFlags::COLOR) > 0; }
+            bool ignore_file() const { return (flags & FileSearchFlags::IGNORE_FILE) > 0; }
+            bool ignore_dir() const { return (flags & FileSearchFlags::IGNORE_DIR) > 0; }
+            bool ignore_symlink() const { return (flags & FileSearchFlags::IGNORE_SYMLINK) > 0; }
+            bool ignore_fifo() const { return (flags & FileSearchFlags::IGNORE_FIFO) > 0; }
+            bool ignore_chr() const { return (flags & FileSearchFlags::IGNORE_CHR) > 0; }
+            bool ignore_blk() const { return (flags & FileSearchFlags::IGNORE_BLK) > 0; }
+            bool ignore_socket() const { return (flags & FileSearchFlags::IGNORE_SOCKET) > 0; }
+            bool ignore_whiteout() const { return (flags & FileSearchFlags::IGNORE_WHITEOUT) > 0; }
+            bool ignore_unknown() const { return (flags & FileSearchFlags::IGNORE_UNKNOWN) > 0; }
+            bool donot_ignore_git() const { return (flags & FileSearchFlags::DONOT_IGNORE_GIT) > 0; }
+            bool ignore_error() const { return (flags & FileSearchFlags::IGNORE_ERROR) > 0; }
+            bool follow_symlink() { return (flags & FileSearchFlags::FOLLOW_SYMLINK) > 0; }
             bool dfs() { return (flags & DFS) > 0; }
 
             void print() {
@@ -107,8 +107,8 @@ namespace ioutils {
             }
         };
 
-        InputParams parse_input_arguments(int argc, char *argv[]) {
-            InputParams params;
+        SearchInputArguments parse_input_arguments(int argc, char *argv[]) {
+            SearchInputArguments params;
             std::vector<std::string> paths;
             bool help = false;
             bool verbose = false;
@@ -215,13 +215,15 @@ namespace ioutils {
             dfs = !bfs;
 
             // Parse the display type
-            params.flags = ignore_file * PARAMS::IGNORE_FILE | ignore_dir * PARAMS::IGNORE_DIR |
-                           ignore_symlink * PARAMS::IGNORE_SYMLINK | color * PARAMS::COLOR | verbose * PARAMS::VERBOSE |
-                           inverse_match * PARAMS::INVERT_MATCH | dfs * PARAMS::DFS |
-                           ignore_fifo * PARAMS::IGNORE_FIFO | ignore_blk * PARAMS::IGNORE_BLK |
-                           ignore_chr * PARAMS::IGNORE_CHR | ignore_socket * PARAMS::IGNORE_SOCKET |
-                           ignore_whiteout * PARAMS::IGNORE_WHITEOUT | ignore_unknown * PARAMS::IGNORE_UNKNOWN |
-                           donot_ignore_git * PARAMS::DONOT_IGNORE_GIT | ignore_error * PARAMS::IGNORE_ERROR;
+            params.flags =
+                ignore_file * FileSearchFlags::IGNORE_FILE | ignore_dir * FileSearchFlags::IGNORE_DIR |
+                ignore_symlink * FileSearchFlags::IGNORE_SYMLINK | color * FileSearchFlags::COLOR |
+                verbose * FileSearchFlags::VERBOSE | inverse_match * FileSearchFlags::INVERT_MATCH |
+                dfs * FileSearchFlags::DFS | ignore_fifo * FileSearchFlags::IGNORE_FIFO |
+                ignore_blk * FileSearchFlags::IGNORE_BLK | ignore_chr * FileSearchFlags::IGNORE_CHR |
+                ignore_socket * FileSearchFlags::IGNORE_SOCKET | ignore_whiteout * FileSearchFlags::IGNORE_WHITEOUT |
+                ignore_unknown * FileSearchFlags::IGNORE_UNKNOWN |
+                donot_ignore_git * FileSearchFlags::DONOT_IGNORE_GIT | ignore_error * FileSearchFlags::IGNORE_ERROR;
 
             // Display input arguments in JSON format if verbose flag is on
             if (params.verbose()) {

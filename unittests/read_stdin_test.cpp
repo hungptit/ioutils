@@ -13,7 +13,7 @@ namespace {
 
 int main() {
     constexpr size_t BUFLEN = 16;
-    using Reader = ioutils::StreamReader<Policy, BUFLEN>;
+    using Reader = ioutils::StdinReader<Policy, BUFLEN>;
     Reader reader;
     // reader(STDIN_FILENO);
     return EXIT_SUCCESS;
