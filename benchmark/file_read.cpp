@@ -1,6 +1,8 @@
 #include "fmt/format.h"
 #include <boost/iostreams/device/mapped_file.hpp>
+#include <cstdio>
 #include <fcntl.h>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <sys/mman.h>
@@ -59,8 +61,7 @@ namespace {
         }
         size_t length = info.st_size;
 
-        char *begin =
-            static_cast<char *>(mmap(nullptr, length, PROT_READ, MAP_PRIVATE, fd, 0u));
+        char *begin = static_cast<char *>(mmap(nullptr, length, PROT_READ, MAP_PRIVATE, fd, 0u));
 
         if (begin == MAP_FAILED) {
             handle_error("Cannot map ");
@@ -89,7 +90,7 @@ namespace {
     // Read from file in chunks
     struct AppendPolicy {
         void process(const char *buffer, const size_t len, const size_t) { data.append(buffer, len); }
-        void finalize(){}       // Do not need to do anything for the append only policy.
+        void finalize() {} // Do not need to do anything for the append only policy.
         std::string data;
     };
 
@@ -128,8 +129,7 @@ namespace {
             for (size_t blk = 0; blk < block_count; ++blk) {
                 long nbytes = ::read(fd, read_buffer, BUFFER_SIZE);
                 if (nbytes < 0) {
-                    const std::string msg =
-                        std::string("Cannot read from file \"") + std::string(datafile) + "\" ";
+                    const std::string msg = std::string("Cannot read from file \"") + std::string(datafile) + "\" ";
                     throw(std::runtime_error(msg));
                 };
 
@@ -205,12 +205,12 @@ const std::string fname("3200.txt");
 
 int main(const int argc, char *argv[]) {
     if (argc < 3) {
-        fmt::print("Need to provide an option and a file name\n");
+        std::cout << "Need to provide an option and a file name.\n";
     }
 
     std::string option(argv[1]);
     if (option == "boost") {
-        fmt::print("Number of lines: {}\n", read_memmap(argv[2]));
+        std::cout << "Number of lines: " << read_memmap(argv[2]) << "\n";
     } else if (option == "mmap") {
         using Policy = ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>;
         using LineStats = ioutils::MMapReader<Policy>;
@@ -220,7 +220,7 @@ int main(const int argc, char *argv[]) {
     } else if (option == "chunk") {
         using Reader = FileReader<1 << 16>;
         Reader reader;
-        fmt::print("Number of lines: {}\n", reader(argv[2]));
+        std::cout << "Number of lines: " << reader(argv[2]) << "\n";
     } else {
         using Policy = ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>;
         using LineStats = ioutils::FileReader<Policy, READ_BUFFER_SIZE>;

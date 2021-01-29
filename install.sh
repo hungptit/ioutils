@@ -1,5 +1,5 @@
 #!/bin/bash
 set -euo pipefail
-DEST=$1
-cmake ./ -DCMAKE_INSTALL_PREFIX=$1
+DST=$1
+cmake ./ -DCMAKE_INSTALL_PREFIX="$DST"
 make install

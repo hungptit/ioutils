@@ -164,11 +164,10 @@ int testwmmap(char *name, int N, bool advise, bool shared) {
     // for Linux:
 #ifdef __linux__
     int *addr = reinterpret_cast<int *>(
-        mmap(NULL, length, PROT_READ,
-             MAP_FILE | (shared ? MAP_SHARED : MAP_PRIVATE) | MAP_POPULATE, fd, 0));
+        mmap(NULL, length, PROT_READ, MAP_FILE | (shared ? MAP_SHARED : MAP_PRIVATE) | MAP_POPULATE, fd, 0));
 #else
-    int *addr = reinterpret_cast<int *>(
-        mmap(NULL, length, PROT_READ, MAP_FILE | (shared ? MAP_SHARED : MAP_PRIVATE), fd, 0));
+    int *addr =
+        reinterpret_cast<int *>(mmap(NULL, length, PROT_READ, MAP_FILE | (shared ? MAP_SHARED : MAP_PRIVATE), fd, 0));
 #endif
     int *initaddr = addr;
     if (addr == MAP_FAILED) {
@@ -176,8 +175,7 @@ int testwmmap(char *name, int N, bool advise, bool shared) {
         return -1;
     }
     if (advise)
-        if (madvise(addr, length, MADV_SEQUENTIAL | MADV_WILLNEED) != 0)
-            cerr << " Couldn't set hints" << endl;
+        if (madvise(addr, length, MADV_SEQUENTIAL | MADV_WILLNEED) != 0) cerr << " Couldn't set hints" << endl;
     close(fd);
     for (int t = 0; t < N; ++t) {
         int size = *addr++;
@@ -203,8 +201,7 @@ int testread(char *name, int N) {
             return -1;
         }
         numbers.resize(size);
-        if (read(fd, &numbers[0], sizeof(int) * numbers.size()) !=
-            sizeof(int) * numbers.size()) {
+        if (read(fd, &numbers[0], sizeof(int) * numbers.size()) != sizeof(int) * numbers.size()) {
             cout << "Data can't be read???" << endl;
             return -1;
         }
@@ -225,9 +222,7 @@ class WallClockTimer {
         gettimeofday(&t1, 0);
         t2 = t1;
     }
-    unsigned long long elapsed() {
-        return ((t2.tv_sec - t1.tv_sec) * 1000ULL * 1000ULL) + ((t2.tv_usec - t1.tv_usec));
-    }
+    unsigned long long elapsed() { return ((t2.tv_sec - t1.tv_sec) * 1000ULL * 1000ULL) + ((t2.tv_usec - t1.tv_usec)); }
     unsigned long long split() {
         gettimeofday(&t2, 0);
         return elapsed();
@@ -290,64 +285,55 @@ int main() {
         cput.reset();
         wct.reset();
         for (int x = 0; x < 10; ++x) tot += testfread(name, N);
-        cout << "fread\t\t\t" << 512 * N * 1.0 / cput.split() << " "
-             << 512 * N * 1.0 / wct.split() << endl;
+        cout << "fread\t\t\t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split() << endl;
 
         // fread with set buffer
         cput.reset();
         wct.reset();
         for (int x = 0; x < 10; ++x) tot += testfreadwithsetbuffer(name, N);
-        cout << "fread w sbuffer\t\t" << 512 * N * 1.0 / cput.split() << " "
-             << 512 * N * 1.0 / wct.split() << endl;
+        cout << "fread w sbuffer\t\t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split() << endl;
 
         // fread with large buffer
         cput.reset();
         wct.reset();
         for (int x = 0; x < 10; ++x) tot += testfreadwithlargebuffer(name, N);
-        cout << "fread w lbuffer\t\t" << 512 * N * 1.0 / cput.split() << " "
-             << 512 * N * 1.0 / wct.split() << endl;
+        cout << "fread w lbuffer\t\t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split() << endl;
 
         // read
         cput.reset();
         wct.reset();
         for (int x = 0; x < 10; ++x) tot += testread(name, N);
-        cout << "read2 \t\t\t" << 512 * N * 1.0 / cput.split() << " "
-             << 512 * N * 1.0 / wct.split() << endl;
+        cout << "read2 \t\t\t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split() << endl;
 
         // mmap
         cput.reset();
         wct.reset();
         for (int x = 0; x < 10; ++x) tot += testwmmap(name, N, false, false);
-        cout << "mmap \t\t\t" << 512 * N * 1.0 / cput.split() << " "
-             << 512 * N * 1.0 / wct.split() << endl;
+        cout << "mmap \t\t\t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split() << endl;
 
         // fancy mmap
         cput.reset();
         wct.reset();
         for (int x = 0; x < 10; ++x) tot += testwmmap(name, N, true, false);
-        cout << "fancy mmap \t\t" << 512 * N * 1.0 / cput.split() << " "
-             << 512 * N * 1.0 / wct.split() << endl;
+        cout << "fancy mmap \t\t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split() << endl;
 
         // mmap
         cput.reset();
         wct.reset();
         for (int x = 0; x < 10; ++x) tot += testwmmap(name, N, false, true);
-        cout << "mmap (shared) \t\t" << 512 * N * 1.0 / cput.split() << " "
-             << 512 * N * 1.0 / wct.split() << endl;
+        cout << "mmap (shared) \t\t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split() << endl;
 
         // fancy mmap
         cput.reset();
         wct.reset();
         for (int x = 0; x < 10; ++x) tot += testwmmap(name, N, true, true);
-        cout << "fancy mmap (shared) \t" << 512 * N * 1.0 / cput.split() << " "
-             << 512 * N * 1.0 / wct.split() << endl;
+        cout << "fancy mmap (shared) \t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split() << endl;
 
         // C++
         cput.reset();
         wct.reset();
         for (int x = 0; x < 10; ++x) tot += testwithCpp(name, N);
-        cout << "Cpp\t\t\t" << 512 * N * 1.0 / cput.split() << " "
-             << 512 * N * 1.0 / wct.split() << endl;
+        cout << "Cpp\t\t\t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split() << endl;
 
         ::remove(name);
     }

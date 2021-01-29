@@ -1,11 +1,12 @@
 #pragma once
+#include <cstdio>
 #include <string>
 
 namespace ioutils {
     namespace experiments {
         struct LineStatsBase {
             LineStatsBase() : lines(0) {}
-            void print() const { fprint("Number of lines: %d\n", lines); }
+            void print() const { printf("Number of lines: %lu\n", lines); }
 
           protected:
             void finalize() const {}

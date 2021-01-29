@@ -1,18 +1,18 @@
 #pragma once
 
-#include "temporary_dir.hpp"
+#include "ioutils/temporary_dir.hpp"
+
+#include <fstream>
 #include <iostream>
 
 namespace {
-    using namespace boost;
+    namespace fs = std::filesystem;
     class TestData {
       public:
-        using path = boost::filesystem::path;
+        using path = fs::path;
         explicit TestData(const bool verbose = false) : temporary_dir() { init(verbose); }
 
-        filesystem::path get_path() {
-            return temporary_dir.get_path();
-        }
+        auto get_path() { return temporary_dir.get_path(); }
 
       private:
         ioutils::TemporaryDirectory temporary_dir;
@@ -21,7 +21,7 @@ namespace {
             std::ofstream outfile(aFile.string());
             outfile << "Fake data for testing.\n";
             outfile.close();
-            if (boost::filesystem::exists(aFile)) {
+            if (fs::exists(aFile)) {
                 if (verbose) std::cout << aFile.string() << " is created" << std::endl;
             } else {
                 std::cerr << "Cannot create " << aFile.string() << std::endl;
@@ -29,7 +29,7 @@ namespace {
         }
 
         void create_symlink(const path &p, const path &symlink, const bool verbose = false) {
-            boost::filesystem::create_symlink(p, symlink);
+            fs::create_symlink(p, symlink);
             if (verbose) {
                 if (verbose) std::cout << symlink.string() << " is linked" << std::endl;
             }
@@ -37,7 +37,7 @@ namespace {
 
         path create_dir(const path &rootFolder, const path &aPath) {
             auto fullPath = rootFolder / aPath;
-            boost::filesystem::create_directories(fullPath);
+            fs::create_directories(fullPath);
             return fullPath;
         }
 

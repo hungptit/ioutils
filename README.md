@@ -152,7 +152,7 @@ Portable binaries for fast-find, fast-updatedb, and fast-locate can be found [he
 We tried our best to make sure that fast-find's output will be identical to the output of GNU find so it can be used as a drop-in replacement for GNU find. Below are the correctness test results obtained using our [verification script](https://github.com/hungptit/ioutils/blob/master/unittests/verify.sh) for a large folder with 377250 files and folders. You can run it using your desired folder to verify that fast-find will work correctly in most situations. *Note that both fast-find and fd do not output the input folder paths*.
 
 ``` shell
-ATH020224:unittests hdang$ ./verify.sh ~/working
+MacOS:unittests hdang$ ./verify.sh ~/working
 Find all files using GNU find
 Find all files using fast-find
 Find all files using fd

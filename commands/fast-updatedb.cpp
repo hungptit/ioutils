@@ -1,47 +1,29 @@
 #include "clara.hpp"
 #include "fmt/format.h"
-#include "locate.hpp"
-#include "search.hpp"
-#include "utilities.hpp"
-#include "utils/timeutils.hpp"
-#include "writer.hpp"
+
+#include "ioutils/locate.hpp"
+#include "ioutils/search.hpp"
+#include "ioutils/utilities.hpp"
+#include "ioutils/writer.hpp"
+
+#include "timeutils.hpp"
+
 #include <set>
 #include <string>
 #include <vector>
 
 namespace {
-    void disp_version() { fmt::print("{}\n", "fast-updatedb version 1.0"); }
-    void copyright() { fmt::print("\n{}\n", "Report bugs or enhancement requests to hungptit@gmail.com"); }
-    void usage() {
+    void updatedb_disp_version() { fmt::print("{}\n", "fast-updatedb version 1.0"); }
+    void updatedb_usage() {
         fmt::print("\nExamples:\n");
         fmt::print("\t1. Build a database for all files from given paths:\n");
         fmt::print("\t\tfast-updatedb -d my_db /\n");
         fmt::print("\t2. Build the file information database for given paths and save to the default path :\n");
         fmt::print("\t\tfast-updatedb ../src/\n");
     }
-    struct InputParams {
-        int flags = 0;
-        int maxdepth = std::numeric_limits<int>::max();
-        std::vector<std::string> paths; // Input databases
-        std::string database;
-        bool stats = 0;
-        bool verbose = 0;
 
-        bool dfs() { return true; } // Use dfs traversal to explore folders.
-        bool donot_ignore_git() const { return true; }
-        bool follow_symlink() const { return false; }
-        bool ignore_error() const { return false; }
-
-        void print() const {
-            fmt::print("Search paths: [\"{}\"]\n", fmt::join(paths, "\",\""));
-            fmt::print("Database: {}\n", database);
-            fmt::print("statistics: {}\n", stats);
-            fmt::print("verbose: {}\n", verbose);
-        }
-    };
-
-    InputParams parse_input_arguments(int argc, char *argv[]) {
-        InputParams params;
+    auto parse_input_arguments(int argc, char *argv[]) {
+        ioutils::locate::UpdateDBInputArguments params;
         std::vector<std::string> paths;
         bool help = false;
         bool version = false;
@@ -54,7 +36,7 @@ namespace {
         auto result = cli.parse(clara::Args(argc, argv));
         if (!result) {
             fmt::print(stderr, "Error in command line: {}\n", result.errorMessage());
-            usage();
+            updatedb_usage();
             exit(1);
         }
 
@@ -63,13 +45,13 @@ namespace {
             std::ostringstream oss;
             oss << cli;
             fmt::print("{}", oss.str());
-            usage();
-            copyright();
+            updatedb_usage();
+            ioutils::copyright();
             exit(EXIT_SUCCESS);
         }
 
         if (version) {
-            disp_version();
+            updatedb_disp_version();
             exit(EXIT_SUCCESS);
         }
 
@@ -100,9 +82,6 @@ namespace {
 
 int main(int argc, char *argv[]) {
     auto params = parse_input_arguments(argc, argv);
-    using Policy = ioutils::locate::UpdateDBStreamPolicy;
-    using Search = typename ioutils::filesystem::DefaultSearch<Policy>;
-    Search search(params);
-    search.traverse(params.paths);
+    ioutils::updatedb(params);
     return EXIT_SUCCESS;
 }

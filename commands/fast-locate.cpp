@@ -1,17 +1,12 @@
 #include "clara.hpp"
-#include "filesystem.hpp"
 #include "fmt/format.h"
-#include "ioutils.hpp"
-#include "locate.hpp"
-#include "fdreader.hpp"
-#include "utils/matchers.hpp"
-#include "utils/memchr.hpp"
-#include "utils/regex_matchers.hpp"
+#include "ioutils/locate.hpp"
+#include "ioutils/utilities.hpp"
 #include <string>
 
 namespace {
-    void disp_version() { fmt::print("{}\n", "fast-locate version 1.0"); }
-    void copyright() { fmt::print("\n{}\n", "Report bugs or enhancement requests to hungptit@gmail.com"); }
+    void locate_disp_version() { fmt::print("{}\n", "fast-locate version 1.0"); }
+
     void usage() {
         fmt::print("\nExamples:\n");
         fmt::print("\t1. Locate files using the default database:\n");
@@ -20,45 +15,9 @@ namespace {
         fmt::print("\t\tfast-locate -d my_db 'boos.*qvm.*string.hpp$'\n");
     }
 
-    enum PARAMS : uint32_t {
-        VERBOSE = 1,
-        COLOR = 1 << 1,
-        INVERT_MATCH = 1 << 2,
-        EXACT_MATCH = 1 << 3,
-        IGNORE_CASE = 1 << 4,
-        INFO = 1 << 5,
-        COUNT = 1 << 6,
-    };
-
-    struct InputParams {
-        int flags;
-        int regex_mode;
-        std::string prefix;                 // Prefix of displayed path
-        std::string pattern;                // A search pattern
-        std::vector<std::string> databases; // A file information database
-
-        bool verbose() const { return (flags & VERBOSE) > 0; }
-        bool info() const { return (flags & INFO) > 0; }
-        bool invert_match() const { return (flags & INVERT_MATCH) > 0; }
-        bool exact_match() const { return (flags & EXACT_MATCH) > 0; }
-        bool ignore_case() const { return (flags & IGNORE_CASE) > 0; }
-
-        void print() const {
-            fmt::print("verbose: {}\n", verbose());
-            fmt::print("info: {}\n", info());
-            fmt::print("invert-match: {}\n", invert_match());
-            fmt::print("exact-match: {}\n", exact_match());
-            fmt::print("ignore-case: {}\n", ignore_case());
-            fmt::print("regex-mode: {}\n", regex_mode);
-
-            fmt::print("Search pattern: '{}'\n", pattern);
-            fmt::print("path prefix: '{}'\n", prefix);
-            fmt::print("File information databases: [\"{}\"]\n", fmt::join(databases, "\",\""));
-        }
-    };
-
-    InputParams parse_input_arguments(int argc, char *argv[]) {
-        InputParams params;
+    auto parse_input_arguments(int argc, char *argv[]) {
+        using namespace ioutils::locate;
+        LocateInputArguments params;
 
         bool version = false;
         bool help = false;
@@ -93,7 +52,7 @@ namespace {
         }
 
         if (version) {
-            disp_version();
+            locate_disp_version();
             exit(EXIT_SUCCESS);
         }
 
@@ -103,7 +62,7 @@ namespace {
             oss << cli;
             fmt::print("{}", oss.str());
             usage();
-            copyright();
+            ioutils::copyright();
             exit(EXIT_SUCCESS);
         }
 
@@ -146,31 +105,10 @@ namespace {
         return params;
     }
 
-    template <typename Matcher, typename Params> void locate(Params &&params) {
-        using GrepAlg = ioutils::StreamReader<ioutils::LocateStreamPolicy<Matcher>>;
-        GrepAlg grep(params);
-        for (auto db : params.databases) {
-            grep(db.data());
-        }
-    }
 } // namespace
 
 int main(int argc, char *argv[]) {
     auto params = parse_input_arguments(argc, argv);
-    if (params.pattern.empty()) {
-        using GrepAlg = ioutils::StreamReader<ioutils::PrintAllPolicy>;
-        GrepAlg grep(params);
-        for (auto db : params.databases) {
-            grep(db.data());
-        }
-    } else {
-        if (!params.invert_match()) {
-            using Matcher = utils::hyperscan::RegexMatcher;
-            locate<Matcher>(params);
-        } else {
-            using Matcher = utils::hyperscan::RegexMatcherInv;
-            locate<Matcher>(params);
-        }
-    }
+    ioutils::locate_files(params);
     return EXIT_SUCCESS;
 }

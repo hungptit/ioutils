@@ -1,16 +1,15 @@
 #include <fstream>
 #include <iostream>
 
-#include "fmt/format.h"
 #include "boost_memmap.hpp"
 #include "celero/Celero.h"
+#include "fmt/format.h"
 #include "ioutils.hpp"
 #include <iostream>
 
 // #include "utils/memchr.hpp"
-#include "linestats.hpp"
 #include "experiments.hpp"
-
+#include "linestats.hpp"
 
 namespace test {
     constexpr char EOL = '\n';
@@ -28,10 +27,9 @@ namespace test {
     size_t iostream_linestats(const std::string &afile) {
         std::ifstream t(afile);
         size_t lines = 0;
-        std::for_each(std::istreambuf_iterator<char>(t), std::istreambuf_iterator<char>(),
-                      [&lines](auto const item) {
-                          if (item == EOL) ++lines;
-                      });
+        std::for_each(std::istreambuf_iterator<char>(t), std::istreambuf_iterator<char>(), [&lines](auto const item) {
+            if (item == EOL) ++lines;
+        });
         return lines;
     }
 
