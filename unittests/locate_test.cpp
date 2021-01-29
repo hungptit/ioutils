@@ -29,6 +29,7 @@ TEST_CASE("Locate files") {
         ioutils::locate::LocateInputArguments params;
         params.databases = {database};
         params.pattern = ".*cpp$";
+        params.regex_mode = HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH;
         params.prefix = "====>";
         params.print();
         ioutils::locate_files(params);
@@ -38,8 +39,9 @@ TEST_CASE("Locate files") {
         ioutils::locate::LocateInputArguments params;
         params.databases = {database};
         params.pattern = ".*hpp$";
+        params.regex_mode = HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH;
         params.print();
-        params.flags = ioutils::locate::INVERT_MATCH;
+        params.flags |= ioutils::locate::INVERT_MATCH;
         ioutils::locate_files(params);
     }
 }
