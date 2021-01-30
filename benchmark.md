@@ -76,7 +76,7 @@ fd 8.2.1
 
 ``` text
 fast-find --version
-fast-find version 1.
+fast-find  5c076f39224d562c1bc880e81928108344052003
 ```
 
 ## Notes ##
