@@ -1,7 +1,7 @@
 #include "celero/Celero.h"
 #include <iostream>
 
-constexpr int number_of_samples = 3;
+constexpr int number_of_samples = 10;
 constexpr int number_of_operations = 1;
 
 #ifdef __APPLE__
@@ -20,7 +20,7 @@ int test(const std::string &command, const std::string &path) {
 }
 
 int test_find_regex(const std::string &command, const std::string &regex, const std::string &path) {
-    std::string buffer = command + " " + path + " | grep -E " + regex + " &> " + tmp_file;
+    std::string buffer = command + " " + path + " |& grep -E " + regex + " > " + tmp_file;
     return system(buffer.data());
 }
 

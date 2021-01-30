@@ -2,13 +2,14 @@
 
 #include "clara.hpp"
 #include "fmt/format.h"
+#include "version.h"
 #include "hs/hs.h"
 #include "utilities.hpp"
 #include <string>
 
 namespace ioutils {
     namespace search {
-        void disp_version() { fmt::print("{}\n", "fast-find version 1.0"); }
+        void disp_fast_find_version() { fmt::print("{} {}\n", "fast-find ", version); }
         void copyright() { fmt::print("\n{}\n", "Report bugs or enhancement requests to hungptit@gmail.com"); }
         void usage() {
             fmt::print("\nExamples:\n");
@@ -190,7 +191,7 @@ namespace ioutils {
             }
 
             if (version) {
-                disp_version();
+                disp_fast_find_version();
                 exit(EXIT_SUCCESS);
             }
 

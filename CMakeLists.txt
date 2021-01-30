@@ -7,6 +7,14 @@ cmake_minimum_required(VERSION 3.15)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Generate the version information
+find_package(Git)
+if(Git_NOTFOUND)
+  message(FATAL_ERROR "Cannot find the git command")
+endif()
+execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --verify HEAD OUTPUT_VARIABLE IOUTILS_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
+file(WRITE "include/ioutils/version.h" "constexpr char version[] = \"${IOUTILS_VERSION}\";\n")
+
 # Use C++ 17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -47,6 +55,7 @@ set(DOCTEST_WITH_TESTS OFF)
 FetchContent_Populate(doctest)
 
 # Add benchmark
+# TODO: Do not install benchmark because users do not need it.
 FetchContent_Declare(
   benchmark
   GIT_REPOSITORY https://github.com/google/benchmark.git
@@ -84,6 +93,7 @@ FetchContent_Declare(
 FetchContent_Populate(utils)
 
 # celero
+# TODO: Do not install celero because users do not need it.
 FetchContent_Declare(
   celero
   GIT_REPOSITORY https://github.com/DigitalInBlue/Celero.git
