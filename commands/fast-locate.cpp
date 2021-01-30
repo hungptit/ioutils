@@ -3,9 +3,10 @@
 #include "ioutils/locate.hpp"
 #include "ioutils/utilities.hpp"
 #include <string>
+#include "ioutils/version.h"
 
 namespace {
-    void locate_disp_version() { fmt::print("{}\n", "fast-locate version 1.0"); }
+    void locate_disp_version() { fmt::print("{} {}\n", "fast-locate ", version); }
 
     void usage() {
         fmt::print("\nExamples:\n");

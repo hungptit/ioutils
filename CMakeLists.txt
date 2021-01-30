@@ -7,6 +7,14 @@ cmake_minimum_required(VERSION 3.15)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Generate the version information
+find_package(Git)
+if(Git_NOTFOUND)
+  message(FATAL_ERROR "Cannot find the git command")
+endif()
+execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --verify HEAD OUTPUT_VARIABLE IOUTILS_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
+file(WRITE "include/ioutils/version.h" "constexpr char version[] = \"${IOUTILS_VERSION}\";\n")
+
 # Use C++ 17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -42,10 +50,12 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/onqtam/doctest.git
   GIT_TAG 2.4.4
   GIT_SHALLOW TRUE)
+
 set(DOCTEST_WITH_TESTS OFF)
-FetchContent_MakeAvailable(doctest)
+FetchContent_Populate(doctest)
 
 # Add benchmark
+# TODO: Do not install benchmark because users do not need it.
 FetchContent_Declare(
   benchmark
   GIT_REPOSITORY https://github.com/google/benchmark.git
@@ -83,6 +93,7 @@ FetchContent_Declare(
 FetchContent_Populate(utils)
 
 # celero
+# TODO: Do not install celero because users do not need it.
 FetchContent_Declare(
   celero
   GIT_REPOSITORY https://github.com/DigitalInBlue/Celero.git
@@ -108,13 +119,13 @@ include(sanitizers)
 include(tools)
 include(dependency-graph)
 
-include_directories("_deps/doctest-src/")
 include_directories("_deps/fmt-src/include")
 include_directories("_deps/utils-src/src")
 include_directories("_deps/clara-src/include/")
-include_directories("_deps/benchmark-src/include/")
 include_directories("include")
 include_directories("3p/include")
+
+set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Hyperscan
 find_library(LIB_HS libhs.a "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
@@ -134,11 +145,8 @@ add_subdirectory(benchmark)
 add_subdirectory(unittests)
 
 # Install all header files to destination folder.
-if (NOT CMAKE_VERSION VERSION_LESS 3.0)
-  install(DIRECTORY src/ DESTINATION include/ioutils)
-endif()
+install(DIRECTORY include/ioutils DESTINATION include)
 
-set(CMAKE_INSTALL_PREFIX "$ENV{HOME}")
 ENABLE_TESTING()
 
 # Formating and linting source code

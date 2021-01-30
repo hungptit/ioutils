@@ -1,4 +1,5 @@
 #pragma once
+#include <cstring>
 #include <fcntl.h>
 #include <stdio.h>
 #include <sys/errno.h>

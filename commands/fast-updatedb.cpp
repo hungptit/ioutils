@@ -5,6 +5,7 @@
 #include "ioutils/search.hpp"
 #include "ioutils/utilities.hpp"
 #include "ioutils/writer.hpp"
+#include "ioutils/version.h"
 
 #include "timeutils.hpp"
 
@@ -13,7 +14,7 @@
 #include <vector>
 
 namespace {
-    void updatedb_disp_version() { fmt::print("{}\n", "fast-updatedb version 1.0"); }
+    void updatedb_disp_version() { fmt::print("{} {}\n", "fast-updatedb ", version); }
     void updatedb_usage() {
         fmt::print("\nExamples:\n");
         fmt::print("\t1. Build a database for all files from given paths:\n");
