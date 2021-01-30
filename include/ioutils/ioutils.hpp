@@ -7,7 +7,7 @@
 namespace ioutils {
     // Return a string which has the content of a file.
     std::string read(const char *afile) {
-        using Reader = MMapReader<AppendPolicy<std::string>>;
+        using Reader = MemoryMappedReader<AppendPolicy<std::string>>;
         Reader reader;
         reader(afile);
         return reader.get_data();

@@ -4,9 +4,9 @@
 #include <fstream>
 #include <iostream>
 
-#include "fdwriter.hpp"
-#include "ioutils.hpp"
-#include "utilities.hpp"
+#include "ioutils/fdwriter.hpp"
+#include "ioutils/ioutils.hpp"
+#include "ioutils/utilities.hpp"
 
 TEST_CASE("Simplify paths") {
     SUBCASE("Case 1") { CHECK(ioutils::path::simplify_path("") == ""); }

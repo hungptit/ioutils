@@ -1,6 +1,8 @@
 #include "fmt/format.h"
 #include <boost/iostreams/device/mapped_file.hpp>
+#include <cstdio>
 #include <fcntl.h>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <sys/mman.h>
@@ -203,12 +205,12 @@ const std::string fname("3200.txt");
 
 int main(const int argc, char *argv[]) {
     if (argc < 3) {
-        fmt::print("Need to provide an option and a file name\n");
+        std::cout << "Need to provide an option and a file name.\n";
     }
 
     std::string option(argv[1]);
     if (option == "boost") {
-        fmt::print("Number of lines: {}\n", read_memmap(argv[2]));
+        std::cout << "Number of lines: " << read_memmap(argv[2]) << "\n";
     } else if (option == "mmap") {
         using Policy = ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>;
         using LineStats = ioutils::MMapReader<Policy>;
@@ -218,7 +220,7 @@ int main(const int argc, char *argv[]) {
     } else if (option == "chunk") {
         using Reader = FileReader<1 << 16>;
         Reader reader;
-        fmt::print("Number of lines: {}\n", reader(argv[2]));
+        std::cout << "Number of lines: " << reader(argv[2]) << "\n";
     } else {
         using Policy = ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>;
         using LineStats = ioutils::FileReader<Policy, READ_BUFFER_SIZE>;

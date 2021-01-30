@@ -1,13 +1,12 @@
-#include "ioutils/search.hpp"
 #include "ioutils/filesystem.hpp"
 #include "ioutils/find.hpp"
+#include "ioutils/search.hpp"
 
 #include "fmt/format.h"
 
 #include "ioutils/locate.hpp"
 #include "ioutils/regex_store_policies.hpp"
 #include "ioutils/search_params.hpp"
-#include "ioutils/search_policies.hpp"
 #include "ioutils/simple_store_policy.hpp"
 #include "ioutils/temporary_dir.hpp"
 
@@ -62,8 +61,10 @@ TEST_CASE("Utility function") {
 
     SUBCASE("Search for files in a given folder using DFS algorithm and store results") {
         SUBCASE("Ignore dir") {
-            ioutils::search::InputParams params;
+            ioutils::search::SearchInputArguments params;
             params.flags |= ioutils::search::IGNORE_DIR;
+            params.print();
+
             ioutils::filesystem::DefaultSearch<ioutils::StorePolicy> search(params);
             search.traverse(std::vector<std::string>{p});
             CHECK(search.get_paths().size() == 14);
@@ -73,7 +74,7 @@ TEST_CASE("Utility function") {
         }
 
         SUBCASE("Ignore files") {
-            ioutils::search::InputParams params;
+            ioutils::search::SearchInputArguments params;
             params.flags |= ioutils::search::IGNORE_DIR;
             params.flags |= ioutils::search::IGNORE_FILE;
             ioutils::filesystem::DefaultSearch<ioutils::StorePolicy> search(params);
@@ -85,7 +86,7 @@ TEST_CASE("Utility function") {
         }
 
         SUBCASE("Ignore files") {
-            ioutils::search::InputParams params;
+            ioutils::search::SearchInputArguments params;
             params.flags |= ioutils::search::IGNORE_DIR;
             params.flags |= ioutils::search::IGNORE_FILE;
             params.flags |= ioutils::search::IGNORE_SYMLINK;
@@ -98,7 +99,7 @@ TEST_CASE("Utility function") {
         }
 
         SUBCASE("Include all") {
-            ioutils::search::InputParams params;
+            ioutils::search::SearchInputArguments params;
             params.flags = ioutils::search::DFS;
             ioutils::filesystem::DefaultSearch<ioutils::StorePolicy> search(params);
             fmt::print("DFS - StorePolicy:\n");
@@ -110,7 +111,7 @@ TEST_CASE("Utility function") {
         }
 
         SUBCASE("Include all with the given level") {
-            ioutils::search::InputParams params;
+            ioutils::search::SearchInputArguments params;
             params.maxdepth = 0;
             ioutils::filesystem::DefaultSearch<ioutils::StorePolicy> search(params);
             fmt::print("DFS - StorePolicy:\n");
@@ -123,14 +124,14 @@ TEST_CASE("Utility function") {
     }
 
     SUBCASE("Search for files in a given folder and return a list of files") {
-        ioutils::search::InputParams params;
+        ioutils::search::SearchInputArguments params;
         ioutils::filesystem::DefaultSearch<ioutils::find::SimplePolicy> search(params);
         fmt::print("DFS - SimplePolicy:\n");
         search.bfs(p);
     }
 
     SUBCASE("Search for files in a given folder using BFS algorithm and store results") {
-        ioutils::search::InputParams params;
+        ioutils::search::SearchInputArguments params;
         ioutils::filesystem::DefaultSearch<ioutils::StorePolicy> search(params);
         fmt::print("BFS - StorePolicy:\n");
         search.bfs(p);
@@ -150,7 +151,7 @@ TEST_CASE("Search with regex") {
     using Matcher = utils::hyperscan::RegexMatcher;
     using Policy = ioutils::RegexStorePolicy<Matcher>;
     using Search = typename ioutils::filesystem::DefaultSearch<Policy>;
-    ioutils::search::InputParams params;
+    ioutils::search::SearchInputArguments params;
     params.flags |= ioutils::search::IGNORE_SYMLINK;
     params.path_regex = "[.]cpp";
     Search search(params);

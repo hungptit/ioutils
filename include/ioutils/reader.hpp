@@ -1,4 +1,5 @@
 #pragma once
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <sys/mman.h>
@@ -52,10 +53,10 @@ namespace ioutils {
 
     // A reader that use memory mapped approach. This approach is slower than
     // streaming approach in general.
-    template <typename Policy> struct MMapReader : public Policy {
-        MMapReader() : Policy() {}
+    template <typename Policy> struct MemoryMappedReader : public Policy {
+        MemoryMappedReader() : Policy() {}
 
-        template <typename... Args> MMapReader(Args... args) : Policy(std::forward<Args>(args)...) {}
+        template <typename... Args> MemoryMappedReader(Args... args) : Policy(std::forward<Args>(args)...) {}
 
         void operator()(const char *datafile) {
             // Cache the file name.

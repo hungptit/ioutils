@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include(CheckCXXCompilerFlag)
+
 include(AddCXXCompilerFlag)
 include(CXXFeatureCheck)
 
@@ -123,6 +123,11 @@ find_library(LIB_HS_RUNTIME libhs_runtime.a "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib"
 find_library(LIB_HS_RUNTIME libhs_runtime.a "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
+
+# Exclude test files from the code coverage report.
+file(GLOB_RECURSE TEST_SRCS unittests/*_test.cpp)
+add_code_coverage_all_targets(EXCLUDE 3p _deps/ ${TEST_SRCS})
+
 
 # add_subdirectory(unittests)
 add_subdirectory(commands)

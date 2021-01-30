@@ -2,9 +2,9 @@
 #include <iostream>
 
 #include "fmt/format.h"
-#include "ioutils.hpp"
-#include "read_policies.hpp"
-#include "reader.hpp"
+#include "ioutils/ioutils.hpp"
+#include "ioutils/read_policies.hpp"
+#include "ioutils/reader.hpp"
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest/doctest.h"
