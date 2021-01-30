@@ -2,8 +2,8 @@
 #include "fmt/format.h"
 #include "ioutils/locate.hpp"
 #include "ioutils/utilities.hpp"
+#include "version.hpp"
 #include <string>
-#include "ioutils/version.h"
 
 namespace {
     void locate_disp_version() { fmt::print("{} {}\n", "fast-locate ", version); }

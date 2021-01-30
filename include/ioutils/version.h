@@ -1,1 +1,0 @@
-constexpr char version[] = "5c076f39224d562c1bc880e81928108344052003";

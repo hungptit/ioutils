@@ -13,7 +13,7 @@ if(Git_NOTFOUND)
   message(FATAL_ERROR "Cannot find the git command")
 endif()
 execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --verify HEAD OUTPUT_VARIABLE IOUTILS_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
-file(WRITE "include/ioutils/version.h" "constexpr char version[] = \"${IOUTILS_VERSION}\";\n")
+file(WRITE "commands/version.hpp" "constexpr char version[] = \"${IOUTILS_VERSION}\";\n")
 
 # Use C++ 17
 set(CMAKE_CXX_STANDARD 17)

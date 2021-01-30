@@ -5,7 +5,7 @@
 #include "ioutils/search.hpp"
 #include "ioutils/utilities.hpp"
 #include "ioutils/writer.hpp"
-#include "ioutils/version.h"
+#include "version.hpp"
 
 #include "timeutils.hpp"
 
