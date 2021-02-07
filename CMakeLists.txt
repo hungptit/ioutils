@@ -132,7 +132,7 @@ add_custom_command(
   VERBATIM)
 
 set(CMAKE_FILES "CMakeLists.txt" "unittests/CMakeLists.txt"
-                "benchmark/CMakeLists.txt")
+                "benchmark/CMakeLists.txt" "commands/CMakeLists.txt")
 message(${CMAKE_FILES})
 find_program(CMAKE_FORMAT NAMES cmake-format)
 if(${CMAKE_FORMAT} STREQUAL "CMAKE_FORMAT-NOTFOUND")
