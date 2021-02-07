@@ -131,11 +131,8 @@ add_custom_command(
   COMMENT "Format C++ files with clang-format."
   VERBATIM)
 
-file(
-  GLOB
-  CMAKE_FILES
-  CMakeLists.txt;src/CMakeLists.txt;unittests/CMakeLists.txt;benchmark/CMakeLists.tx
-)
+set(CMAKE_FILES "CMakeLists.txt" "unittests/CMakeLists.txt"
+                "benchmark/CMakeLists.txt")
 message(${CMAKE_FILES})
 find_program(CMAKE_FORMAT NAMES cmake-format)
 if(${CMAKE_FORMAT} STREQUAL "CMAKE_FORMAT-NOTFOUND")
