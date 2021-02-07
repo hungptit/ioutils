@@ -13,14 +13,17 @@ if(CCACHE_PROGRAM)
   set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
 endif()
 
-
 # Generate the version information
 find_package(Git)
 if(Git_NOTFOUND)
   message(FATAL_ERROR "Cannot find the git command")
 endif()
-execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --verify HEAD OUTPUT_VARIABLE IOUTILS_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
-file(WRITE "commands/version.hpp" "constexpr char version[] = \"${IOUTILS_VERSION}\";\n")
+execute_process(
+  COMMAND ${GIT_EXECUTABLE} rev-parse --verify HEAD
+  OUTPUT_VARIABLE IOUTILS_VERSION
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+file(WRITE "commands/version.hpp"
+     "constexpr char version[] = \"${IOUTILS_VERSION}\";\n")
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(AddCXXCompilerFlag)
@@ -29,16 +32,16 @@ include(CXXFeatureCheck)
 # Use C++ 17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_EXTENSIONS ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(ENABLE_ALL_WARNINGS ON)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(POSITION_INDEPENDENT_CODE OFF)
-add_compile_options(-DFMT_HEADER_ONLY)
 
 # Enable AVX2 by default
 option(USE_AVX2 "Support AVX2" ON)
 add_cxx_compiler_flag(-mavx2)
+add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
 
 # Install required libraries
 include(FetchContent)
@@ -79,17 +82,30 @@ include(dependency-graph)
 
 set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
-# Hyperscan
-find_library(LIB_HS libhs.a "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
-find_library(LIB_HS_RUNTIME libhs_runtime.a "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
-find_library(LIB_HS_RUNTIME libhs_runtime.a "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
+# ragel TODO: Fix ragel build FetchContent_Declare( ragel GIT_REPOSITORY
+# https://github.com/bnoordhuis/ragel.git GIT_TAG master)
+# FetchContent_MakeAvailable(ragel)
+
+# TODO: Create a github ticket
+FetchContent_Declare(
+  hyperscan
+  GIT_REPOSITORY https://github.com/intel/hyperscan.git
+  GIT_TAG v5.4.0)
+set(BUILD_SHARED_LIBS OFF)
+FetchContent_Populate(hyperscan)
+
+find_library(LIB_HS libhs.a "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib"
+             NO_DEFAULT_PATH)
+find_library(LIB_HS_RUNTIME libhs_runtime.a
+             "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
+find_library(LIB_HS_RUNTIME libhs_runtime.a
+             "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # Exclude test files from the code coverage report.
 file(GLOB_RECURSE TEST_SRCS unittests/*_test.cpp)
 add_code_coverage_all_targets(EXCLUDE 3p _deps/ ${TEST_SRCS})
-
 
 # add_subdirectory(unittests)
 add_subdirectory(commands)
@@ -99,10 +115,11 @@ add_subdirectory(unittests)
 # Install all header files to destination folder.
 install(DIRECTORY include/ioutils DESTINATION include)
 
-ENABLE_TESTING()
+enable_testing()
 
 # Formating and linting source code
-file(GLOB CPP_FILES include/*.hpp unittests/*.[ch]pp benchmark/*.[ch]pp commands/*.[ch]pp)
+file(GLOB_RECURSE CPP_FILES include/*.hpp unittests/*.[ch]pp benchmark/*.[ch]pp
+     commands/*.[ch]pp)
 message("${CPP_FILES}")
 
 find_program(CLANG_FORMAT NAMES clang-format)
@@ -114,7 +131,12 @@ add_custom_command(
   COMMENT "Format C++ files with clang-format."
   VERBATIM)
 
-file(GLOB CMAKE_FILES CMakeLists.txt src/CMakeLists.txt)
+file(
+  GLOB
+  CMAKE_FILES
+  CMakeLists.txt;src/CMakeLists.txt;unittests/CMakeLists.txt;benchmark/CMakeLists.tx
+)
+message(${CMAKE_FILES})
 find_program(CMAKE_FORMAT NAMES cmake-format)
 if(${CMAKE_FORMAT} STREQUAL "CMAKE_FORMAT-NOTFOUND")
   add_custom_command(

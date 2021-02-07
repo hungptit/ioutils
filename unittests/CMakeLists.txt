@@ -6,7 +6,7 @@ FetchContent_Declare(
 set(DOCTEST_WITH_TESTS OFF)
 FetchContent_Populate(doctest)
 
-if (MSVC)
+if(MSVC)
   add_compile_options(/W4 /WX)
 else()
   add_cxx_compiler_flag(-Wall)
@@ -17,17 +17,24 @@ endif()
 
 add_cxx_compiler_flag(-static)
 
-set(TEST_EXECUTABLES search_test read_stdin_test locate_test read_data_test tempdir_test utilities_test writer_test)
-foreach (TEST_EXECUTABLE ${TEST_EXECUTABLES})
+set(TEST_EXECUTABLES
+    search_test
+    read_stdin_test
+    locate_test
+    read_data_test
+    tempdir_test
+    utilities_test
+    writer_test)
+foreach(TEST_EXECUTABLE ${TEST_EXECUTABLES})
   add_executable(${TEST_EXECUTABLE} ${TEST_EXECUTABLE}.cpp)
   target_link_libraries(${TEST_EXECUTABLE} PRIVATE ${LIB_HS} ${LIB_HS_RUNTIME})
   target_code_coverage(${TEST_EXECUTABLE} AUTO ALL)
-  target_include_directories(${TEST_EXECUTABLE} PRIVATE "${ROOT_DIR}/_deps/doctest-src/")
-  target_include_directories(${TEST_EXECUTABLE} PRIVATE "${ROOT_DIR}/include")
-  target_include_directories(${TEST_EXECUTABLE} PRIVATE "${ROOT_DIR}/3p/include")  
-  target_include_directories(${TEST_EXECUTABLE} PRIVATE "${fmt_SOURCE_DIR}/include/")
-  target_include_directories(${TEST_EXECUTABLE} PRIVATE "${utils_SOURCE_DIR}/src/")
+  target_include_directories(
+    ${TEST_EXECUTABLE}
+    PRIVATE "${ROOT_DIR}/_deps/doctest-src/" "${ROOT_DIR}/include"
+            "${ROOT_DIR}/3p/include" "${fmt_SOURCE_DIR}/include/"
+            "${utils_SOURCE_DIR}/src/")
   add_test(ioutils_${TEST_EXECUTABLE} ./${TEST_EXECUTABLE})
-endforeach (TEST_EXECUTABLE)
+endforeach(TEST_EXECUTABLE)
 
-ENABLE_TESTING()
+enable_testing()
