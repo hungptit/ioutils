@@ -38,10 +38,15 @@ set(ENABLE_ALL_WARNINGS ON)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(POSITION_INDEPENDENT_CODE OFF)
 
+# Customized options
+option(IOUTILS_ENABLE_TESTING "Build unittests" ON)
+option(IOUTILS_ENABLE_BENCHMARK "Build benchmark" ON)
+option(USE_AVX2 "Support AVX2 by default" ON)
+
 # Enable AVX2 by default
-option(USE_AVX2 "Support AVX2" ON)
-add_cxx_compiler_flag(-mavx2)
-add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
+if(USE_AVX2)
+  add_cxx_compiler_flag(-mavx2)
+endif()
 
 # Install required libraries
 include(FetchContent)
@@ -109,8 +114,14 @@ add_code_coverage_all_targets(EXCLUDE 3p _deps/ ${TEST_SRCS})
 
 # add_subdirectory(unittests)
 add_subdirectory(commands)
-add_subdirectory(benchmark)
-add_subdirectory(unittests)
+
+if(IOUTILS_ENABLE_BENCHMARK)
+  add_subdirectory(benchmark)
+endif()
+
+if(IOUTILS_ENABLE_TESTING)
+  add_subdirectory(unittests)
+endif()
 
 # Install all header files to destination folder.
 install(DIRECTORY include/ioutils DESTINATION include)
@@ -120,7 +131,6 @@ enable_testing()
 # Formating and linting source code
 file(GLOB_RECURSE CPP_FILES include/*.hpp unittests/*.[ch]pp benchmark/*.[ch]pp
      commands/*.[ch]pp)
-message("${CPP_FILES}")
 
 find_program(CLANG_FORMAT NAMES clang-format)
 add_custom_command(
@@ -133,7 +143,6 @@ add_custom_command(
 
 set(CMAKE_FILES "CMakeLists.txt" "unittests/CMakeLists.txt"
                 "benchmark/CMakeLists.txt" "commands/CMakeLists.txt")
-message(${CMAKE_FILES})
 find_program(CMAKE_FORMAT NAMES cmake-format)
 if(${CMAKE_FORMAT} STREQUAL "CMAKE_FORMAT-NOTFOUND")
   add_custom_command(

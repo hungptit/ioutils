@@ -16,6 +16,7 @@ else()
 endif()
 
 add_cxx_compiler_flag(-static)
+add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
 
 set(TEST_EXECUTABLES
     search_test

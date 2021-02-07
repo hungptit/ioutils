@@ -15,6 +15,7 @@ endif()
 # Build using static libraries to reduce dependency.
 add_cxx_compiler_flag(-static)
 add_cxx_compiler_flag(-lto)
+add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
 
 set(COMMANDS fast-updatedb fast-locate fast-find fast-wc)
 foreach(COMMAND ${COMMANDS})

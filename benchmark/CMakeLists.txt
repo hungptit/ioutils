@@ -1,9 +1,10 @@
+add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
+
 # Add benchmark TODO: Do not install benchmark because users do not need it.
 FetchContent_Declare(
   benchmark
   GIT_REPOSITORY https://github.com/google/benchmark.git
-  GIT_TAG v1.5.2
-  GIT_SHALLOW TRUE)
+  GIT_TAG v1.5.2)
 set(BENCHMARK_ENABLE_TESTING OFF)
 set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
 set(BENCHMARK_ENABLE_ASSEMBLY_TEST OFF)
@@ -13,8 +14,7 @@ FetchContent_MakeAvailable(benchmark)
 FetchContent_Declare(
   celero
   GIT_REPOSITORY https://github.com/DigitalInBlue/Celero.git
-  GIT_TAG master
-  GIT_SHALLOW TRUE)
+  GIT_TAG master)
 set(CELERO_COMPILE_DYNAMIC_LIBRARIES OFF)
 set(CELERO_ENABLE_EXPERIMENTS OFF)
 FetchContent_MakeAvailable(celero)
