@@ -156,10 +156,10 @@ MacOS:unittests hdang$ ./verify.sh ~/working
 Find all files using GNU find
 Find all files using fast-find
 Find all files using fd
-\n==== Verify the output of fast-find ====
+==== Verify the output of fast-find ====
 1d0
 < /Users/hdang/working
-\n==== Verify the output of fd ====
+==== Verify the output of fd ====
 1d0
 < /Users/hdang/working
 ```
