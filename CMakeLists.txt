@@ -109,7 +109,7 @@ find_library(LIB_HS_RUNTIME libhs_runtime.a
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # Exclude test files from the code coverage report.
-file(GLOB_RECURSE TEST_SRCS unittests/*_test.cpp)
+file(GLOB_RECURSE TEST_SRCS CONFIGURE_DEPENDS unittests/*_test.cpp)
 add_code_coverage_all_targets(EXCLUDE 3p _deps/ ${TEST_SRCS})
 
 # add_subdirectory(unittests)
@@ -129,8 +129,14 @@ install(DIRECTORY include/ioutils DESTINATION include)
 enable_testing()
 
 # Formating and linting source code
-file(GLOB_RECURSE CPP_FILES include/*.hpp unittests/*.[ch]pp benchmark/*.[ch]pp
-     commands/*.[ch]pp)
+file(
+  GLOB_RECURSE
+  CPP_FILES
+  CONFIGURE_DEPENDS
+  include/*.hpp
+  unittests/*.[ch]pp
+  benchmark/*.[ch]pp
+  commands/*.[ch]pp)
 
 find_program(CLANG_FORMAT NAMES clang-format)
 add_custom_command(

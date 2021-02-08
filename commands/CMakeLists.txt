@@ -12,6 +12,8 @@ else()
   add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()
 
+# set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+
 # Build using static libraries to reduce dependency.
 add_cxx_compiler_flag(-static)
 add_cxx_compiler_flag(-lto)
