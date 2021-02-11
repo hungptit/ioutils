@@ -2,8 +2,8 @@
 
 #include "filesystem.hpp"
 #include "fmt/format.h"
-#include "resources.hpp"
 #include "regex_matchers.hpp"
+#include "resources.hpp"
 #include <string>
 
 namespace ioutils {
