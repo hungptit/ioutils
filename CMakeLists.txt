@@ -91,16 +91,19 @@ set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 # https://github.com/bnoordhuis/ragel.git GIT_TAG master)
 # FetchContent_MakeAvailable(ragel)
 
-# TODO: Create a github ticket
+# TODO: Cannot compile hyperscan because of build failures.
 FetchContent_Declare(
   hyperscan
   GIT_REPOSITORY https://github.com/intel/hyperscan.git
-  GIT_TAG v5.4.0)
+  GIT_TAG master)
 set(BUILD_SHARED_LIBS OFF)
+set(HAVE_AVX2 TRUE)
+set(FAT_RUNTIME OFF)
+set(BUILD_EXAMPLES OFF)
 FetchContent_Populate(hyperscan)
 
-find_library(LIB_HS libhs.a "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib"
-             NO_DEFAULT_PATH)
+# Find the hyperscan library
+find_library(LIB_HS libhs.a "${ROOT_DIR}/3p/lib" NO_DEFAULT_PATH)
 find_library(LIB_HS_RUNTIME libhs_runtime.a
              "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
 find_library(LIB_HS_RUNTIME libhs_runtime.a
@@ -112,7 +115,6 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 file(GLOB_RECURSE TEST_SRCS CONFIGURE_DEPENDS unittests/*_test.cpp)
 add_code_coverage_all_targets(EXCLUDE 3p _deps/ ${TEST_SRCS})
 
-# add_subdirectory(unittests)
 add_subdirectory(commands)
 
 if(IOUTILS_ENABLE_BENCHMARK)

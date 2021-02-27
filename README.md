@@ -24,6 +24,16 @@ ioutils provides very fast implementations for file traversal and reading/writin
 
 # Usage #
 
+## Build from source ##
+
+You must install ragel in your macOS/Linux system to be able to build ioutils from source.
+
+``` shell
+git clone https://github.com/hungptit/ioutils.git
+cd ioutils
+./install $PWD/test
+```
+
 ## Precompiled binaries ##
 
 **All precompiled binaries for Linux and MacOS can be downloaded from** [**this github repostory**](https://github.com/hungptit/tools).
