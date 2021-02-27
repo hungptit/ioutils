@@ -39,9 +39,9 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(POSITION_INDEPENDENT_CODE OFF)
 
 # Customized options
-option(IOUTILS_ENABLE_COMMANDS "Build commands" OFF)
-option(IOUTILS_ENABLE_TESTING "Build unittests" OFF)
-option(IOUTILS_ENABLE_BENCHMARK "Build benchmark" OFF)
+option(IOUTILS_ENABLE_COMMANDS "Build commands" ON)
+option(IOUTILS_ENABLE_TESTING "Build unittests" ON)
+option(IOUTILS_ENABLE_BENCHMARK "Build benchmark" ON)
 option(USE_AVX2 "Support AVX2 by default" ON)
 
 # Enable AVX2 by default
@@ -88,11 +88,7 @@ include(dependency-graph)
 
 set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
-# ragel TODO: Fix ragel build FetchContent_Declare( ragel GIT_REPOSITORY
-# https://github.com/bnoordhuis/ragel.git GIT_TAG master)
-# FetchContent_MakeAvailable(ragel)
-
-# TODO: Cannot compile hyperscan because of build failures.
+# Note: Use a fork of hyperscan to avoid build failure.
 FetchContent_Declare(
   hyperscan
   GIT_REPOSITORY https://github.com/hungptit/hyperscan.git

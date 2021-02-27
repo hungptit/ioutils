@@ -19,17 +19,10 @@ add_cxx_compiler_flag(-static)
 add_cxx_compiler_flag(-lto)
 add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
 
-# Find the hyperscan library
-find_library(LIB_HS libhs.a "${ROOT_DIR}/3p/lib" NO_DEFAULT_PATH)
-find_library(LIB_HS_RUNTIME libhs_runtime.a
-  "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
-find_library(LIB_HS_RUNTIME libhs_runtime.a
-  "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
-
 set(COMMANDS fast-updatedb fast-locate fast-find fast-wc)
 foreach(COMMAND ${COMMANDS})
   add_executable(${COMMAND} ${COMMAND}.cpp)
-  target_link_libraries(${COMMAND} ${LIB_HS} ${LIB_HS_RUNTIME})
+  target_link_libraries(${COMMAND} PRIVATE hs hs_runtime)
   target_include_directories(${COMMAND} PRIVATE "${clara_SOURCE_DIR}/include/")
   target_include_directories(${COMMAND} PRIVATE "${fmt_SOURCE_DIR}/include/")
   target_include_directories(${COMMAND} PRIVATE "${utils_SOURCE_DIR}/src/")

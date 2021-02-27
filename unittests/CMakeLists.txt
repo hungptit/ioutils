@@ -18,13 +18,6 @@ endif()
 add_cxx_compiler_flag(-static)
 add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
 
-# Find the hyperscan library
-# find_library(LIB_HS libhs.a "${ROOT_DIR}/3p/lib" NO_DEFAULT_PATH)
-# find_library(LIB_HS_RUNTIME libhs_runtime.a
-#   "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
-# find_library(LIB_HS_RUNTIME libhs_runtime.a
-#   "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
-
 set(TEST_EXECUTABLES
     search_test
     read_stdin_test
@@ -35,7 +28,6 @@ set(TEST_EXECUTABLES
     writer_test)
 foreach(TEST_EXECUTABLE ${TEST_EXECUTABLES})
   add_executable(${TEST_EXECUTABLE} ${TEST_EXECUTABLE}.cpp)
-  # target_link_libraries(${TEST_EXECUTABLE} PRIVATE ${LIB_HS} ${LIB_HS_RUNTIME})
   target_link_libraries(${TEST_EXECUTABLE} PRIVATE hs hs_runtime)
   target_code_coverage(${TEST_EXECUTABLE} AUTO ALL)
   target_include_directories(
