@@ -41,11 +41,13 @@ set(POSITION_INDEPENDENT_CODE OFF)
 # Customized options
 option(IOUTILS_ENABLE_TESTING "Build unittests" ON)
 option(IOUTILS_ENABLE_BENCHMARK "Build benchmark" ON)
+
 option(USE_AVX2 "Support AVX2 by default" ON)
 
 # Enable AVX2 by default
 if(USE_AVX2)
   add_cxx_compiler_flag(-mavx2)
+  add_cxx_compiler_flag(-DUSE_AVX2)
 endif()
 
 # Install required libraries
@@ -87,24 +89,15 @@ include(dependency-graph)
 
 set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
-# ragel TODO: Fix ragel build FetchContent_Declare( ragel GIT_REPOSITORY
-# https://github.com/bnoordhuis/ragel.git GIT_TAG master)
-# FetchContent_MakeAvailable(ragel)
+# TODO: Fix the hyperscan build
+# FetchContent_Declare(
+#   hyperscan
+#   GIT_REPOSITORY https://github.com/intel/hyperscan.git
+#   GIT_TAG v5.4.0)
 
-# TODO: Create a github ticket
-FetchContent_Declare(
-  hyperscan
-  GIT_REPOSITORY https://github.com/intel/hyperscan.git
-  GIT_TAG v5.4.0)
-set(BUILD_SHARED_LIBS OFF)
-FetchContent_Populate(hyperscan)
+# set(BUILD_SHARED_LIBS OFF)
 
-find_library(LIB_HS libhs.a "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib"
-             NO_DEFAULT_PATH)
-find_library(LIB_HS_RUNTIME libhs_runtime.a
-             "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
-find_library(LIB_HS_RUNTIME libhs_runtime.a
-             "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
+# FetchContent_Populate(hyperscan)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 

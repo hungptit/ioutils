@@ -18,6 +18,12 @@ endif()
 add_cxx_compiler_flag(-static)
 add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
 
+find_library(LIB_HS libhs.a "${ROOT_DIR}/3p/lib"
+  NO_DEFAULT_PATH)
+
+find_library(LIB_HS_RUNTIME libhs_runtime.a
+  "${ROOT_DIR}/3p/lib" NO_DEFAULT_PATH)
+
 set(TEST_EXECUTABLES
     search_test
     read_stdin_test
