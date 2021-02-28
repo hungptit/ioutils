@@ -46,6 +46,7 @@ option(USE_AVX2 "Support AVX2 by default" ON)
 # Enable AVX2 by default
 if(USE_AVX2)
   add_cxx_compiler_flag(-mavx2)
+  add_cxx_compiler_flag(-DUSE_AVX2)
 endif()
 
 # Install required libraries
@@ -87,11 +88,7 @@ include(dependency-graph)
 
 set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
-# ragel TODO: Fix ragel build FetchContent_Declare( ragel GIT_REPOSITORY
-# https://github.com/bnoordhuis/ragel.git GIT_TAG master)
-# FetchContent_MakeAvailable(ragel)
-
-# TODO: Create a github ticket
+# TODO: There is a bug in the hyperscan build. We cannot build it as a submodule.
 FetchContent_Declare(
   hyperscan
   GIT_REPOSITORY https://github.com/intel/hyperscan.git
