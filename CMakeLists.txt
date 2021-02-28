@@ -46,6 +46,7 @@ option(USE_AVX2 "Support AVX2 by default" ON)
 # Enable AVX2 by default
 if(USE_AVX2)
   add_cxx_compiler_flag(-mavx2)
+  add_cxx_compiler_flag(-DUSE_AVX2)
 endif()
 
 # Install required libraries
