@@ -3,13 +3,11 @@
 #include "fdreader.hpp"
 #include "fdwriter.hpp"
 #include "filesystem.hpp"
-#include "memchr.hpp"
 #include "search.hpp"
 #include <fcntl.h>
 #include <string>
 #include <unistd.h>
 
-#include "matchers.hpp"
 #include "memchr.hpp"
 #include "regex_matchers.hpp"
 

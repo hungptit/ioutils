@@ -42,8 +42,9 @@ set(COMMAND_BENCHMARK_COMMANDS find_benchmark locate_benchmark)
 foreach(BENCHMARK ${COMMAND_BENCHMARK_COMMANDS})
   add_executable(${BENCHMARK} ${BENCHMARK}.cpp)
   target_link_libraries(${BENCHMARK} PRIVATE celero)
-  target_include_directories(${BENCHMARK}
-                             PRIVATE "_deps/benchmark-src/include/")
+  target_include_directories(
+    ${BENCHMARK} PRIVATE "${benchmark_SOURCE_DIR}/include/"
+                         "${fmt_SOURCE_DIR}/include")
 endforeach(BENCHMARK)
 set(COMMAND_BENCHMARK_COMMANDS filesystem_benchmark)
 foreach(BENCHMARK ${COMMAND_BENCHMARK_COMMANDS})
@@ -51,8 +52,10 @@ foreach(BENCHMARK ${COMMAND_BENCHMARK_COMMANDS})
   target_link_libraries(${BENCHMARK} PRIVATE benchmark::benchmark
                                              benchmark::benchmark_main)
   target_include_directories(
-    ${BENCHMARK} PRIVATE "_deps/benchmark-src/include/" "${ROOT_DIR}/include"
-                         "${ROOT_DIR}/3p/include" "${utils_SOURCE_DIR}/src/")
+    ${BENCHMARK}
+    PRIVATE "${benchmark_SOURCE_DIR}/include/" "${fmt_SOURCE_DIR}/include/"
+            "${ROOT_DIR}/include" "${ROOT_DIR}/3p/include"
+            "${utils_SOURCE_DIR}/src/")
 endforeach(BENCHMARK)
 
 # set(COMMAND_BENCHMARK_COMMANDS file_read) foreach (BENCHMARK

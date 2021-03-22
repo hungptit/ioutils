@@ -88,7 +88,8 @@ include(dependency-graph)
 
 set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
-# TODO: There is a bug in the hyperscan build. We cannot build it as a submodule.
+# TODO: There is a bug in the hyperscan build. We cannot build it as a
+# submodule.
 FetchContent_Declare(
   hyperscan
   GIT_REPOSITORY https://github.com/intel/hyperscan.git
