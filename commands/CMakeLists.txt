@@ -26,7 +26,7 @@ foreach(COMMAND ${COMMANDS})
   target_include_directories(${COMMAND} PRIVATE "${clara_SOURCE_DIR}/include/")
   target_include_directories(${COMMAND} PRIVATE "${fmt_SOURCE_DIR}/include/")
   target_include_directories(${COMMAND} PRIVATE "${utils_SOURCE_DIR}/src/")
-  target_include_directories(${COMMAND} PRIVATE "${ROOT_DIR}/include")
+  target_include_directories(${COMMAND} PRIVATE "${PROJECT_SOURCE_DIR}")
   target_include_directories(${COMMAND} PRIVATE "${ROOT_DIR}/3p/include")
 endforeach(COMMAND)
 

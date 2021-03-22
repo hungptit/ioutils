@@ -110,7 +110,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 file(GLOB_RECURSE TEST_SRCS CONFIGURE_DEPENDS unittests/*_test.cpp)
 add_code_coverage_all_targets(EXCLUDE 3p _deps/ ${TEST_SRCS})
 
-# add_subdirectory(unittests)
+add_subdirectory(ioutils)
 add_subdirectory(commands)
 
 if(IOUTILS_ENABLE_BENCHMARK)
@@ -145,8 +145,9 @@ add_custom_command(
   COMMENT "Format C++ files with clang-format."
   VERBATIM)
 
-set(CMAKE_FILES "CMakeLists.txt" "unittests/CMakeLists.txt"
-                "benchmark/CMakeLists.txt" "commands/CMakeLists.txt")
+set(CMAKE_FILES
+    "CMakeLists.txt" "benchmark/CMakeLists.txt" "commands/CMakeLists.txt"
+    "ioutils/CMakeLists.txt" "unittests/CMakeLists.txt")
 find_program(CMAKE_FORMAT NAMES cmake-format)
 if(${CMAKE_FORMAT} STREQUAL "CMAKE_FORMAT-NOTFOUND")
   add_custom_command(
