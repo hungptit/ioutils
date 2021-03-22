@@ -18,6 +18,14 @@ endif()
 add_cxx_compiler_flag(-static)
 add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
 
+# Add test library
+set(SRC_FILES "test_data.cpp")
+add_library(test_ioutils STATIC ${SRC_FILES})
+target_include_directories(
+  test_ioutils PRIVATE "${PROJECT_SOURCE_DIR}" "${ROOT_DIR}"
+                       "${fmt_SOURCE_DIR}/include/")
+target_code_coverage(test_ioutils AUTO ALL)
+
 set(TEST_EXECUTABLES
     search_test
     read_stdin_test
@@ -26,13 +34,15 @@ set(TEST_EXECUTABLES
     tempdir_test
     utilities_test
     writer_test)
+
 foreach(TEST_EXECUTABLE ${TEST_EXECUTABLES})
   add_executable(${TEST_EXECUTABLE} ${TEST_EXECUTABLE}.cpp)
-  target_link_libraries(${TEST_EXECUTABLE} PRIVATE ${LIB_HS} ${LIB_HS_RUNTIME})
+  target_link_libraries(${TEST_EXECUTABLE} PRIVATE ioutils test_ioutils
+                                                   ${LIB_HS} ${LIB_HS_RUNTIME})
   target_code_coverage(${TEST_EXECUTABLE} AUTO ALL)
   target_include_directories(
     ${TEST_EXECUTABLE}
-    PRIVATE "${ROOT_DIR}/_deps/doctest-src/" "${ROOT_DIR}/include"
+    PRIVATE "${ROOT_DIR}/_deps/doctest-src/" "${ROOT_DIR}"
             "${ROOT_DIR}/3p/include" "${fmt_SOURCE_DIR}/include/"
             "${utils_SOURCE_DIR}/src/")
   add_test(ioutils_${TEST_EXECUTABLE} ./${TEST_EXECUTABLE})

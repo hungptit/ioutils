@@ -21,6 +21,8 @@
 
 using namespace std;
 
+using ioutils::TestData;
+
 TEST_CASE("Valid dir") {
     CHECK(!ioutils::filesystem::is_valid_dir("."));
     CHECK(!ioutils::filesystem::is_valid_dir(".."));
@@ -61,8 +63,8 @@ TEST_CASE("Utility function") {
 
     SUBCASE("Search for files in a given folder using DFS algorithm and store results") {
         SUBCASE("Ignore dir") {
-            ioutils::search::SearchInputArguments params;
-            params.flags |= ioutils::search::IGNORE_DIR;
+            ioutils::SearchInputArguments params;
+            params.flags |= ioutils::IGNORE_DIR;
             params.print();
 
             ioutils::filesystem::DefaultSearch<ioutils::StorePolicy> search(params);
@@ -74,9 +76,9 @@ TEST_CASE("Utility function") {
         }
 
         SUBCASE("Ignore files") {
-            ioutils::search::SearchInputArguments params;
-            params.flags |= ioutils::search::IGNORE_DIR;
-            params.flags |= ioutils::search::IGNORE_FILE;
+            ioutils::SearchInputArguments params;
+            params.flags |= ioutils::IGNORE_DIR;
+            params.flags |= ioutils::IGNORE_FILE;
             ioutils::filesystem::DefaultSearch<ioutils::StorePolicy> search(params);
             search.traverse(std::vector<std::string>{p});
             CHECK(search.get_paths().size() == 1); // Should not see anything.
@@ -86,10 +88,10 @@ TEST_CASE("Utility function") {
         }
 
         SUBCASE("Ignore files") {
-            ioutils::search::SearchInputArguments params;
-            params.flags |= ioutils::search::IGNORE_DIR;
-            params.flags |= ioutils::search::IGNORE_FILE;
-            params.flags |= ioutils::search::IGNORE_SYMLINK;
+            ioutils::SearchInputArguments params;
+            params.flags |= ioutils::IGNORE_DIR;
+            params.flags |= ioutils::IGNORE_FILE;
+            params.flags |= ioutils::IGNORE_SYMLINK;
             ioutils::filesystem::DefaultSearch<ioutils::StorePolicy> search(params);
             search.traverse(std::vector<std::string>{p});
             CHECK(search.get_paths().size() == 0); // Should not see anything.
@@ -99,8 +101,8 @@ TEST_CASE("Utility function") {
         }
 
         SUBCASE("Include all") {
-            ioutils::search::SearchInputArguments params;
-            params.flags = ioutils::search::DFS;
+            ioutils::SearchInputArguments params;
+            params.flags = ioutils::DFS;
             ioutils::filesystem::DefaultSearch<ioutils::StorePolicy> search(params);
             fmt::print("DFS - StorePolicy:\n");
             search.traverse(std::vector<std::string>{p});
@@ -111,7 +113,7 @@ TEST_CASE("Utility function") {
         }
 
         SUBCASE("Include all with the given level") {
-            ioutils::search::SearchInputArguments params;
+            ioutils::SearchInputArguments params;
             params.maxdepth = 0;
             ioutils::filesystem::DefaultSearch<ioutils::StorePolicy> search(params);
             fmt::print("DFS - StorePolicy:\n");
@@ -124,14 +126,14 @@ TEST_CASE("Utility function") {
     }
 
     SUBCASE("Search for files in a given folder and return a list of files") {
-        ioutils::search::SearchInputArguments params;
+        ioutils::SearchInputArguments params;
         ioutils::filesystem::DefaultSearch<ioutils::find::SimplePolicy> search(params);
         fmt::print("DFS - SimplePolicy:\n");
         search.bfs(p);
     }
 
     SUBCASE("Search for files in a given folder using BFS algorithm and store results") {
-        ioutils::search::SearchInputArguments params;
+        ioutils::SearchInputArguments params;
         ioutils::filesystem::DefaultSearch<ioutils::StorePolicy> search(params);
         fmt::print("BFS - StorePolicy:\n");
         search.bfs(p);
@@ -151,8 +153,8 @@ TEST_CASE("Search with regex") {
     using Matcher = utils::hyperscan::RegexMatcher;
     using Policy = ioutils::RegexStorePolicy<Matcher>;
     using Search = typename ioutils::filesystem::DefaultSearch<Policy>;
-    ioutils::search::SearchInputArguments params;
-    params.flags |= ioutils::search::IGNORE_SYMLINK;
+    ioutils::SearchInputArguments params;
+    params.flags |= ioutils::IGNORE_SYMLINK;
     params.path_regex = "[.]cpp";
     Search search(params);
     search.traverse(std::vector<std::string>{p});

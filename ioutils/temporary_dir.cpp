@@ -26,5 +26,5 @@ namespace ioutils {
         }
     }
 
-    const auto &TemporaryDirectory::get_path() { return current_dir; }
+    const std::filesystem::path &TemporaryDirectory::get_path() { return current_dir; }
 } // namespace ioutils

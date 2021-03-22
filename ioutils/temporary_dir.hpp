@@ -3,7 +3,6 @@
 #include <filesystem>
 
 namespace ioutils {
-    namespace fs = std::filesystem;
     class TemporaryDirectory {
       public:
         explicit TemporaryDirectory();
@@ -12,11 +11,12 @@ namespace ioutils {
         TemporaryDirectory(TemporaryDirectory &&tmpDir) = default;
         ~TemporaryDirectory();
 
-        const auto &get_path();
+        const std::filesystem::path &get_path();
 
       private:
+        using path = std::filesystem::path;
         std::string get_unique_string();
         ioutils::RandomStringGenerator gen;
-        fs::path current_dir;
+        std::filesystem::path current_dir;
     };
 } // namespace ioutils
