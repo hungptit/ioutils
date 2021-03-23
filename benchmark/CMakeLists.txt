@@ -53,9 +53,8 @@ foreach(BENCHMARK ${COMMAND_BENCHMARK_COMMANDS})
                                              benchmark::benchmark_main)
   target_include_directories(
     ${BENCHMARK}
-    PRIVATE "${benchmark_SOURCE_DIR}/include/" "${fmt_SOURCE_DIR}/include/"
-            "${PROJECT_SOURCE_DIR}" "${ROOT_DIR}/3p/include"
-            "${utils_SOURCE_DIR}/src/")
+    PRIVATE "${benchmark_SOURCE_DIR}/include/" "${PROJECT_SOURCE_DIR}"
+            "${ROOT_DIR}/3p/include" "${utils_SOURCE_DIR}/src/")
 endforeach(BENCHMARK)
 
 # set(COMMAND_BENCHMARK_COMMANDS file_read) foreach (BENCHMARK

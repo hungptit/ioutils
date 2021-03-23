@@ -1,18 +1,14 @@
 #pragma once
 
-#include "fmt/format.h"
-#include <array>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <deque>
 #include <dirent.h>
 #include <fcntl.h>
 #include <string>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <vector>
 
 namespace ioutils {
     namespace filesystem {
@@ -31,25 +27,6 @@ namespace ioutils {
 
         // Check that if a path is exist.
         bool exists(const char *p);
-
-        // Utility class for path.
-        class Utils {
-          public:
-            const char *get_absolute_path(const char *p, Error &errcode) {
-                const char *results = realpath(p, fullpath);
-                errcode = (results != nullptr) ? SUCCESS : FAILED;
-                return results;
-            }
-
-            const char *get_current_directory(Error &errcode) {
-                const char *p = getcwd(fullpath, PATH_MAX);
-                errcode = (p != nullptr) ? SUCCESS : FAILED;
-                return p;
-            }
-
-          private:
-            char fullpath[PATH_MAX];
-        };
     } // namespace filesystem
 
     // A struct which stores all information about a file.

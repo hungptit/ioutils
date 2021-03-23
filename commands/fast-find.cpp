@@ -1,5 +1,6 @@
 #include "clara.hpp"
 
+#include "fmt/format.h"
 #include "ioutils/enums.hpp"
 #include "ioutils/find.hpp"
 #include "ioutils/search.hpp"
