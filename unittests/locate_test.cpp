@@ -1,4 +1,5 @@
 #include "ioutils/locate.hpp"
+#include "ioutils/updatedb.hpp"
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest/doctest.h"
@@ -9,7 +10,7 @@ namespace {
 } // namespace
 
 TEST_CASE("updatedb input parameters") {
-    ioutils::locate::UpdateDBInputArguments params;
+    ioutils::UpdateDBInputArguments params;
     params.database = database;
     params.paths = paths;
     params.print();
@@ -18,7 +19,7 @@ TEST_CASE("updatedb input parameters") {
 
 TEST_CASE("Locate files") {
     SUBCASE("List all files") {
-        ioutils::locate::LocateInputArguments params;
+        ioutils::LocateInputArguments params;
         params.databases = {database};
         params.pattern = "";
         params.print();
@@ -26,7 +27,7 @@ TEST_CASE("Locate files") {
     }
 
     SUBCASE("Locate a file") {
-        ioutils::locate::LocateInputArguments params;
+        ioutils::LocateInputArguments params;
         params.databases = {database};
         params.pattern = ".*cpp$";
         params.regex_mode = HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH;
@@ -36,7 +37,7 @@ TEST_CASE("Locate files") {
     }
 
     SUBCASE("Locate a file using an invert match") {
-        ioutils::locate::LocateInputArguments params;
+        ioutils::LocateInputArguments params;
         params.databases = {database};
         params.pattern = ".*hpp$";
         params.regex_mode = HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH;
