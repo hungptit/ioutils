@@ -49,7 +49,7 @@ endforeach(BENCHMARK)
 set(COMMAND_BENCHMARK_COMMANDS filesystem_benchmark)
 foreach(BENCHMARK ${COMMAND_BENCHMARK_COMMANDS})
   add_executable(${BENCHMARK} ${BENCHMARK}.cpp)
-  target_link_libraries(${BENCHMARK} PRIVATE benchmark::benchmark
+  target_link_libraries(${BENCHMARK} PRIVATE ioutils benchmark::benchmark
                                              benchmark::benchmark_main)
   target_include_directories(
     ${BENCHMARK}

@@ -131,7 +131,7 @@ file(
   GLOB_RECURSE
   CPP_FILES
   CONFIGURE_DEPENDS
-  include/*.hpp
+  ioutils/*.[ch]pp
   unittests/*.[ch]pp
   benchmark/*.[ch]pp
   commands/*.[ch]pp)

@@ -1,9 +1,9 @@
 #include "clara.hpp"
 
+#include "ioutils/enums.hpp"
 #include "ioutils/find.hpp"
 #include "ioutils/search.hpp"
 #include "ioutils/search_params.hpp"
-#include "ioutils/enums.hpp"
 #include "regex_matchers.hpp"
 
 #include "version.hpp"
@@ -134,8 +134,10 @@ namespace {
             verbose * ioutils::FileSearchFlags::VERBOSE | inverse_match * ioutils::FileSearchFlags::INVERT_MATCH |
             dfs * ioutils::FileSearchFlags::DFS | ignore_fifo * ioutils::FileSearchFlags::IGNORE_FIFO |
             ignore_blk * ioutils::FileSearchFlags::IGNORE_BLK | ignore_chr * ioutils::FileSearchFlags::IGNORE_CHR |
-            ignore_socket * ioutils::FileSearchFlags::IGNORE_SOCKET | ignore_whiteout * ioutils::FileSearchFlags::IGNORE_WHITEOUT |
-            ignore_unknown * ioutils::FileSearchFlags::IGNORE_UNKNOWN | donot_ignore_git * ioutils::FileSearchFlags::DONOT_IGNORE_GIT |
+            ignore_socket * ioutils::FileSearchFlags::IGNORE_SOCKET |
+            ignore_whiteout * ioutils::FileSearchFlags::IGNORE_WHITEOUT |
+            ignore_unknown * ioutils::FileSearchFlags::IGNORE_UNKNOWN |
+            donot_ignore_git * ioutils::FileSearchFlags::DONOT_IGNORE_GIT |
             ignore_error * ioutils::FileSearchFlags::IGNORE_ERROR;
 
         // Display input arguments in JSON format if verbose flag is on

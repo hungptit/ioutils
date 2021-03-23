@@ -11,8 +11,6 @@
 #include "memchr.hpp"
 #include "regex_matchers.hpp"
 
-#include "hs/hs.h"
-
 namespace ioutils {
     namespace locate {
         struct UpdateDBInputArguments {

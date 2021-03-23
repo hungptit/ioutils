@@ -14,7 +14,6 @@
 #include "fdwriter.hpp"
 #include "filesystem.hpp"
 #include "fmt/format.h"
-#include "regex_matchers.hpp"
 
 namespace ioutils {
     namespace filesystem {
