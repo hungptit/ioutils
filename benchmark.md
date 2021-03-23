@@ -79,6 +79,13 @@ fast-find --version
 fast-find  5c076f39224d562c1bc880e81928108344052003
 ```
 
+**Initialize up test data**
+
+``` shell
+cd benchmark
+./setup.sh
+```
+
 ## Notes ##
 
 * All automated performance benchmark results are collected on a SSD drive with a warm up cache.
