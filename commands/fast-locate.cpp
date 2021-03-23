@@ -18,7 +18,7 @@ namespace {
 
     auto parse_input_arguments(int argc, char *argv[]) {
         using namespace ioutils::locate;
-        LocateInputArguments params;
+        ioutils::LocateInputArguments params;
 
         bool version = false;
         bool help = false;

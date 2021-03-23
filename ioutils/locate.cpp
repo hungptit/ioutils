@@ -15,4 +15,21 @@ namespace ioutils {
         fmt::print("File information databases: [\"{}\"]\n", fmt::join(databases, "\",\""));
     }
 
+    void locate_files(const ioutils::LocateInputArguments &params) {
+        if (params.pattern.empty()) {
+            using GrepAlg = ioutils::StreamReader<PrintAllPolicy>;
+            GrepAlg grep(params);
+            for (auto db : params.databases) {
+                grep(db.data());
+            }
+        } else {
+            if (!params.invert_match()) {
+                using Matcher = utils::hyperscan::RegexMatcher;
+                find_matched_files<Matcher>(params);
+            } else {
+                using Matcher = utils::hyperscan::RegexMatcherInv;
+                find_matched_files<Matcher>(params);
+            }
+        }
+    }
 } // namespace ioutils
