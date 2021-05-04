@@ -1,9 +1,10 @@
 #include "clara.hpp"
 
+#include "fmt/format.h"
+#include "ioutils/enums.hpp"
 #include "ioutils/find.hpp"
 #include "ioutils/search.hpp"
 #include "ioutils/search_params.hpp"
-#include "matchers.hpp"
 #include "regex_matchers.hpp"
 
 #include "version.hpp"
@@ -21,9 +22,8 @@ namespace {
         fmt::print("\t\tfast-find ../src/ -e 'reader'\n");
     }
 
-    auto parse_input_arguments(int argc, char *argv[]) {
-        using namespace ioutils::search;
-        SearchInputArguments params;
+    ioutils::SearchInputArguments parse_input_arguments(int argc, char *argv[]) {
+        ioutils::SearchInputArguments params;
         std::vector<std::string> paths;
         bool help = false;
         bool verbose = false;
@@ -130,14 +130,16 @@ namespace {
 
         // Parse the display type
         params.flags =
-            ignore_file * FileSearchFlags::IGNORE_FILE | ignore_dir * FileSearchFlags::IGNORE_DIR |
-            ignore_symlink * FileSearchFlags::IGNORE_SYMLINK | color * FileSearchFlags::COLOR |
-            verbose * FileSearchFlags::VERBOSE | inverse_match * FileSearchFlags::INVERT_MATCH |
-            dfs * FileSearchFlags::DFS | ignore_fifo * FileSearchFlags::IGNORE_FIFO |
-            ignore_blk * FileSearchFlags::IGNORE_BLK | ignore_chr * FileSearchFlags::IGNORE_CHR |
-            ignore_socket * FileSearchFlags::IGNORE_SOCKET | ignore_whiteout * FileSearchFlags::IGNORE_WHITEOUT |
-            ignore_unknown * FileSearchFlags::IGNORE_UNKNOWN | donot_ignore_git * FileSearchFlags::DONOT_IGNORE_GIT |
-            ignore_error * FileSearchFlags::IGNORE_ERROR;
+            ignore_file * ioutils::FileSearchFlags::IGNORE_FILE | ignore_dir * ioutils::FileSearchFlags::IGNORE_DIR |
+            ignore_symlink * ioutils::FileSearchFlags::IGNORE_SYMLINK | color * ioutils::FileSearchFlags::COLOR |
+            verbose * ioutils::FileSearchFlags::VERBOSE | inverse_match * ioutils::FileSearchFlags::INVERT_MATCH |
+            dfs * ioutils::FileSearchFlags::DFS | ignore_fifo * ioutils::FileSearchFlags::IGNORE_FIFO |
+            ignore_blk * ioutils::FileSearchFlags::IGNORE_BLK | ignore_chr * ioutils::FileSearchFlags::IGNORE_CHR |
+            ignore_socket * ioutils::FileSearchFlags::IGNORE_SOCKET |
+            ignore_whiteout * ioutils::FileSearchFlags::IGNORE_WHITEOUT |
+            ignore_unknown * ioutils::FileSearchFlags::IGNORE_UNKNOWN |
+            donot_ignore_git * ioutils::FileSearchFlags::DONOT_IGNORE_GIT |
+            ignore_error * ioutils::FileSearchFlags::IGNORE_ERROR;
 
         // Display input arguments in JSON format if verbose flag is on
         if (params.verbose()) {
@@ -149,7 +151,7 @@ namespace {
 } // namespace
 
 namespace {
-    template <typename Params> void search(Params &&params) {
+    template <typename Params> void find(Params &&params) {
         if (params.path_regex.empty()) {
             using Policy = ioutils::find::SimplePolicy;
             ioutils::filesystem::DefaultSearch<Policy> search(params);
@@ -171,6 +173,6 @@ namespace {
 } // namespace
 
 int main(int argc, char *argv[]) {
-    search(parse_input_arguments(argc, argv));
+    find(parse_input_arguments(argc, argv));
     return EXIT_SUCCESS;
 }

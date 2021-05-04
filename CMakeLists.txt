@@ -88,7 +88,8 @@ include(dependency-graph)
 
 set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
-# TODO: There is a bug in the hyperscan build. We cannot build it as a submodule.
+# TODO: There is a bug in the hyperscan build. We cannot build it as a
+# submodule.
 FetchContent_Declare(
   hyperscan
   GIT_REPOSITORY https://github.com/intel/hyperscan.git
@@ -109,7 +110,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 file(GLOB_RECURSE TEST_SRCS CONFIGURE_DEPENDS unittests/*_test.cpp)
 add_code_coverage_all_targets(EXCLUDE 3p _deps/ ${TEST_SRCS})
 
-# add_subdirectory(unittests)
+add_subdirectory(ioutils)
 add_subdirectory(commands)
 
 if(IOUTILS_ENABLE_BENCHMARK)
@@ -130,7 +131,7 @@ file(
   GLOB_RECURSE
   CPP_FILES
   CONFIGURE_DEPENDS
-  include/*.hpp
+  ioutils/*.[ch]pp
   unittests/*.[ch]pp
   benchmark/*.[ch]pp
   commands/*.[ch]pp)
@@ -144,8 +145,9 @@ add_custom_command(
   COMMENT "Format C++ files with clang-format."
   VERBATIM)
 
-set(CMAKE_FILES "CMakeLists.txt" "unittests/CMakeLists.txt"
-                "benchmark/CMakeLists.txt" "commands/CMakeLists.txt")
+set(CMAKE_FILES
+    "CMakeLists.txt" "benchmark/CMakeLists.txt" "commands/CMakeLists.txt"
+    "ioutils/CMakeLists.txt" "unittests/CMakeLists.txt")
 find_program(CMAKE_FORMAT NAMES cmake-format)
 if(${CMAKE_FORMAT} STREQUAL "CMAKE_FORMAT-NOTFOUND")
   add_custom_command(

@@ -1,5 +1,3 @@
-#pragma once
-
 #include "fmt/format.h"
 #include <array>
 #include <cstdlib>
@@ -58,45 +56,5 @@ namespace ioutils {
             struct stat buf;
             return stat(p, &buf) == 0;
         }
-
-        // Utility class for path.
-        class Utils {
-          public:
-            const char *get_absolute_path(const char *p, Error &errcode) {
-                const char *results = realpath(p, fullpath);
-                errcode = (results != nullptr) ? SUCCESS : FAILED;
-                return results;
-            }
-
-            const char *get_current_directory(Error &errcode) {
-                const char *p = getcwd(fullpath, PATH_MAX);
-                errcode = (p != nullptr) ? SUCCESS : FAILED;
-                return p;
-            }
-
-          private:
-            char fullpath[PATH_MAX];
-        };
     } // namespace filesystem
-
-    // A struct which stores all information about a file.
-    struct Stats {
-        mode_t st_mode; /* protection */
-        size_t st_size; /* total size, in bytes */
-        std::time_t last_access_time;
-        std::time_t modification_time;
-        std::time_t status_change_time;
-        std::string extension;
-        std::string path;
-    };
-
-    // A struct that hold folder information during the traversal.
-    struct Path {
-        template <typename T> explicit Path(int val, T &&p) : fd(val), path(std::forward<T>(p)) {}
-
-        template <typename T> explicit Path(T &&p) : fd(p.fd), path(std::forward<std::string>(p.path)) {}
-
-        int fd; // The current path file descriptor
-        std::string path;
-    };
 } // namespace ioutils

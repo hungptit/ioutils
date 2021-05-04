@@ -1,8 +1,8 @@
 #include "clara.hpp"
 #include "fmt/format.h"
 
-#include "ioutils/locate.hpp"
 #include "ioutils/search.hpp"
+#include "ioutils/updatedb.hpp"
 #include "ioutils/utilities.hpp"
 #include "ioutils/writer.hpp"
 #include "version.hpp"
@@ -24,7 +24,7 @@ namespace {
     }
 
     auto parse_input_arguments(int argc, char *argv[]) {
-        ioutils::locate::UpdateDBInputArguments params;
+        ioutils::UpdateDBInputArguments params;
         std::vector<std::string> paths;
         bool help = false;
         bool version = false;

@@ -1,13 +1,14 @@
-#pragma once
 #include <string>
 
+#include "fmt/format.h"
+#include "ioutils/utilities.hpp"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <tuple>
 #include <unistd.h>
 
 namespace ioutils {
-    inline void copyright() { fmt::print("\n{}\n", "Report bugs or enhancement requests to hungptit@gmail.com"); }
+    void copyright() { fmt::print("\n{}\n", "Report bugs or enhancement requests to hungptit@gmail.com"); }
 
     namespace path {
         /**
