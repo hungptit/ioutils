@@ -39,8 +39,8 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(POSITION_INDEPENDENT_CODE OFF)
 
 # Customized options
-option(IOUTILS_ENABLE_TESTING "Build unittests" ON)
-option(IOUTILS_ENABLE_BENCHMARK "Build benchmark" ON)
+option(IOUTILS_ENABLE_TESTING "Build unittests" OFF)
+option(IOUTILS_ENABLE_BENCHMARK "Build benchmark" OFF)
 
 option(USE_AVX2 "Support AVX2 by default" ON)
 
@@ -90,14 +90,13 @@ include(dependency-graph)
 set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # TODO: Fix the hyperscan build
-# FetchContent_Declare(
-#   hyperscan
-#   GIT_REPOSITORY https://github.com/intel/hyperscan.git
-#   GIT_TAG v5.4.0)
-
-# set(BUILD_SHARED_LIBS OFF)
-
-# FetchContent_Populate(hyperscan)
+FetchContent_Declare(
+  hyperscan
+  GIT_REPOSITORY https://github.com/hungptit/hyperscan.git
+  GIT_TAG v5.4.0)
+set(BUILD_SHARED_LIBS OFF)
+set(FAT_RUNTIME OFF)
+FetchContent_MakeAvailable(hyperscan)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -105,8 +104,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 file(GLOB_RECURSE TEST_SRCS CONFIGURE_DEPENDS unittests/*_test.cpp)
 add_code_coverage_all_targets(EXCLUDE 3p _deps/ ${TEST_SRCS})
 
-# add_subdirectory(unittests)
-add_subdirectory(commands)
+# add_subdirectory(commands)
 
 if(IOUTILS_ENABLE_BENCHMARK)
   add_subdirectory(benchmark)

@@ -27,7 +27,7 @@ mkdir -p $tmp_dir
 
 pushd "$tmp_dir" || exit
 # Disable FAT_RUNTIME for local build.
-cmake "$src_dir" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$root_dir" -DFAT_RUNTIME=OFF -DHAVE_AVX2=ON
+cmake "$src_dir" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$root_dir" -DFAT_RUNTIME=OFF
 make -j"$ncpus"
 make install
 popd || exit
