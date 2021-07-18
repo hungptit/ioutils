@@ -1,5 +1,16 @@
 #!/bin/bash
 set -euo pipefail
-DST=$1
-cmake ./ -DCMAKE_INSTALL_PREFIX="$DST"
-make install
+dst_dir=$1
+
+# Use clang++ to compile code on non-Windows platforms.
+cmake ./ -DCMAKE_INSTALL_PREFIX="$dst_dir" -DCMAKE_CXX_COMPILER=clang++
+make -j9
+
+# Copy commands to the destination
+set -x
+mkdir -p "$dst_dir"
+cp "$PWD/commands/fast-find" "$dst_dir/"
+cp "$PWD/commands/fast-locate" "$dst_dir/"
+cp "$PWD/commands/fast-updatedb" "$dst_dir/"
+cp "$PWD/commands/fast-wc" "$dst_dir/"
+set +x
