@@ -2,6 +2,7 @@
 
 #include "hs/hs.h"
 #include "utilities.hpp"
+#include <limits>
 #include <string>
 
 #include "ioutils/enums.hpp"

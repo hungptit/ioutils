@@ -88,21 +88,21 @@ include(dependency-graph)
 
 set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
-# TODO: There is a bug in the hyperscan build. We cannot build it as a
-# submodule.
 FetchContent_Declare(
   hyperscan
-  GIT_REPOSITORY https://github.com/intel/hyperscan.git
-  GIT_TAG v5.4.0)
+  GIT_REPOSITORY https://github.com/hungptit/hyperscan.git
+  GIT_TAG develop)
 set(BUILD_SHARED_LIBS OFF)
-FetchContent_Populate(hyperscan)
+FetchContent_MakeAvailable(hyperscan)
 
-find_library(LIB_HS libhs.a "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib"
-             NO_DEFAULT_PATH)
-find_library(LIB_HS_RUNTIME libhs_runtime.a
-             "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
-find_library(LIB_HS_RUNTIME libhs_runtime.a
-             "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
+add_library(hs::hs ALIAS hs)
+add_library(hs::hs_runtime ALIAS hs_runtime)
+
+# find_library(LIB_HS libhs.a "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib"
+# NO_DEFAULT_PATH) find_library(LIB_HS_RUNTIME libhs_runtime.a
+# "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
+# find_library(LIB_HS_RUNTIME libhs_runtime.a
+# "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
