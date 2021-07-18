@@ -42,11 +42,9 @@ foreach(target ${TEST_EXECUTABLES})
                                           ${LIB_HS_RUNTIME})
   target_code_coverage(${target} AUTO ALL)
   target_include_directories(
-    ${target}
-    PRIVATE "${ROOT_DIR}/_deps/doctest-src/" "${ROOT_DIR}"
-            "${ROOT_DIR}/3p/include" "${fmt_SOURCE_DIR}/include/"
-            "${utils_SOURCE_DIR}/src/")
+    ${target} PRIVATE "${doctest_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}"
+                      "${fmt_SOURCE_DIR}/include/" "${utils_SOURCE_DIR}/src/")
   add_test(ioutils_${target} ./${target})
-endforeach(target)
+endforeach(TEST_EXECUTABLE)
 
 enable_testing()

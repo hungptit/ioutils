@@ -39,9 +39,16 @@ namespace ioutils {
         }
     };
 
-    template <int BUFFER_SIZE = 1 << 16> struct StreamReaderAppendPolicy {
-        char read_buffer[BUFFER_SIZE];
+    template <int SIZE = 1 << 16> struct StreamReaderAppendPolicy {
+        char read_buffer[SIZE];
         std::string file_name;
+        static constexpr int BUFFER_SIZE = SIZE;
         void set_filename(const char *datafile) { file_name = datafile; }
+        std::string data;
+        void process(const char *begin, const size_t len) {
+            if (len > 0) {
+                data.append(begin, len);
+            }
+        }
     };
 } // namespace ioutils

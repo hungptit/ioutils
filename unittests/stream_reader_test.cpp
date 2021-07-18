@@ -22,13 +22,13 @@ TEST_CASE("Basic tests for the StreamReader class") {
 
         ioutils::StreamReader<Policy> reader;
         reader(datafile.c_str());
-        CHECK(results == reader.read_buffer);
+        CHECK(results == reader.data);
     }
 
     SUBCASE("Try to read from an inexisting file") {
         const std::string datafile("bad_input_data_file");
         ioutils::StreamReader<Policy> reader;
         reader(datafile.c_str());
-        REQUIRE(reader.read_buffer.empty());
+        REQUIRE(reader.data.empty());
     }
 }
