@@ -42,9 +42,8 @@ foreach(TEST_EXECUTABLE ${TEST_EXECUTABLES})
   target_code_coverage(${TEST_EXECUTABLE} AUTO ALL)
   target_include_directories(
     ${TEST_EXECUTABLE}
-    PRIVATE "${ROOT_DIR}/_deps/doctest-src/" "${ROOT_DIR}"
-            "${ROOT_DIR}/3p/include" "${fmt_SOURCE_DIR}/include/"
-            "${utils_SOURCE_DIR}/src/")
+    PRIVATE "${doctest_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}"
+            "${fmt_SOURCE_DIR}/include/" "${utils_SOURCE_DIR}/src/")
   add_test(ioutils_${TEST_EXECUTABLE} ./${TEST_EXECUTABLE})
 endforeach(TEST_EXECUTABLE)
 

@@ -86,23 +86,15 @@ include(sanitizers)
 include(tools)
 include(dependency-graph)
 
-set(ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-
+# Build hyperscan using the C++17 fork.
 FetchContent_Declare(
   hyperscan
   GIT_REPOSITORY https://github.com/hungptit/hyperscan.git
   GIT_TAG develop)
 set(BUILD_SHARED_LIBS OFF)
 FetchContent_MakeAvailable(hyperscan)
-
 add_library(hs::hs ALIAS hs)
 add_library(hs::hs_runtime ALIAS hs_runtime)
-
-# find_library(LIB_HS libhs.a "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib"
-# NO_DEFAULT_PATH) find_library(LIB_HS_RUNTIME libhs_runtime.a
-# "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
-# find_library(LIB_HS_RUNTIME libhs_runtime.a
-# "${CMAKE_CURRENT_SOURCE_DIR}/3p/lib" NO_DEFAULT_PATH)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -123,50 +115,12 @@ endif()
 
 # Install all header files to destination folder.
 install(DIRECTORY include/ioutils DESTINATION include)
+install(TARGETS ioutils DESTINATION lib)
+install(TARGETS fast-find DESTINATION bin)
+install(TARGETS fast-locate DESTINATION bin)
+install(TARGETS fast-updatedb DESTINATION bin)
+install(TARGETS fast-wc DESTINATION bin)
 
 enable_testing()
 
-# Formating and linting source code
-file(
-  GLOB_RECURSE
-  CPP_FILES
-  CONFIGURE_DEPENDS
-  ioutils/*.[ch]pp
-  unittests/*.[ch]pp
-  benchmark/*.[ch]pp
-  commands/*.[ch]pp)
-
-find_program(CLANG_FORMAT NAMES clang-format)
-add_custom_command(
-  OUTPUT .fmt_cpp_stamp
-  DEPENDS ${CPP_FILES}
-  COMMAND ${CLANG_FORMAT} -i ${CPP_FILES}
-  COMMAND touch .fmt_cpp_stamp
-  COMMENT "Format C++ files with clang-format."
-  VERBATIM)
-
-set(CMAKE_FILES
-    "CMakeLists.txt" "benchmark/CMakeLists.txt" "commands/CMakeLists.txt"
-    "ioutils/CMakeLists.txt" "unittests/CMakeLists.txt")
-find_program(CMAKE_FORMAT NAMES cmake-format)
-if(${CMAKE_FORMAT} STREQUAL "CMAKE_FORMAT-NOTFOUND")
-  add_custom_command(
-    OUTPUT .fmt_cmake_stamp
-    DEPENDS ${CMAKE_FILES}
-    COMMAND touch .fmt_cmake_stamp
-    COMMENT "Skip formatting CMake files."
-    VERBATIM)
-else()
-  add_custom_command(
-    OUTPUT .fmt_cmake_stamp
-    DEPENDS ${CMAKE_FILES}
-    COMMAND cmake-format -i ${CMAKE_FILES}
-    COMMAND touch .fmt_cmake_stamp
-    COMMENT "Format CMake files with cmake-format."
-    VERBATIM)
-endif()
-
-add_custom_target(
-  format
-  DEPENDS .fmt_cpp_stamp .fmt_cmake_stamp
-  COMMENT "Format C++ and CMake files.")
+include(cmake/format_files.cmake)
