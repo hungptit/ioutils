@@ -1,7 +1,9 @@
 #pragma once
+#include <cstddef>
 #include <cstring>
 #include <fcntl.h>
 #include <stdio.h>
+#include <string>
 #include <sys/errno.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -35,5 +37,11 @@ namespace ioutils {
             }
             read(fd, datafile);
         }
+    };
+
+    template <int BUFFER_SIZE = 1 << 16> struct StreamReaderAppendPolicy {
+        char read_buffer[BUFFER_SIZE];
+        std::string file_name;
+        void set_filename(const char *datafile) { file_name = datafile; }
     };
 } // namespace ioutils

@@ -13,9 +13,9 @@ else()
   add_cxx_compiler_flag(-Wextra)
   add_cxx_compiler_flag(-Werror)
   add_cxx_compiler_flag(-pedantic)
+  add_cxx_compiler_flag(-static)
 endif()
 
-add_cxx_compiler_flag(-static)
 add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
 
 # Add test library
@@ -31,21 +31,22 @@ set(TEST_EXECUTABLES
     read_stdin_test
     locate_test
     read_data_test
+    stream_reader_test
     tempdir_test
     utilities_test
     writer_test)
 
-foreach(TEST_EXECUTABLE ${TEST_EXECUTABLES})
-  add_executable(${TEST_EXECUTABLE} ${TEST_EXECUTABLE}.cpp)
-  target_link_libraries(${TEST_EXECUTABLE} PRIVATE ioutils test_ioutils
-                                                   ${LIB_HS} ${LIB_HS_RUNTIME})
-  target_code_coverage(${TEST_EXECUTABLE} AUTO ALL)
+foreach(target ${TEST_EXECUTABLES})
+  add_executable(${target} ${target}.cpp)
+  target_link_libraries(${target} PRIVATE ioutils test_ioutils ${LIB_HS}
+                                          ${LIB_HS_RUNTIME})
+  target_code_coverage(${target} AUTO ALL)
   target_include_directories(
-    ${TEST_EXECUTABLE}
+    ${target}
     PRIVATE "${ROOT_DIR}/_deps/doctest-src/" "${ROOT_DIR}"
             "${ROOT_DIR}/3p/include" "${fmt_SOURCE_DIR}/include/"
             "${utils_SOURCE_DIR}/src/")
-  add_test(ioutils_${TEST_EXECUTABLE} ./${TEST_EXECUTABLE})
-endforeach(TEST_EXECUTABLE)
+  add_test(ioutils_${target} ./${target})
+endforeach(target)
 
 enable_testing()
