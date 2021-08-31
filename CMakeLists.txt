@@ -22,6 +22,7 @@ execute_process(
   COMMAND ${GIT_EXECUTABLE} rev-parse --verify HEAD
   OUTPUT_VARIABLE IOUTILS_VERSION
   OUTPUT_STRIP_TRAILING_WHITESPACE)
+
 file(WRITE "commands/version.hpp"
      "constexpr char version[] = \"${IOUTILS_VERSION}\";\n")
 
@@ -32,9 +33,9 @@ include(CXXFeatureCheck)
 # Use C++ 17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(ENABLE_ALL_WARNINGS ON)
+set(ENABLE_ALL_WARNINGS OFF)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(POSITION_INDEPENDENT_CODE OFF)
 
@@ -89,7 +90,7 @@ include(dependency-graph)
 # Build hyperscan using the C++17 fork.
 FetchContent_Declare(
   hyperscan
-  GIT_REPOSITORY https://github.com/hungptit/hyperscan.git
+  GIT_REPOSITORY git@github.com:hungptit/hyperscan.git
   GIT_TAG develop)
 set(BUILD_SHARED_LIBS OFF)
 FetchContent_MakeAvailable(hyperscan)

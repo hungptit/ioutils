@@ -1,21 +1,30 @@
 # Formating source code
-file(
-  GLOB_RECURSE
-  CPP_FILES
-  CONFIGURE_DEPENDS
-  ioutils/*.[ch]pp
-  unittests/*.[ch]pp
-  benchmark/*.[ch]pp
-  commands/*.[ch]pp)
-
 find_program(CLANG_FORMAT NAMES clang-format)
-add_custom_command(
-  OUTPUT .fmt_cpp_stamp
-  DEPENDS ${CPP_FILES}
-  COMMAND ${CLANG_FORMAT} -i ${CPP_FILES}
-  COMMAND touch .fmt_cpp_stamp
-  COMMENT "Format C++ files with clang-format."
-  VERBATIM)
+if(${CLANG_FORMAT} STREQUAL "CLANG_FORMAT-NOTFOUND")
+  add_custom_command(
+    OUTPUT .fmt_cpp_stamp
+    DEPENDS ${CPP_FILES}
+    COMMAND touch .fmt_cpp_stamp
+    COMMENT "Skip formatting C++ files with clang-format."
+    VERBATIM)
+else()
+  file(
+    GLOB_RECURSE
+    CPP_FILES
+    CONFIGURE_DEPENDS
+    ioutils/*.[ch]pp
+    unittests/*.[ch]pp
+    benchmark/*.[ch]pp
+    commands/*.[ch]pp)
+
+  add_custom_command(
+    OUTPUT .fmt_cpp_stamp
+    DEPENDS ${CPP_FILES}
+    COMMAND ${CLANG_FORMAT} -i ${CPP_FILES}
+    COMMAND touch .fmt_cpp_stamp
+    COMMENT "Format C++ files with clang-format."
+    VERBATIM)
+endif()
 
 set(CMAKE_FILES
     "${PROJECT_SOURCE_DIR}/CMakeLists.txt"
