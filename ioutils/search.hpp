@@ -1,6 +1,5 @@
 #pragma once
 
-#include "hs/hs.h"
 #include "utilities.hpp"
 #include <limits>
 #include <string>
@@ -9,10 +8,12 @@
 #include "ioutils/search_default.hpp"
 
 namespace ioutils {
+    int get_default_regex_mode();
+    
     struct SearchInputArguments {
         static constexpr int EXPLORE_ALL = -1;
         int flags = 0;
-        int regex_mode = HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH;
+        int regex_mode = get_default_regex_mode();
         int maxdepth = std::numeric_limits<int>::max();
         std::string path_regex = {};
         std::vector<std::string> paths = {};

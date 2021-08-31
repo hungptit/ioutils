@@ -13,8 +13,8 @@ FetchContent_MakeAvailable(benchmark)
 # celero TODO: Do not install celero because users do not need it.
 FetchContent_Declare(
   celero
-  GIT_REPOSITORY https://github.com/DigitalInBlue/Celero.git
-  GIT_TAG master)
+  GIT_REPOSITORY git@github.com:hungptit/Celero.git
+  GIT_TAG hd-fix-warnings)
 set(CELERO_COMPILE_DYNAMIC_LIBRARIES OFF)
 set(CELERO_ENABLE_EXPERIMENTS OFF)
 FetchContent_MakeAvailable(celero)
