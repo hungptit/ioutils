@@ -9,7 +9,7 @@
 
 namespace ioutils {
     int get_default_regex_mode();
-    
+
     struct SearchInputArguments {
         static constexpr int EXPLORE_ALL = -1;
         int flags = 0;
