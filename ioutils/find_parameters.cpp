@@ -1,11 +1,7 @@
 #include "fmt/format.h"
-#include "hs/hs.h"
-
 #include "ioutils/search.hpp"
 
 namespace ioutils {
-    void SearchInputArguments::set_default_regex_mode() { regex_mode = HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH; }
-
     void SearchInputArguments::print() const {
         if (color()) {
             fmt::print("\033[1;34mverbose: \033[1;32m{}\n", verbose());

@@ -86,16 +86,6 @@ include(sanitizers)
 include(tools)
 include(dependency-graph)
 
-# Build hyperscan using the C++17 fork.
-FetchContent_Declare(
-  hyperscan
-  GIT_REPOSITORY https://github.com/hungptit/hyperscan.git
-  GIT_TAG develop)
-set(BUILD_SHARED_LIBS OFF)
-FetchContent_MakeAvailable(hyperscan)
-add_library(hs::hs ALIAS hs)
-add_library(hs::hs_runtime ALIAS hs_runtime)
-
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # Exclude test files from the code coverage report.
