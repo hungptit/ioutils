@@ -19,6 +19,12 @@ set(CELERO_COMPILE_DYNAMIC_LIBRARIES OFF)
 set(CELERO_ENABLE_EXPERIMENTS OFF)
 FetchContent_MakeAvailable(celero)
 
+FetchContent_Declare(
+  mio
+  GIT_REPOSITORY git@github.com:mandreyel/mio.git
+  GIT_TAG master)
+FetchContent_MakeAvailable(mio)
+
 # This option make sure that we use the local boost version. Note that if the
 # system boost is installed then CMake might use that boost version.
 # set(Boost_USE_STATIC_LIBS ON) set(Boost_USE_MULTITHREADED ON)

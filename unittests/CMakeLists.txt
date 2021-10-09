@@ -45,6 +45,6 @@ foreach(target ${TEST_EXECUTABLES})
     ${target} PRIVATE "${doctest_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}"
                       "${fmt_SOURCE_DIR}/include/" "${utils_SOURCE_DIR}/src/")
   add_test(ioutils_${target} ./${target})
-endforeach(TEST_EXECUTABLE)
+endforeach()
 
 enable_testing()
