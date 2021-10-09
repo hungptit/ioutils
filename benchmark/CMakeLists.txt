@@ -4,7 +4,7 @@ add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
 FetchContent_Declare(
   benchmark
   GIT_REPOSITORY https://github.com/google/benchmark.git
-  GIT_TAG v1.5.2)
+  GIT_TAG main)
 set(BENCHMARK_ENABLE_TESTING OFF)
 set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
 set(BENCHMARK_ENABLE_ASSEMBLY_TEST OFF)
