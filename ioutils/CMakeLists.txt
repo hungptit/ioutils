@@ -1,12 +1,3 @@
-if(MSVC)
-  add_compile_options(/W4 /WX)
-else()
-  add_cxx_compiler_flag(-Wall)
-  add_cxx_compiler_flag(-Wextra)
-  add_cxx_compiler_flag(-Werror)
-  add_cxx_compiler_flag(-pedantic)
-endif()
-
 add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
 
 set(SRC_FILES
