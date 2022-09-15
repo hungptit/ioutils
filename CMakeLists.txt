@@ -32,10 +32,10 @@ include(CXXFeatureCheck)
 # Use C++ 17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(ENABLE_ALL_WARNINGS ON)
-set(CMAKE_VERBOSE_MAKEFILE ON)
+set(ENABLE_ALL_WARNINGS OFF)
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(POSITION_INDEPENDENT_CODE OFF)
 
 # Customized options
@@ -61,6 +61,18 @@ set(BUILD_TESTING OFF)
 set(FMT_DOC OFF)
 set(FMT_TEST OFF)
 FetchContent_Populate(fmt)
+
+# Build hyperscan using the C++17 fork.
+FetchContent_Declare(
+  hyperscan
+  GIT_REPOSITORY git@github.com:hungptit/hyperscan.git
+  GIT_TAG develop)
+set(BUILD_SHARED_LIBS OFF)
+FetchContent_MakeAvailable(hyperscan)
+add_library(hs::hs ALIAS hs)
+add_library(hs::hs_runtime ALIAS hs_runtime)
+
+include_directories(${hyperscan_SOURCE_DIR}/src)
 
 # utils
 FetchContent_Declare(
