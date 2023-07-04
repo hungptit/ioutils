@@ -59,8 +59,6 @@ namespace {
 
         argparse::ArgumentParser parser("fast-wc");
 
-        parser.add_argument("--path", "-p").required().help("The input file or folder").nargs(1);
-
         parser.add_argument("--verbose", "-v")
             .help("Display the verbose information")
             .default_value(false)
@@ -102,6 +100,9 @@ namespace {
             .implicit_value(true)
             .action([&](const auto &) { mmap = true; });
 
+        // Assume files path are not above arguments.
+        parser.add_argument("path").required().help("The input file or folder").remaining();
+        
         try {
             parser.parse_args(argc, argv);
         } catch (const std::runtime_error &err) {
@@ -116,8 +117,7 @@ namespace {
 
         if (params.verbose()) params.print();
 
-        params.files = parser.get<std::vector<std::string>>("--path");
-
+        params.files = (parser.get<std::vector<std::string>>("path"));
         return params;
     }
 

@@ -20,7 +20,7 @@ add_cxx_compiler_flag(-static)
 add_cxx_compiler_flag(-lto)
 add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
 
-set(COMMANDS fast-updatedb fast-locate fast-find fast-wc)
+set(COMMANDS fast-updatedb fast-locate fast-find fast-wc test_arg)
 foreach(COMMAND ${COMMANDS})
   add_executable(${COMMAND} ${COMMAND}.cpp)
   target_link_libraries(${COMMAND} ioutils)
