@@ -1,5 +1,6 @@
-#include "clara.hpp"
 #include "fmt/format.h"
+#include <algorithm>
+#include <argparse/argparse.hpp>
 
 #include "ioutils/filesystem.hpp"
 #include "ioutils/linestats.hpp"
@@ -56,36 +57,66 @@ namespace {
         bool max_line_length = false;
         bool min_line_length = false;
 
-        auto cli = clara::Help(help) | clara::Opt(byte_count, "")["-c"]["--bytes"]("Print the byte counts.") |
-                   clara::Opt(char_count, "")["-m"]["--chars"]("Print the char counts.") |
-                   clara::Opt(line_count, "")["-l"]["--lines"]("Print the line counts.") |
-                   clara::Opt(word_count, "")["-w"]["--words"]("Print the word counts.") |
-                   clara::Opt(max_line_length, "")["-L"]["--max-line-length"]("Print the maximum line width.") |
-                   clara::Opt(min_line_length, "")["-M"]["--min-line-length"]("Print the minimum line width.") |
-                   clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information") |
-                   clara::Opt(mmap)["--mmap"]("Read by mapping file into memory.") |
-                   clara::Arg(params.files, "files")("Input files or folders");
+        argparse::ArgumentParser parser("fast-wc");
 
-        auto result = cli.parse(clara::Args(argc, argv));
-        if (!result) {
-            fmt::print(stderr, "Invalid option: {}\n", result.errorMessage());
-            exit(EXIT_FAILURE);
-        }
+        parser.add_argument("--path", "-p").required().help("The input file or folder").nargs(1);
 
-        // Print out the help document.
-        if (help) {
-            std::ostringstream oss;
-            oss << cli;
-            fmt::print("{}", oss.str());
-            exit(EXIT_SUCCESS);
+        parser.add_argument("--verbose", "-v")
+            .help("Display the verbose information")
+            .default_value(false)
+            .implicit_value(true)
+            .action([&](const auto &) { verbose = true; });
+        parser.add_argument("--chars", "-c")
+            .help("Print the char count")
+            .default_value(true)
+            .implicit_value(true)
+            .action([&](const auto &) { line_count = true; });
+
+        parser.add_argument("--lines", "-l")
+            .help("Print the line count")
+            .default_value(true)
+            .implicit_value(true)
+            .action([&](const auto &) { line_count = true; });
+
+        parser.add_argument("--words", "-w")
+            .help("Print the word count")
+            .default_value(true)
+            .implicit_value(true)
+            .action([&](const auto &) { word_count = true; });
+
+        parser.add_argument("--max-line-length")
+            .help("Print the maximum line length")
+            .default_value(false)
+            .implicit_value(true)
+            .action([&](const auto &) { max_line_length = true; });
+
+        parser.add_argument("--min-line-length")
+            .help("Print the minimum line length")
+            .default_value(false)
+            .implicit_value(true)
+            .action([&](const auto &) { min_line_length = true; });
+
+        parser.add_argument("--mmap")
+            .help("Read the file contents using mapped memory.")
+            .default_value(false)
+            .implicit_value(true)
+            .action([&](const auto &) { mmap = true; });
+
+        try {
+            parser.parse_args(argc, argv);
+        } catch (const std::runtime_error &err) {
+            std::cerr << err.what() << std::endl;
+            std::cerr << parser;
+            throw;
         }
 
         // Update flags
         params.flags = verbose * VERBOSE | mmap * MMAP | byte_count * BYTE_COUNT | word_count * WORD_COUNT |
                        line_count * LINE_COUNT | max_line_length * MAX_LINE_LENGTH | min_line_length * MIN_LINE_LENGTH;
 
-        // Display input arguments in JSON format if verbose flag is on
         if (params.verbose()) params.print();
+
+        params.files = parser.get<std::vector<std::string>>("--path");
 
         return params;
     }
