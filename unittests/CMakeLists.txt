@@ -2,7 +2,7 @@
 FetchContent_Declare(
   doctest
   GIT_REPOSITORY https://github.com/onqtam/doctest.git
-  GIT_TAG 2.4.4)
+  GIT_TAG master)
 set(DOCTEST_WITH_TESTS OFF)
 FetchContent_Populate(doctest)
 
@@ -45,6 +45,6 @@ foreach(target ${TEST_EXECUTABLES})
     ${target} PRIVATE "${doctest_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}"
                       "${fmt_SOURCE_DIR}/include/" "${utils_SOURCE_DIR}/src/")
   add_test(ioutils_${target} ./${target})
-endforeach(TEST_EXECUTABLE)
+endforeach()
 
 enable_testing()
