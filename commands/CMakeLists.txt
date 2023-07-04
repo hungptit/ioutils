@@ -4,7 +4,7 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/catchorg/Clara.git
   GIT_TAG v1.1.5
   GIT_SHALLOW TRUE)
-FetchContent_MakeAvailable(clara)
+FetchContent_Populate(clara)
 
 if(MSVC)
   add_compile_options(/W4 /WX)
