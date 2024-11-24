@@ -1,25 +1,20 @@
 #include "clara.hpp"
-#include "fmt/format.h"
-
-#include "ioutils/search.hpp"
+#include "fmt/base.h"
 #include "ioutils/updatedb.hpp"
 #include "ioutils/utilities.hpp"
-#include "ioutils/writer.hpp"
 #include "version.hpp"
-
-#include "timeutils.hpp"
-
 #include <set>
 #include <string>
 #include <vector>
 
 namespace {
-    void updatedb_disp_version() { fmt::print("{} {}\n", "fast-updatedb ", version); }
-    void updatedb_usage() {
+    void print_version() { fmt::print("{} {}\n", "fast-updatedb ", version); }
+    void print_usage() {
         fmt::print("\nExamples:\n");
         fmt::print("\t1. Build a database for all files from given paths:\n");
         fmt::print("\t\tfast-updatedb -d my_db /\n");
-        fmt::print("\t2. Build the file information database for given paths and save to the default path :\n");
+        fmt::print(
+            "\t2. Build the file information database for given paths and save to the default path :\n");
         fmt::print("\t\tfast-updatedb ../src/\n");
     }
 
@@ -28,16 +23,17 @@ namespace {
         std::vector<std::string> paths;
         bool help = false;
         bool version = false;
-        auto cli = clara::Help(help) |
-                   clara::Opt(params.database, "database")["-d"]["--database"]("The file information database.") |
-                   clara::Opt(params.verbose)["-v"]["--verbose"]("Display verbose information") |
-                   clara::Opt(version)["--version"]("Display the fast-updatedb version") |
-                   clara::Arg(paths, "paths")("Search paths.");
+        auto cli =
+            clara::Help(help) |
+            clara::Opt(params.database, "database")["-d"]["--database"]("The file information database.") |
+            clara::Opt(params.verbose)["-v"]["--verbose"]("Display verbose information") |
+            clara::Opt(version)["--version"]("Display the fast-updatedb version") |
+            clara::Arg(paths, "paths")("Search paths.");
 
         auto result = cli.parse(clara::Args(argc, argv));
         if (!result) {
             fmt::print(stderr, "Error in command line: {}\n", result.errorMessage());
-            updatedb_usage();
+            print_usage();
             exit(1);
         }
 
@@ -46,13 +42,13 @@ namespace {
             std::ostringstream oss;
             oss << cli;
             fmt::print("{}", oss.str());
-            updatedb_usage();
+            print_usage();
             ioutils::copyright();
             exit(EXIT_SUCCESS);
         }
 
         if (version) {
-            updatedb_disp_version();
+            print_version();
             exit(EXIT_SUCCESS);
         }
 

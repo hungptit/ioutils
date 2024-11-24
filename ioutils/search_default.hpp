@@ -1,5 +1,7 @@
 #pragma once
 
+#include "fdwriter.hpp"
+#include "filesystem.hpp"
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
@@ -10,9 +12,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <vector>
-
-#include "fdwriter.hpp"
-#include "filesystem.hpp"
 
 namespace ioutils::filesystem {
     // A class which has DFS and BFS file traversal algorithms.
@@ -88,7 +87,8 @@ namespace ioutils::filesystem {
 
             int retval = fstat(fd, &props);
             if (retval < 0) {
-                if (!ignore_error) fprintf(stderr, "fast-find: '%s': %s.\n", dir.path.data(), strerror(errno));
+                if (!ignore_error)
+                    fprintf(stderr, "fast-find: '%s': %s.\n", dir.path.data(), strerror(errno));
                 ::close(fd);
                 return;
             }
@@ -102,13 +102,13 @@ namespace ioutils::filesystem {
                         switch (info->d_type) {
                         case DT_DIR: {
                             // We have to exclude .. and .. folder from our search results.
-                            const bool is_valid_dir =
-                                filesystem::is_valid_dir(info->d_name) && Policy::is_valid_dir(info->d_name);
+                            const bool is_valid_dir = filesystem::is_valid_dir(info->d_name) &&
+                                                      Policy::is_valid_dir(info->d_name);
                             if (is_valid_dir) {
                                 temporary_path.clear();
                                 if (dir.path == "/") {
                                     temporary_path.append(1, SEP); // Should not add SEP two times.
-                                } else if (dir.path == ".") {      // Use relative path to improve usability.
+                                } else if (dir.path == ".") { // Use relative path to improve usability.
                                 } else {
                                     temporary_path.append(dir.path);
                                     temporary_path.append(1, SEP);
@@ -148,14 +148,16 @@ namespace ioutils::filesystem {
                         }
                         case DT_UNKNOWN: {
                             // Handle situations where d_type is not cached.
-                            if (filesystem::is_valid_dir(info->d_name) && Policy::is_valid_dir(info->d_name)) {
+                            if (filesystem::is_valid_dir(info->d_name) &&
+                                Policy::is_valid_dir(info->d_name)) {
                                 temporary_path.clear();
                                 temporary_path.append(dir.path);
                                 temporary_path.append(1, SEP);
                                 temporary_path.append(info->d_name);
                                 struct stat unknown_info;
                                 if (stat(temporary_path.data(), &unknown_info) != 0) {
-                                    fprintf(stderr, "fast-find: '%s': %s.\n", temporary_path.data(), strerror(errno));
+                                    fprintf(stderr, "fast-find: '%s': %s.\n", temporary_path.data(),
+                                            strerror(errno));
                                 } else {
                                     auto umode = unknown_info.st_mode & S_IFMT;
                                     if (umode == S_IFDIR) {

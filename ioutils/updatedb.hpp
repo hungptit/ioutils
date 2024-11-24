@@ -47,7 +47,9 @@ namespace ioutils {
         /**
          * A whiteout path is specific to MacOS.
          */
-        void process_whiteout(const Path &parent, const char *stem = nullptr) { process_file(parent, stem); }
+        void process_whiteout(const Path &parent, const char *stem = nullptr) {
+            process_file(parent, stem);
+        }
 
         /**
          * TODO: We treat unknown as a file for now. This strategy seem to work well

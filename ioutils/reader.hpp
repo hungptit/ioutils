@@ -56,7 +56,8 @@ namespace ioutils {
     template <typename Policy> struct MemoryMappedReader : public Policy {
         MemoryMappedReader() : Policy() {}
 
-        template <typename... Args> MemoryMappedReader(Args... args) : Policy(std::forward<Args>(args)...) {}
+        template <typename... Args>
+        MemoryMappedReader(Args... args) : Policy(std::forward<Args>(args)...) {}
 
         void operator()(const char *datafile) {
             // Cache the file name.

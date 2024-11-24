@@ -50,7 +50,9 @@ namespace ioutils {
         static constexpr int BUFFER_SIZE = 1 << 17;
         template <typename Params>
         LocateStreamPolicy(Params &&params)
-            : matcher(params.pattern, params.regex_mode), prefix(params.prefix), console(StreamWriter::STDOUT) {
+            : matcher(params.pattern, params.regex_mode),
+              prefix(params.prefix),
+              console(StreamWriter::STDOUT) {
             read_buffer = buffer;
         }
 
@@ -106,7 +108,8 @@ namespace ioutils {
     };
 
     struct PrintAllPolicy {
-        template <typename Params> PrintAllPolicy(Params &&args) : prefix(args.prefix), console(StreamWriter::STDOUT) {}
+        template <typename Params>
+        PrintAllPolicy(Params &&args) : prefix(args.prefix), console(StreamWriter::STDOUT) {}
         void process(const char *begin, const size_t len) { console.write(begin, len); }
         void set_filename(const char *) {}
 

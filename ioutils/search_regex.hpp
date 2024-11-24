@@ -103,7 +103,9 @@ namespace ioutils {
         void process_file(std::string && p) const {
             if (matcher(p.data(), p.size())) fmt::print("{}\n", p);
         }
-        void process_dir(const Path &p) const { matcher(p.path.data(), p.path.size()) fmt::print("{}\n", p); }
+        void process_dir(const Path &p) const {
+            matcher(p.path.data(), p.path.size()) fmt::print("{}\n", p);
+        }
 
         utils::RegexMatcher matcher;
     };

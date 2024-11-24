@@ -1,16 +1,14 @@
-# - Adds a compiler flag if it is supported by the compiler
+# * Adds a compiler flag if it is supported by the compiler
 #
 # This function checks that the supplied compiler flag is supported and then
 # adds it to the corresponding compiler flags
 #
-#  add_cxx_compiler_flag(<FLAG> [<VARIANT>])
+# add_cxx_compiler_flag(<FLAG> [<VARIANT>])
 #
-# - Example
+# * Example
 #
-# include(AddCXXCompilerFlag)
-# add_cxx_compiler_flag(-Wall)
-# add_cxx_compiler_flag(-no-strict-aliasing RELEASE)
-# Requires CMake 2.6+
+# include(AddCXXCompilerFlag) add_cxx_compiler_flag(-Wall)
+# add_cxx_compiler_flag(-no-strict-aliasing RELEASE) Requires CMake 2.6+
 
 if(__add_cxx_compiler_flag)
   return()
@@ -24,7 +22,9 @@ function(mangle_compiler_flag FLAG OUTPUT)
   string(REPLACE "+" "X" SANITIZED_FLAG ${SANITIZED_FLAG})
   string(REGEX REPLACE "[^A-Za-z_0-9]" "_" SANITIZED_FLAG ${SANITIZED_FLAG})
   string(REGEX REPLACE "_+" "_" SANITIZED_FLAG ${SANITIZED_FLAG})
-  set(${OUTPUT} "${SANITIZED_FLAG}" PARENT_SCOPE)
+  set(${OUTPUT}
+      "${SANITIZED_FLAG}"
+      PARENT_SCOPE)
 endfunction(mangle_compiler_flag)
 
 function(add_cxx_compiler_flag FLAG)
@@ -38,7 +38,9 @@ function(add_cxx_compiler_flag FLAG)
     if(ARGV1)
       string(TOUPPER "_${VARIANT}" VARIANT)
     endif()
-    set(CMAKE_CXX_FLAGS${VARIANT} "${CMAKE_CXX_FLAGS${VARIANT}} ${BENCHMARK_CXX_FLAGS${VARIANT}} ${FLAG}" PARENT_SCOPE)
+    set(CMAKE_CXX_FLAGS${VARIANT}
+        "${CMAKE_CXX_FLAGS${VARIANT}} ${BENCHMARK_CXX_FLAGS${VARIANT}} ${FLAG}"
+        PARENT_SCOPE)
   endif()
 endfunction()
 
@@ -53,13 +55,24 @@ function(add_required_cxx_compiler_flag FLAG)
     if(ARGV1)
       string(TOUPPER "_${VARIANT}" VARIANT)
     endif()
-    set(CMAKE_CXX_FLAGS${VARIANT} "${CMAKE_CXX_FLAGS${VARIANT}} ${FLAG}" PARENT_SCOPE)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}" PARENT_SCOPE)
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${FLAG}" PARENT_SCOPE)
-    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${FLAG}" PARENT_SCOPE)
-    set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} ${FLAG}" PARENT_SCOPE)
+    set(CMAKE_CXX_FLAGS${VARIANT}
+        "${CMAKE_CXX_FLAGS${VARIANT}} ${FLAG}"
+        PARENT_SCOPE)
+    set(CMAKE_EXE_LINKER_FLAGS
+        "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}"
+        PARENT_SCOPE)
+    set(CMAKE_SHARED_LINKER_FLAGS
+        "${CMAKE_SHARED_LINKER_FLAGS} ${FLAG}"
+        PARENT_SCOPE)
+    set(CMAKE_MODULE_LINKER_FLAGS
+        "${CMAKE_MODULE_LINKER_FLAGS} ${FLAG}"
+        PARENT_SCOPE)
+    set(CMAKE_REQUIRED_FLAGS
+        "${CMAKE_REQUIRED_FLAGS} ${FLAG}"
+        PARENT_SCOPE)
   else()
-    message(FATAL_ERROR "Required flag '${FLAG}' is not supported by the compiler")
+    message(
+      FATAL_ERROR "Required flag '${FLAG}' is not supported by the compiler")
   endif()
 endfunction()
 

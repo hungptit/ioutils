@@ -18,12 +18,23 @@ add_custom_command(
   VERBATIM)
 
 set(CMAKE_FILES
-    "${PROJECT_SOURCE_DIR}/CMakeLists.txt"
-    "${PROJECT_SOURCE_DIR}/benchmark/CMakeLists.txt"
-    "${PROJECT_SOURCE_DIR}/commands/CMakeLists.txt"
-    "${PROJECT_SOURCE_DIR}/ioutils/CMakeLists.txt"
-    "${PROJECT_SOURCE_DIR}/unittests/CMakeLists.txt"
-    "${PROJECT_SOURCE_DIR}/cmake/format_files.cmake")
+    ${PROJECT_SOURCE_DIR}/CMakeLists.txt
+    ${PROJECT_SOURCE_DIR}/benchmark/CMakeLists.txt
+    ${PROJECT_SOURCE_DIR}/commands/CMakeLists.txt
+    ${PROJECT_SOURCE_DIR}/ioutils/CMakeLists.txt
+    ${PROJECT_SOURCE_DIR}/unittests/CMakeLists.txt
+    ${PROJECT_SOURCE_DIR}/cmake/format_files.cmake
+    ${PROJECT_SOURCE_DIR}/cmake/AddCXXCompilerFlag.cmake
+    ${PROJECT_SOURCE_DIR}/cmake/CXXFeatureCheck.cmake
+    ${PROJECT_SOURCE_DIR}/cmake/clara.cmake
+    ${PROJECT_SOURCE_DIR}/cmake/cmake-scripts.cmake
+    ${PROJECT_SOURCE_DIR}/cmake/fmt.cmake
+    ${PROJECT_SOURCE_DIR}/cmake/format_files.cmake
+    ${PROJECT_SOURCE_DIR}/cmake/glaze.cmake
+    ${PROJECT_SOURCE_DIR}/cmake/hyperscan.cmake
+    ${PROJECT_SOURCE_DIR}/cmake/jemalloc.cmake
+    ${PROJECT_SOURCE_DIR}/cmake/shell-check.cmake
+    ${PROJECT_SOURCE_DIR}/cmake/utils.cmake)
 
 # Format CMake files
 find_program(CMAKE_FORMAT NAMES cmake-format)

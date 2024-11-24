@@ -1,6 +1,6 @@
 #include "ioutils/updatedb.hpp"
 #include "fmt/ranges.h"
-#include "ioutils/search.hpp"
+#include "ioutils/search_default.hpp"
 
 namespace ioutils {
 

@@ -27,9 +27,10 @@ namespace test {
     auto iostream_linestats(const std::string &afile) -> size_t {
         std::ifstream t(afile);
         size_t lines = 0;
-        std::for_each(std::istreambuf_iterator<char>(t), std::istreambuf_iterator<char>(), [&lines](auto const item) {
-            if (item == EOL) ++lines;
-        });
+        std::for_each(std::istreambuf_iterator<char>(t), std::istreambuf_iterator<char>(),
+                      [&lines](auto const item) {
+                          if (item == EOL) ++lines;
+                      });
         return lines;
     }
 

@@ -1,7 +1,5 @@
 #include "clara.hpp"
-#include "fmt/format.h"
-
-#include "ioutils/filesystem.hpp"
+#include "fmt/base.h"
 #include "ioutils/linestats.hpp"
 #include "ioutils/reader.hpp"
 #include <string>
@@ -56,15 +54,16 @@ namespace {
         bool max_line_length = false;
         bool min_line_length = false;
 
-        auto cli = clara::Help(help) | clara::Opt(byte_count, "")["-c"]["--bytes"]("Print the byte counts.") |
-                   clara::Opt(char_count, "")["-m"]["--chars"]("Print the char counts.") |
-                   clara::Opt(line_count, "")["-l"]["--lines"]("Print the line counts.") |
-                   clara::Opt(word_count, "")["-w"]["--words"]("Print the word counts.") |
-                   clara::Opt(max_line_length, "")["-L"]["--max-line-length"]("Print the maximum line width.") |
-                   clara::Opt(min_line_length, "")["-M"]["--min-line-length"]("Print the minimum line width.") |
-                   clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information") |
-                   clara::Opt(mmap)["--mmap"]("Read by mapping file into memory.") |
-                   clara::Arg(params.files, "files")("Input files or folders");
+        auto cli =
+            clara::Help(help) | clara::Opt(byte_count, "")["-c"]["--bytes"]("Print the byte counts.") |
+            clara::Opt(char_count, "")["-m"]["--chars"]("Print the char counts.") |
+            clara::Opt(line_count, "")["-l"]["--lines"]("Print the line counts.") |
+            clara::Opt(word_count, "")["-w"]["--words"]("Print the word counts.") |
+            clara::Opt(max_line_length, "")["-L"]["--max-line-length"]("Print the maximum line width.") |
+            clara::Opt(min_line_length, "")["-M"]["--min-line-length"]("Print the minimum line width.") |
+            clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information") |
+            clara::Opt(mmap)["--mmap"]("Read by mapping file into memory.") |
+            clara::Arg(params.files, "files")("Input files or folders");
 
         auto result = cli.parse(clara::Args(argc, argv));
         if (!result) {
@@ -82,7 +81,8 @@ namespace {
 
         // Update flags
         params.flags = verbose * VERBOSE | mmap * MMAP | byte_count * BYTE_COUNT | word_count * WORD_COUNT |
-                       line_count * LINE_COUNT | max_line_length * MAX_LINE_LENGTH | min_line_length * MIN_LINE_LENGTH;
+                       line_count * LINE_COUNT | max_line_length * MAX_LINE_LENGTH |
+                       min_line_length * MIN_LINE_LENGTH;
 
         // Display input arguments in JSON format if verbose flag is on
         if (params.verbose()) params.print();
@@ -101,14 +101,12 @@ namespace {
 } // namespace
 
 auto main(int argc, char *argv[]) -> int {
-    auto params = parse_input_arguments(argc, argv);
+    const auto params = parse_input_arguments(argc, argv);
     if (params.mmap()) {
-        using Reader = ioutils::MemoryMappedReader<ioutils::FileStats>;
-        wc<Reader>(params);
+        wc<ioutils::MemoryMappedReader<ioutils::FileStats>>(params);
     } else {
         constexpr int BUFFER_SIZE = 1 << 16;
-        using Reader = ioutils::FileReader<ioutils::FileStats, BUFFER_SIZE>;
-        wc<Reader>(params);
+        wc<ioutils::FileReader<ioutils::FileStats, BUFFER_SIZE>>(params);
     }
     return EXIT_SUCCESS;
 }

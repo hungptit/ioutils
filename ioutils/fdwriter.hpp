@@ -15,7 +15,8 @@ namespace ioutils {
         static constexpr int STDERR = STDERR_FILENO;
         static constexpr size_t BUFFER_SIZE = 1 << 17;
 
-        StreamWriter(const int fides = STDOUT_FILENO, const int len = BUFFER_SIZE) : fd(fides), buflen(len) {
+        StreamWriter(const int fides = STDOUT_FILENO, const int len = BUFFER_SIZE)
+            : fd(fides), buflen(len) {
             buffer.reserve(buflen);
         }
 

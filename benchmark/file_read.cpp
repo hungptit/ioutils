@@ -129,7 +129,8 @@ namespace {
             for (size_t blk = 0; blk < block_count; ++blk) {
                 long nbytes = ::read(fd, read_buffer, BUFFER_SIZE);
                 if (nbytes < 0) {
-                    const std::string msg = std::string("Cannot read from file \"") + std::string(datafile) + "\" ";
+                    const std::string msg =
+                        std::string("Cannot read from file \"") + std::string(datafile) + "\" ";
                     throw(std::runtime_error(msg));
                 };
 

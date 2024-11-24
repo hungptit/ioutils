@@ -1,5 +1,5 @@
 #include "ioutils/locate.hpp"
-#include "fmt/format.h"
+#include "fmt/base.h"
 #include "fmt/ranges.h"
 
 namespace ioutils {
