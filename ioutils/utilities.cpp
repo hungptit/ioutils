@@ -64,7 +64,7 @@ namespace ioutils {
             std::string results = relative_path ? tokens[0] : ("/" + tokens[0]);
             if (tokens.size() > 1) {
                 for (size_t idx = 1; idx < tokens.size(); ++idx) {
-                    results.push_back(SLASH);
+                    results.append(1, SLASH);
                     results.append(tokens[idx]);
                 }
             }

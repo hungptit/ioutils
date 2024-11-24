@@ -1,11 +1,11 @@
 #include <cassert>
 #include <cerrno>
-#include <fcntl.h>
-#include <fstream>
-#include <iostream>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <fcntl.h>
+#include <fstream>
+#include <iostream>
 #include <sys/mman.h>
 #include <sys/resource.h>
 #include <sys/time.h>
@@ -222,7 +222,9 @@ class WallClockTimer {
         gettimeofday(&t1, nullptr);
         t2 = t1;
     }
-    auto elapsed() -> unsigned long long { return ((t2.tv_sec - t1.tv_sec) * 1000ULL * 1000ULL) + ((t2.tv_usec - t1.tv_usec)); }
+    auto elapsed() -> unsigned long long {
+        return ((t2.tv_sec - t1.tv_sec) * 1000ULL * 1000ULL) + ((t2.tv_usec - t1.tv_usec));
+    }
     auto split() -> unsigned long long {
         gettimeofday(&t2, nullptr);
         return elapsed();

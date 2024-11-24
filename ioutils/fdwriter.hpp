@@ -51,11 +51,9 @@ namespace ioutils {
             }
         }
 
-        void put(const char ch) { buffer.push_back(ch); }
-
-        void eol() { buffer.push_back(EOL); }
-
-        void sep() { buffer.push_back(SEP); }
+        void put(const char ch) { buffer.append(1, ch); }
+        void eol() { buffer.append(1, EOL); }
+        void sep() { buffer.append(1, SEP); }
 
       private:
         static constexpr char EOL = '\n';
