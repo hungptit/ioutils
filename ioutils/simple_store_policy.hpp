@@ -15,14 +15,14 @@ namespace ioutils {
             : store_file(!params.ignore_file()),
               store_dir(!params.ignore_dir()),
               store_symlink(!params.ignore_symlink()) {}
-        const container_type &get_paths() const { return paths; }
+        [[nodiscard]] auto get_paths() const -> const container_type & { return paths; }
 
       protected:
         bool store_file = false;
         bool store_dir = false;
         bool store_symlink = false;
 
-        bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
+        auto is_valid_dir(const char *dname) const -> bool { return filesystem::is_valid_dir(dname); }
 
         void process_file(const Path &parent, const char *stem) {
             if (store_file) {

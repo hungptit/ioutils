@@ -13,7 +13,7 @@ namespace ioutils {
       public:
         RandomStringGenerator();
         RandomStringGenerator(unsigned seed);
-        std::string operator()(const size_t len);
+        auto operator()(const size_t len) -> std::string;
 
       private:
         std::mt19937 rgn;

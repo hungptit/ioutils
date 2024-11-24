@@ -3,18 +3,18 @@
 constexpr int number_of_samples = 10;
 constexpr int number_of_operations = 5;
 
-int test(const std::string &command, const std::string &regex) {
+auto test(const std::string &command, const std::string &regex) -> int {
     std::string buffer = command + regex + " > /tmp/output.log";
     return system(buffer.data());
 }
 
-int test_gnu_locate_regex(const std::string &command, const std::string &regex) {
+auto test_gnu_locate_regex(const std::string &command, const std::string &regex) -> int {
     const std::string dbfile = "locate.db";
     std::string buffer = command + " -d " + dbfile + " --regex " + regex + " > /tmp/locate.log";
     return system(buffer.data());
 }
 
-int test_locate_regex(const std::string &command, const std::string &regex) {
+auto test_locate_regex(const std::string &command, const std::string &regex) -> int {
     const std::string dbfile = ".database";
     std::string buffer = command + " -d " + dbfile + " " + regex + " > /tmp/fast-locate.log";
     return system(buffer.data());

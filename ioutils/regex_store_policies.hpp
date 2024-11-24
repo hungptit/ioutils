@@ -20,10 +20,10 @@ namespace ioutils {
             buffer.reserve(1023);
         }
 
-        const std::vector<std::string> &get_paths() const { return paths; }
+        [[nodiscard]] auto get_paths() const -> const std::vector<std::string> & { return paths; }
 
       protected:
-        bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
+        auto is_valid_dir(const char *dname) const -> bool { return filesystem::is_valid_dir(dname); }
 
         void process_file(const Path &parent, const char *stem) {
             if (!store_file) return;

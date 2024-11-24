@@ -27,7 +27,7 @@ set(TEST_EXECUTABLES
 foreach(target ${TEST_EXECUTABLES})
   add_executable(${target} ${target}.cpp)
   target_link_libraries(${target} PRIVATE ioutils test_ioutils ${LIB_HS}
-                                          ${LIB_HS_RUNTIME})
+                                          ${LIB_HS_RUNTIME} fmt::fmt)
   target_code_coverage(${target} AUTO ALL)
   target_include_directories(
     ${target} PRIVATE "${doctest_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}"

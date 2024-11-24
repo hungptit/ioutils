@@ -3,8 +3,8 @@
 #include "fdwriter.hpp"
 #include "filesystem.hpp"
 
-namespace ioutils {
-    namespace find {
+
+    namespace ioutils::find {
         // Reference: https://misc.flogisoft.com/bash/tip_colors_and_formatting
         static const std::string FIFO_COLOR = "\033[1;32m";    // Normal, Green
         static const std::string DIR_COLOR = "\033[1;91m";     // Bold, Light red
@@ -40,7 +40,7 @@ namespace ioutils {
             }
 
           protected:
-            bool is_valid_dir(const char *dname) const { return donot_ignore_git ? 1 : (strcmp(dname, ".git") != 0); }
+            auto is_valid_dir(const char *dname) const -> bool { return donot_ignore_git ? true : (strcmp(dname, ".git") != 0); }
 
             void process_file(const Path &parent, const char *stem) {
                 if (ignore_file) return;
@@ -228,7 +228,7 @@ namespace ioutils {
             }
 
           protected:
-            bool is_valid_dir(const char *dname) const { return donot_ignore_git ? 1 : (strcmp(dname, ".git") != 0); }
+            auto is_valid_dir(const char *dname) const -> bool { return donot_ignore_git ? true : (strcmp(dname, ".git") != 0); }
 
             void process_file(const Path &parent, const char *stem) {
                 if (ignore_file) return;
@@ -456,5 +456,5 @@ namespace ioutils {
             const char EOL = '\n';
             const char SEP = '/';
         };
-    } // namespace find
-} // namespace ioutils
+    } // namespace ioutils::find
+

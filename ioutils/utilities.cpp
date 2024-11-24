@@ -19,7 +19,7 @@ namespace ioutils {
          * Runtime: O(n)
          * Memory: O(n)
          */
-        std::string simplify_path(const std::string &path) {
+        auto simplify_path(const std::string &path) -> std::string {
             constexpr char SLASH = '/';
             const int N = static_cast<int>(path.size());
             if (path.empty()) return "";
@@ -40,11 +40,11 @@ namespace ioutils {
                 } else if (stem == "..") {
                     if (tokens.empty()) {
                         if (relative_path) {
-                            tokens.push_back("..");
+                            tokens.emplace_back("..");
                         }
                     } else {
                         if (tokens.back() == "..") {
-                            tokens.push_back("..");
+                            tokens.emplace_back("..");
                         } else {
                             tokens.pop_back();
                         }

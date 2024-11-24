@@ -2,7 +2,7 @@
 #include <cstddef>
 #include <cstring>
 #include <fcntl.h>
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <sys/errno.h>
 #include <sys/mman.h>

@@ -10,14 +10,14 @@ namespace ioutils {
       public:
         using path = std::filesystem::path;
         explicit TestData(const bool verbose = false);
-        const path &get_path();
+        auto get_path() -> const path &;
 
       private:
         ioutils::TemporaryDirectory temporary_dir;
 
         void create_file(const path &aFile, const bool verbose = false);
         void create_symlink(const path &p, const path &symlink, const bool verbose = false);
-        path create_dir(const path &rootFolder, const path &aPath);
+        auto create_dir(const path &rootFolder, const path &aPath) -> path;
 
         void init(const bool verbose);
     };

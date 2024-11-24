@@ -7,7 +7,7 @@ namespace ioutils {
         void process(const char *buffer, const size_t len) { data.emplace_back(std::string(buffer, len)); }
         void finalize() {}
         void set_filename(const char *) {}
-        Container get_data() { return std::move(data); }
+        auto get_data() -> Container { return std::move(data); }
 
       private:
         Container data;
@@ -16,7 +16,7 @@ namespace ioutils {
     template <> class AppendPolicy<std::string> {
       public:
         void process(const char *buffer, const size_t len, const size_t) { data.append(buffer, len); }
-        const std::string &get_data() { return data; }
+        auto get_data() -> const std::string & { return data; }
         void finalize() {}
         void set_filename(const char *) {}
         void clear() { data.clear(); }

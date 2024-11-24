@@ -11,11 +11,11 @@ namespace ioutils {
         TemporaryDirectory(TemporaryDirectory &&tmpDir) = default;
         ~TemporaryDirectory();
 
-        const std::filesystem::path &get_path();
+        auto get_path() -> const std::filesystem::path &;
 
       private:
         using path = std::filesystem::path;
-        std::string get_unique_string();
+        auto get_unique_string() -> std::string;
         ioutils::RandomStringGenerator gen;
         std::filesystem::path current_dir;
     };

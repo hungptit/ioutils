@@ -31,11 +31,11 @@ namespace ioutils {
         std::string pattern;                // A search pattern
         std::vector<std::string> databases; // A file information database
 
-        bool verbose() const { return (flags & VERBOSE) > 0; }
-        bool info() const { return (flags & locate::INFO) > 0; }
-        bool invert_match() const { return (flags & locate::INVERT_MATCH) > 0; }
-        bool exact_match() const { return (flags & locate::EXACT_MATCH) > 0; }
-        bool ignore_case() const { return (flags & locate::IGNORE_CASE) > 0; }
+        [[nodiscard]] auto verbose() const -> bool { return (flags & VERBOSE) > 0; }
+        [[nodiscard]] auto info() const -> bool { return (flags & locate::INFO) > 0; }
+        [[nodiscard]] auto invert_match() const -> bool { return (flags & locate::INVERT_MATCH) > 0; }
+        [[nodiscard]] auto exact_match() const -> bool { return (flags & locate::EXACT_MATCH) > 0; }
+        [[nodiscard]] auto ignore_case() const -> bool { return (flags & locate::IGNORE_CASE) > 0; }
 
         void print() const;
     };

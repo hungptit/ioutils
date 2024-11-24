@@ -2,10 +2,10 @@
 #include <cstdio>
 #include <string>
 
-namespace ioutils {
-    namespace experiments {
+
+    namespace ioutils::experiments {
         struct LineStatsBase {
-            LineStatsBase() : lines(0) {}
+            LineStatsBase()  {}
             void print() const { printf("Number of lines: %lu\n", lines); }
 
           protected:
@@ -37,6 +37,6 @@ namespace ioutils {
             }
             void finalize() const {}
         };
-    } // namespace experiments
+    } // namespace ioutils::experiments
 
-} // namespace ioutils
+

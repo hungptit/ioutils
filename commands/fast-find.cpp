@@ -20,7 +20,7 @@ namespace {
         fmt::print("\t\tfast-find ../src/ -e 'reader'\n");
     }
 
-    ioutils::SearchInputArguments parse_input_arguments(int argc, char *argv[]) {
+    auto parse_input_arguments(int argc, char *argv[]) -> ioutils::SearchInputArguments {
         ioutils::SearchInputArguments params;
         std::vector<std::string> paths;
         bool help = false;
@@ -108,7 +108,7 @@ namespace {
 
         // Need to more extensive path extension here using path_regex.
         if (paths.empty()) {
-            params.paths.push_back(".");
+            params.paths.emplace_back(".");
         } else {
             for (auto p : paths) {
                 params.paths.emplace_back(ioutils::path::simplify_path(p));
@@ -170,7 +170,7 @@ namespace {
     }
 } // namespace
 
-int main(int argc, char *argv[]) {
+auto main(int argc, char *argv[]) -> int {
     find(parse_input_arguments(argc, argv));
     return EXIT_SUCCESS;
 }

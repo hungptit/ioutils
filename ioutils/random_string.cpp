@@ -11,7 +11,7 @@ namespace ioutils {
 
     RandomStringGenerator::RandomStringGenerator(unsigned seed) : rgn(seed) {}
 
-    std::string RandomStringGenerator::operator()(const size_t len) {
+    auto RandomStringGenerator::operator()(const size_t len) -> std::string {
         std::string str(len, 0);
         for (size_t idx = 0; idx < len; ++idx) {
             str[idx] = valid_characters[rgn() % N];

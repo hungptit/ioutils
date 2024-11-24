@@ -11,7 +11,7 @@ namespace {
 
 } // namespace
 
-int main() {
+auto main() -> int {
     constexpr size_t BUFLEN = 16;
     using Reader = ioutils::StdinReader<Policy, BUFLEN>;
     Reader reader;

@@ -14,8 +14,8 @@
 #include "fdwriter.hpp"
 #include "filesystem.hpp"
 
-namespace ioutils {
-    namespace filesystem {
+
+    namespace ioutils::filesystem {
         // A class which has DFS and BFS file traversal algorithms.
         template <typename Policy> class DefaultSearch : public Policy {
           public:
@@ -50,7 +50,7 @@ namespace ioutils {
              * travese will use bfs algorithm.
              */
             void dfs(const std::string &p) {
-                next.emplace_back(Path{-1, p});
+                next.emplace_back(-1, p);
                 while (!next.empty()) {
                     auto parent = next.back();
                     next.pop_back();
@@ -63,7 +63,7 @@ namespace ioutils {
              */
             void bfs(const std::string &p) {
                 int current_level = 0;
-                current.emplace_back(Path{-1, p});
+                current.emplace_back(-1, p);
                 while (!current.empty()) {
                     next.clear();
                     for (auto const &current_path : current) {
@@ -99,7 +99,7 @@ namespace ioutils {
                     DIR *dirp = fdopendir(fd);
                     if (dirp != nullptr) {
                         struct dirent *info;
-                        while ((info = readdir(dirp)) != NULL) {
+                        while ((info = readdir(dirp)) != nullptr) {
                             switch (info->d_type) {
                             case DT_DIR: {
                                 // We have to exclude .. and .. folder from our search results.
@@ -116,7 +116,7 @@ namespace ioutils {
                                     }
                                     temporary_path.append(info->d_name);
                                     Policy::process_dir(temporary_path);
-                                    next.emplace_back(Path{-1, temporary_path});
+                                    next.emplace_back(-1, temporary_path);
                                 }
                                 break;
                             }
@@ -161,7 +161,7 @@ namespace ioutils {
                                     } else {
                                         auto umode = unknown_info.st_mode & S_IFMT;
                                         if (umode == S_IFDIR) {
-                                            next.emplace_back(Path{-1, temporary_path});
+                                            next.emplace_back(-1, temporary_path);
                                             Policy::process_dir(temporary_path);
                                         } else {
                                             Policy::process_unknown(dir, info->d_name);
@@ -214,5 +214,5 @@ namespace ioutils {
             std::string temporary_path;
             static constexpr char SEP = '/';
         };
-    } // namespace filesystem
-} // namespace ioutils
+    } // namespace ioutils::filesystem
+

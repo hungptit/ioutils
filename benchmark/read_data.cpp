@@ -13,7 +13,7 @@
 
 namespace test {
     constexpr char EOL = '\n';
-    template <typename Container> Container read_iostream(const std::string &afile) {
+    template <typename Container> auto read_iostream(const std::string &afile) -> Container {
         std::ifstream t(afile);
         Container str;
         t.seekg(0, std::ios::end);
@@ -24,7 +24,7 @@ namespace test {
         return str;
     }
 
-    size_t iostream_linestats(const std::string &afile) {
+    auto iostream_linestats(const std::string &afile) -> size_t {
         std::ifstream t(afile);
         size_t lines = 0;
         std::for_each(std::istreambuf_iterator<char>(t), std::istreambuf_iterator<char>(), [&lines](auto const item) {
@@ -33,7 +33,7 @@ namespace test {
         return lines;
     }
 
-    size_t memmap_linestats(const std::string &afile) {
+    auto memmap_linestats(const std::string &afile) -> size_t {
         boost::iostreams::mapped_file mmap(afile, boost::iostreams::mapped_file::readonly);
         auto begin = mmap.const_data();
         auto end = begin + mmap.size();

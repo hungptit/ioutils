@@ -81,7 +81,7 @@ namespace {
     }
 } // namespace
 
-int main(int argc, char *argv[]) {
+auto main(int argc, char *argv[]) -> int {
     auto params = parse_input_arguments(argc, argv);
     ioutils::updatedb(params);
     return EXIT_SUCCESS;

@@ -1,8 +1,8 @@
 cmake_policy(SET CMP0048 NEW)
 project(
   ioutils
-  VERSION "0.1.0"
-  DESCRIPTION "A blazing fast small file I/O library."
+  VERSION "1.0.0"
+  DESCRIPTION "A blazing fast replacement tools for find and locate commands."
   LANGUAGES CXX)
 
 cmake_minimum_required(VERSION 3.15)
@@ -49,13 +49,14 @@ if(USE_AVX2)
   add_cxx_compiler_flag(-DUSE_AVX2)
 endif()
 
-# Install required libraries
+# Get required libraries
 include(FetchContent)
 include(cmake/hyperscan.cmake)
 include(cmake/fmt.cmake)
 include(cmake/utils.cmake)
 include(cmake/cmake-scripts.cmake)
 include(cmake/clara.cmake)
+include(cmake/format_files.cmake)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/_deps/cmake_scripts-src/;")
 include(c++-standards)
@@ -63,7 +64,6 @@ include(code-coverage)
 include(sanitizers)
 include(tools)
 include(dependency-graph)
-include(cmake/format_files.cmake)
 
 # Exclude test files from the code coverage report.
 file(GLOB_RECURSE TEST_SRCS CONFIGURE_DEPENDS unittests/*_test.cpp)

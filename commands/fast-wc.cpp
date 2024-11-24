@@ -21,14 +21,14 @@ namespace {
     struct InputParams {
         int flags;
 
-        bool verbose() const { return (flags & VERBOSE) > 0; }
-        bool mmap() const { return (flags & MMAP) > 0; }
-        bool byte_count() const { return (flags & BYTE_COUNT) > 0; }
-        bool char_count() const { return (flags & CHAR_COUNT) > 0; }
-        bool line_count() const { return (flags & LINE_COUNT) > 0; }
-        bool word_count() const { return (flags & WORD_COUNT) > 0; }
-        bool max_line_length() const { return (flags & MAX_LINE_LENGTH) > 0; }
-        bool min_line_length() const { return (flags & MIN_LINE_LENGTH) > 0; }
+        [[nodiscard]] auto verbose() const -> bool { return (flags & VERBOSE) > 0; }
+        [[nodiscard]] auto mmap() const -> bool { return (flags & MMAP) > 0; }
+        [[nodiscard]] auto byte_count() const -> bool { return (flags & BYTE_COUNT) > 0; }
+        [[nodiscard]] auto char_count() const -> bool { return (flags & CHAR_COUNT) > 0; }
+        [[nodiscard]] auto line_count() const -> bool { return (flags & LINE_COUNT) > 0; }
+        [[nodiscard]] auto word_count() const -> bool { return (flags & WORD_COUNT) > 0; }
+        [[nodiscard]] auto max_line_length() const -> bool { return (flags & MAX_LINE_LENGTH) > 0; }
+        [[nodiscard]] auto min_line_length() const -> bool { return (flags & MIN_LINE_LENGTH) > 0; }
 
         std::vector<std::string> files;
 
@@ -44,10 +44,10 @@ namespace {
         }
     };
 
-    InputParams parse_input_arguments(int argc, char *argv[]) {
+    auto parse_input_arguments(int argc, char *argv[]) -> InputParams {
         InputParams params;
         bool help = false;
-        bool verbose = 0;
+        bool verbose = false;
         bool mmap = false;
         bool byte_count = true;
         bool char_count = false;
@@ -100,7 +100,7 @@ namespace {
 
 } // namespace
 
-int main(int argc, char *argv[]) {
+auto main(int argc, char *argv[]) -> int {
     auto params = parse_input_arguments(argc, argv);
     if (params.mmap()) {
         using Reader = ioutils::MemoryMappedReader<ioutils::FileStats>;

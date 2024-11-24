@@ -6,8 +6,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-namespace ioutils {
-    namespace search {
+
+    namespace ioutils::search {
         struct PathExpansion {
             void opperator(const std::string &pattern) {
                 // Find the root path
@@ -64,5 +64,5 @@ namespace ioutils {
             return params;
         }
 
-    } // namespace search
-} // namespace ioutils
+    } // namespace ioutils::search
+

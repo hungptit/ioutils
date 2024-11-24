@@ -24,7 +24,7 @@ namespace ioutils {
         void dfs(const std::vector<std::string> &p) {
             for (auto item : p) {
                 int fd = ::open(item.data(), O_RDONLY);
-                if (fd > -1) folders.emplace_back(Path{fd, item});
+                if (fd > -1) folders.emplace_back(fd, item);
             }
 
             // Search for files and folders using DFS traversal.
@@ -38,7 +38,7 @@ namespace ioutils {
         void bfs(const std::vector<std::string> &p) {
             for (auto item : p) {
                 int fd = ::open(item.data(), O_RDONLY);
-                if (fd > -1) folders.emplace_back(Path{fd, item});
+                if (fd > -1) folders.emplace_back(fd, item);
             }
 
             // Search for files and folders using DFS traversal.
@@ -61,7 +61,7 @@ namespace ioutils {
                 DIR *dirp = fdopendir(fd);
                 if (dirp != nullptr) {
                     struct dirent *info;
-                    while ((info = readdir(dirp)) != NULL) {
+                    while ((info = readdir(dirp)) != nullptr) {
                         switch (info->d_type) {
                         case DT_DIR:
                             if (Policy::is_valid_dir(info->d_name)) {
@@ -69,7 +69,7 @@ namespace ioutils {
                                 int current_dir_fd = ::open(p.data(), O_RDONLY);
                                 if (current_dir_fd >= 0) {
                                     Policy::process_dir(p);
-                                    folders.emplace_back(Path{current_dir_fd, std::move(p)});
+                                    folders.emplace_back(current_dir_fd, std::move(p));
                                 }
                             }
                             break;
@@ -106,5 +106,5 @@ namespace ioutils {
         void process_dir(const Path &p) const { matcher(p.path.data(), p.path.size()) fmt::print("{}\n", p); }
 
         utils::RegexMatcher matcher;
-    }
+    };
 } // namespace ioutils

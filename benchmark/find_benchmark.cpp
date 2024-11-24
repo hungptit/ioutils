@@ -14,22 +14,22 @@ const std::string fast_find("../commands/fast-find ");
 const std::string tmp_file = "/tmp/output.log";
 const std::string test_path(std::getenv("TEST_DIR"));
 
-int test(const std::string &command, const std::string &path) {
+auto test(const std::string &command, const std::string &path) -> int {
     std::string buffer = command + path + " &> " + tmp_file;
     return system(buffer.data());
 }
 
-int test_find_regex(const std::string &command, const std::string &regex, const std::string &path) {
+auto test_find_regex(const std::string &command, const std::string &regex, const std::string &path) -> int {
     std::string buffer = command + " " + path + " |& grep -E " + regex + " > " + tmp_file;
     return system(buffer.data());
 }
 
-int test_fast_find_regex(const std::string &command, const std::string &regex, const std::string &path) {
+auto test_fast_find_regex(const std::string &command, const std::string &regex, const std::string &path) -> int {
     std::string buffer = command + " -e " + regex + " " + path + " &> " + tmp_file;
     return system(buffer.data());
 }
 
-int test_fd_regex(const std::string &command, const std::string &regex, const std::string &path) {
+auto test_fd_regex(const std::string &command, const std::string &regex, const std::string &path) -> int {
     std::string buffer = command + " " + regex + " " + path + " &> " + tmp_file;
     return system(buffer.data());
 }

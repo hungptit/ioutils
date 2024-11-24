@@ -72,7 +72,7 @@ namespace {
             if (default_db == nullptr) {
                 params.databases.emplace_back(".database");
             } else {
-                params.databases.push_back(default_db);
+                params.databases.emplace_back(default_db);
             }
         } else {
             for (auto item : dbs) {
@@ -108,7 +108,7 @@ namespace {
 
 } // namespace
 
-int main(int argc, char *argv[]) {
+auto main(int argc, char *argv[]) -> int {
     auto params = parse_input_arguments(argc, argv);
     ioutils::locate_files(params);
     return EXIT_SUCCESS;

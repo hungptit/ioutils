@@ -1,7 +1,7 @@
 #pragma once
 
 #include "fmt/format.h"
-#include <stdio.h>
+#include <cstdio>
 #include <unistd.h>
 
 namespace ioutils {

@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 namespace ioutils {
-    ssize_t write(const char *buffer, const size_t buflen, const char *outfile) {
+    auto write(const char *buffer, const size_t buflen, const char *outfile) -> ssize_t {
         int fd = ::open(outfile, O_CREAT | O_WRONLY, S_IRWXU);
         if (fd < 0) {
             fprintf(stderr, "Cannot open file '%s' to write.", outfile);

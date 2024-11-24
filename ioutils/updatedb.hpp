@@ -11,7 +11,7 @@ namespace ioutils {
     struct UpdateDBStreamPolicy {
         template <typename Params> UpdateDBStreamPolicy(Params &&params) : writer(params.database.data()) {}
 
-        bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
+        auto is_valid_dir(const char *dname) const -> bool { return filesystem::is_valid_dir(dname); }
         void process_file(const Path &parent, const char *stem = nullptr) {
             writer.write(parent.path.data(), parent.path.size());
             if (stem != nullptr) {
@@ -67,15 +67,15 @@ namespace ioutils {
     struct UpdateDBInputArguments {
         int flags = 0;
         int maxdepth = std::numeric_limits<int>::max();
-        bool stats = 0;
-        bool verbose = 0;
+        bool stats = false;
+        bool verbose = false;
         std::string database;           // The output fast-locate database path
         std::vector<std::string> paths; // Saearch paths
 
-        bool dfs() { return true; } // Use dfs traversal to explore folders.
-        bool donot_ignore_git() const { return true; }
-        bool follow_symlink() const { return false; }
-        bool ignore_error() const { return false; }
+        auto dfs() -> bool { return true; } // Use dfs traversal to explore folders.
+        [[nodiscard]] auto donot_ignore_git() const -> bool { return true; }
+        [[nodiscard]] auto follow_symlink() const -> bool { return false; }
+        [[nodiscard]] auto ignore_error() const -> bool { return false; }
 
         void print() const;
     };

@@ -17,16 +17,16 @@ namespace ioutils {
             FAILED = -1,
         };
 
-        bool is_valid_dir(const char *p);
-        bool is_valid_dir_slow(const char *dname);
+        auto is_valid_dir(const char *p) -> bool;
+        auto is_valid_dir_slow(const char *dname) -> bool;
 
-        bool is_regular_file(const mode_t st_mode);
-        bool is_directory(const mode_t st_mode);
-        bool is_symlink(const mode_t st_mode);
-        const char *get_extension(const char *p, const size_t len);
+        auto is_regular_file(const mode_t st_mode) -> bool;
+        auto is_directory(const mode_t st_mode) -> bool;
+        auto is_symlink(const mode_t st_mode) -> bool;
+        auto get_extension(const char *p, const size_t len) -> const char *;
 
         // Check that if a path is exist.
-        bool exists(const char *p);
+        auto exists(const char *p) -> bool;
     } // namespace filesystem
 
     // A struct which stores all information about a file.
