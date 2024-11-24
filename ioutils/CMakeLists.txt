@@ -1,24 +1,3 @@
-# Build hyperscan using the C++17 fork.
-FetchContent_Declare(
-  hyperscan
-  GIT_REPOSITORY git@github.com:hungptit/hyperscan.git
-  GIT_TAG develop)
-set(BUILD_SHARED_LIBS OFF)
-FetchContent_MakeAvailable(hyperscan)
-add_library(hs::hs ALIAS hs)
-add_library(hs::hs_runtime ALIAS hs_runtime)
-
-if(MSVC)
-  add_compile_options(/W4 /WX)
-else()
-  add_cxx_compiler_flag(-Wall)
-  add_cxx_compiler_flag(-Wextra)
-  add_cxx_compiler_flag(-Werror)
-  add_cxx_compiler_flag(-pedantic)
-endif()
-
-add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
-
 set(SRC_FILES
     random_string.cpp
     temporary_dir.cpp
@@ -29,7 +8,7 @@ set(SRC_FILES
     locate.cpp
     updatedb.cpp)
 add_library(ioutils STATIC ${SRC_FILES})
-target_link_libraries(ioutils PUBLIC hs::hs hs::hs_runtime)
+target_link_libraries(ioutils PUBLIC hs::hs hs::hs_runtime fmt::fmt)
 target_include_directories(
   ioutils PUBLIC "${PROJECT_SOURCE_DIR}" "${fmt_SOURCE_DIR}/include/"
                  "${utils_SOURCE_DIR}/src" "${hyperscan_SOURCE_DIR}/src")

@@ -29,13 +29,13 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(AddCXXCompilerFlag)
 include(CXXFeatureCheck)
 
-# Use C++ 17
-set(CMAKE_CXX_STANDARD 17)
+# Use C++20
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(ENABLE_ALL_WARNINGS ON)
-set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(POSITION_INDEPENDENT_CODE OFF)
 
 # Customized options
@@ -51,33 +51,11 @@ endif()
 
 # Install required libraries
 include(FetchContent)
-
-# fmt
-FetchContent_Declare(
-  fmt
-  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-  GIT_TAG 7.1.3)
-set(BUILD_TESTING OFF)
-set(FMT_DOC OFF)
-set(FMT_TEST OFF)
-FetchContent_Populate(fmt)
-
-# utils
-FetchContent_Declare(
-  utils
-  GIT_REPOSITORY https://github.com/hungptit/utils.git
-  GIT_TAG master
-  GIT_SHALLOW TRUE)
-FetchContent_Populate(utils)
-
-# Add cmake-scripts
-FetchContent_Declare(
-  cmake_scripts
-  GIT_REPOSITORY https://github.com/StableCoder/cmake-scripts.git
-  GIT_TAG main
-  GIT_SHALLOW TRUE)
-
-FetchContent_Populate(cmake_scripts)
+include(cmake/hyperscan.cmake)
+include(cmake/fmt.cmake)
+include(cmake/utils.cmake)
+include(cmake/cmake-scripts.cmake)
+include(cmake/clara.cmake)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/_deps/cmake_scripts-src/;")
 include(c++-standards)
@@ -85,8 +63,7 @@ include(code-coverage)
 include(sanitizers)
 include(tools)
 include(dependency-graph)
-
-set(CMAKE_VERBOSE_MAKEFILE ON)
+include(cmake/format_files.cmake)
 
 # Exclude test files from the code coverage report.
 file(GLOB_RECURSE TEST_SRCS CONFIGURE_DEPENDS unittests/*_test.cpp)
@@ -112,5 +89,3 @@ install(TARGETS fast-updatedb DESTINATION bin)
 install(TARGETS fast-wc DESTINATION bin)
 
 enable_testing()
-
-include(cmake/format_files.cmake)

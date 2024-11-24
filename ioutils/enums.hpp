@@ -1,7 +1,8 @@
 #pragma once
 
+#include <cstdint>
 namespace ioutils {
-    enum FileSearchFlags : uint32_t {
+    enum FileSearchFlags : std::uint32_t {
         VERBOSE = 1,                // Display verbose information.
         INVERT_MATCH = 1 << 1,      // Display paths that do not match given pattern.
         COLOR = 1 << 2,             // Display color text.

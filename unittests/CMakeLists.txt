@@ -6,18 +6,6 @@ FetchContent_Declare(
 set(DOCTEST_WITH_TESTS OFF)
 FetchContent_Populate(doctest)
 
-if(MSVC)
-  add_compile_options(/W4 /WX)
-else()
-  add_cxx_compiler_flag(-Wall)
-  add_cxx_compiler_flag(-Wextra)
-  add_cxx_compiler_flag(-Werror)
-  add_cxx_compiler_flag(-pedantic)
-  add_cxx_compiler_flag(-static)
-endif()
-
-add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
-
 # Add test library
 set(SRC_FILES "test_data.cpp")
 add_library(test_ioutils STATIC ${SRC_FILES})

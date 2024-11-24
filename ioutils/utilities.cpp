@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <tuple>
 #include <unistd.h>
+#include <vector>
 
 namespace ioutils {
     void copyright() { fmt::print("\n{}\n", "Report bugs or enhancement requests to hungptit@gmail.com"); }

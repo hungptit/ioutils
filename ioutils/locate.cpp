@@ -1,6 +1,6 @@
-#include "fmt/format.h"
-
 #include "ioutils/locate.hpp"
+#include "fmt/format.h"
+#include "fmt/ranges.h"
 
 namespace ioutils {
     void LocateInputArguments::print() const {

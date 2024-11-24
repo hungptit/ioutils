@@ -6,9 +6,7 @@
 #include "ioutils/search.hpp"
 #include "ioutils/search_params.hpp"
 #include "regex_matchers.hpp"
-
 #include "version.hpp"
-
 #include <dirent.h>
 
 namespace {
