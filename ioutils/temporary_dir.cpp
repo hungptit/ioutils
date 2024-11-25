@@ -5,7 +5,7 @@
 namespace ioutils {
     using path = std::filesystem::path;
 
-    std::string TemporaryDirectory::get_unique_string() {
+    auto TemporaryDirectory::get_unique_string() -> std::string {
         constexpr int len = 16;
         return gen(len);
     }
@@ -26,5 +26,5 @@ namespace ioutils {
         }
     }
 
-    const std::filesystem::path &TemporaryDirectory::get_path() { return current_dir; }
+    auto TemporaryDirectory::get_path() -> const std::filesystem::path & { return current_dir; }
 } // namespace ioutils

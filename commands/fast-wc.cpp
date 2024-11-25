@@ -1,7 +1,5 @@
 #include "clara.hpp"
-#include "fmt/format.h"
-
-#include "ioutils/filesystem.hpp"
+#include "fmt/base.h"
 #include "ioutils/linestats.hpp"
 #include "ioutils/reader.hpp"
 #include <string>
@@ -21,14 +19,14 @@ namespace {
     struct InputParams {
         int flags;
 
-        bool verbose() const { return (flags & VERBOSE) > 0; }
-        bool mmap() const { return (flags & MMAP) > 0; }
-        bool byte_count() const { return (flags & BYTE_COUNT) > 0; }
-        bool char_count() const { return (flags & CHAR_COUNT) > 0; }
-        bool line_count() const { return (flags & LINE_COUNT) > 0; }
-        bool word_count() const { return (flags & WORD_COUNT) > 0; }
-        bool max_line_length() const { return (flags & MAX_LINE_LENGTH) > 0; }
-        bool min_line_length() const { return (flags & MIN_LINE_LENGTH) > 0; }
+        [[nodiscard]] auto verbose() const -> bool { return (flags & VERBOSE) > 0; }
+        [[nodiscard]] auto mmap() const -> bool { return (flags & MMAP) > 0; }
+        [[nodiscard]] auto byte_count() const -> bool { return (flags & BYTE_COUNT) > 0; }
+        [[nodiscard]] auto char_count() const -> bool { return (flags & CHAR_COUNT) > 0; }
+        [[nodiscard]] auto line_count() const -> bool { return (flags & LINE_COUNT) > 0; }
+        [[nodiscard]] auto word_count() const -> bool { return (flags & WORD_COUNT) > 0; }
+        [[nodiscard]] auto max_line_length() const -> bool { return (flags & MAX_LINE_LENGTH) > 0; }
+        [[nodiscard]] auto min_line_length() const -> bool { return (flags & MIN_LINE_LENGTH) > 0; }
 
         std::vector<std::string> files;
 
@@ -44,10 +42,10 @@ namespace {
         }
     };
 
-    InputParams parse_input_arguments(int argc, char *argv[]) {
+    auto parse_input_arguments(int argc, char *argv[]) -> InputParams {
         InputParams params;
         bool help = false;
-        bool verbose = 0;
+        bool verbose = false;
         bool mmap = false;
         bool byte_count = true;
         bool char_count = false;
@@ -56,15 +54,16 @@ namespace {
         bool max_line_length = false;
         bool min_line_length = false;
 
-        auto cli = clara::Help(help) | clara::Opt(byte_count, "")["-c"]["--bytes"]("Print the byte counts.") |
-                   clara::Opt(char_count, "")["-m"]["--chars"]("Print the char counts.") |
-                   clara::Opt(line_count, "")["-l"]["--lines"]("Print the line counts.") |
-                   clara::Opt(word_count, "")["-w"]["--words"]("Print the word counts.") |
-                   clara::Opt(max_line_length, "")["-L"]["--max-line-length"]("Print the maximum line width.") |
-                   clara::Opt(min_line_length, "")["-M"]["--min-line-length"]("Print the minimum line width.") |
-                   clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information") |
-                   clara::Opt(mmap)["--mmap"]("Read by mapping file into memory.") |
-                   clara::Arg(params.files, "files")("Input files or folders");
+        auto cli =
+            clara::Help(help) | clara::Opt(byte_count, "")["-c"]["--bytes"]("Print the byte counts.") |
+            clara::Opt(char_count, "")["-m"]["--chars"]("Print the char counts.") |
+            clara::Opt(line_count, "")["-l"]["--lines"]("Print the line counts.") |
+            clara::Opt(word_count, "")["-w"]["--words"]("Print the word counts.") |
+            clara::Opt(max_line_length, "")["-L"]["--max-line-length"]("Print the maximum line width.") |
+            clara::Opt(min_line_length, "")["-M"]["--min-line-length"]("Print the minimum line width.") |
+            clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information") |
+            clara::Opt(mmap)["--mmap"]("Read by mapping file into memory.") |
+            clara::Arg(params.files, "files")("Input files or folders");
 
         auto result = cli.parse(clara::Args(argc, argv));
         if (!result) {
@@ -82,7 +81,8 @@ namespace {
 
         // Update flags
         params.flags = verbose * VERBOSE | mmap * MMAP | byte_count * BYTE_COUNT | word_count * WORD_COUNT |
-                       line_count * LINE_COUNT | max_line_length * MAX_LINE_LENGTH | min_line_length * MIN_LINE_LENGTH;
+                       line_count * LINE_COUNT | max_line_length * MAX_LINE_LENGTH |
+                       min_line_length * MIN_LINE_LENGTH;
 
         // Display input arguments in JSON format if verbose flag is on
         if (params.verbose()) params.print();
@@ -100,15 +100,13 @@ namespace {
 
 } // namespace
 
-int main(int argc, char *argv[]) {
-    auto params = parse_input_arguments(argc, argv);
+auto main(int argc, char *argv[]) -> int {
+    const auto params = parse_input_arguments(argc, argv);
     if (params.mmap()) {
-        using Reader = ioutils::MemoryMappedReader<ioutils::FileStats>;
-        wc<Reader>(params);
+        wc<ioutils::MemoryMappedReader<ioutils::FileStats>>(params);
     } else {
         constexpr int BUFFER_SIZE = 1 << 16;
-        using Reader = ioutils::FileReader<ioutils::FileStats, BUFFER_SIZE>;
-        wc<Reader>(params);
+        wc<ioutils::FileReader<ioutils::FileStats, BUFFER_SIZE>>(params);
     }
     return EXIT_SUCCESS;
 }

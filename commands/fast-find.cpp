@@ -1,14 +1,11 @@
 #include "clara.hpp"
 
-#include "fmt/format.h"
+#include "fmt/base.h"
 #include "ioutils/enums.hpp"
 #include "ioutils/find.hpp"
 #include "ioutils/search.hpp"
-#include "ioutils/search_params.hpp"
 #include "regex_matchers.hpp"
-
 #include "version.hpp"
-
 #include <dirent.h>
 
 namespace {
@@ -22,7 +19,7 @@ namespace {
         fmt::print("\t\tfast-find ../src/ -e 'reader'\n");
     }
 
-    ioutils::SearchInputArguments parse_input_arguments(int argc, char *argv[]) {
+    auto parse_input_arguments(int argc, char *argv[]) -> ioutils::SearchInputArguments {
         ioutils::SearchInputArguments params;
         std::vector<std::string> paths;
         bool help = false;
@@ -55,7 +52,8 @@ namespace {
             clara::Help(help) | clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information.") |
             clara::Help(version) | clara::Opt(version)["--version"]("Display fast-find version.") |
             clara::Opt(ignore_case)["-i"]["--ignore-case"]("Ignore case") |
-            clara::Opt(inverse_match)["--invert-match"]("Display paths that do not match a given path regex.") |
+            clara::Opt(inverse_match)["--invert-match"](
+                "Display paths that do not match a given path regex.") |
             clara::Opt(ignore_file)["--ignore-file"]("Ignore files.") |
             clara::Opt(ignore_dir)["--ignore-dir"]("Ignore folders.") |
             clara::Opt(ignore_symlink)["--ignore-symlink"]("Ignore symlink.") |
@@ -80,8 +78,10 @@ namespace {
 
             // Unsupported options
             clara::Opt(follow_link, "follow-link")["--follow-link"]("Follow symbolic links. (WIP)") |
-            clara::Opt(begin_time, "newer")["--newer"]("Display paths that are newer than a given timestamp. (WIP)") |
-            clara::Opt(end_time, "older")["--older"]("Display paths that are older than a given timestamp. (WIP)") |
+            clara::Opt(begin_time,
+                       "newer")["--newer"]("Display paths that are newer than a given timestamp. (WIP)") |
+            clara::Opt(end_time,
+                       "older")["--older"]("Display paths that are older than a given timestamp. (WIP)") |
 
             // Required arguments.
             clara::Arg(paths, "paths")("Search paths");
@@ -110,7 +110,7 @@ namespace {
 
         // Need to more extensive path extension here using path_regex.
         if (paths.empty()) {
-            params.paths.push_back(".");
+            params.paths.emplace_back(".");
         } else {
             for (auto p : paths) {
                 params.paths.emplace_back(ioutils::path::simplify_path(p));
@@ -130,11 +130,14 @@ namespace {
 
         // Parse the display type
         params.flags =
-            ignore_file * ioutils::FileSearchFlags::IGNORE_FILE | ignore_dir * ioutils::FileSearchFlags::IGNORE_DIR |
-            ignore_symlink * ioutils::FileSearchFlags::IGNORE_SYMLINK | color * ioutils::FileSearchFlags::COLOR |
-            verbose * ioutils::FileSearchFlags::VERBOSE | inverse_match * ioutils::FileSearchFlags::INVERT_MATCH |
-            dfs * ioutils::FileSearchFlags::DFS | ignore_fifo * ioutils::FileSearchFlags::IGNORE_FIFO |
-            ignore_blk * ioutils::FileSearchFlags::IGNORE_BLK | ignore_chr * ioutils::FileSearchFlags::IGNORE_CHR |
+            ignore_file * ioutils::FileSearchFlags::IGNORE_FILE |
+            ignore_dir * ioutils::FileSearchFlags::IGNORE_DIR |
+            ignore_symlink * ioutils::FileSearchFlags::IGNORE_SYMLINK |
+            color * ioutils::FileSearchFlags::COLOR | verbose * ioutils::FileSearchFlags::VERBOSE |
+            inverse_match * ioutils::FileSearchFlags::INVERT_MATCH | dfs * ioutils::FileSearchFlags::DFS |
+            ignore_fifo * ioutils::FileSearchFlags::IGNORE_FIFO |
+            ignore_blk * ioutils::FileSearchFlags::IGNORE_BLK |
+            ignore_chr * ioutils::FileSearchFlags::IGNORE_CHR |
             ignore_socket * ioutils::FileSearchFlags::IGNORE_SOCKET |
             ignore_whiteout * ioutils::FileSearchFlags::IGNORE_WHITEOUT |
             ignore_unknown * ioutils::FileSearchFlags::IGNORE_UNKNOWN |
@@ -172,7 +175,7 @@ namespace {
     }
 } // namespace
 
-int main(int argc, char *argv[]) {
+auto main(int argc, char *argv[]) -> int {
     find(parse_input_arguments(argc, argv));
     return EXIT_SUCCESS;
 }

@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <tuple>
 #include <unistd.h>
+#include <vector>
 
 namespace ioutils {
     void copyright() { fmt::print("\n{}\n", "Report bugs or enhancement requests to hungptit@gmail.com"); }
@@ -18,7 +19,7 @@ namespace ioutils {
          * Runtime: O(n)
          * Memory: O(n)
          */
-        std::string simplify_path(const std::string &path) {
+        auto simplify_path(const std::string &path) -> std::string {
             constexpr char SLASH = '/';
             const int N = static_cast<int>(path.size());
             if (path.empty()) return "";
@@ -39,11 +40,11 @@ namespace ioutils {
                 } else if (stem == "..") {
                     if (tokens.empty()) {
                         if (relative_path) {
-                            tokens.push_back("..");
+                            tokens.emplace_back("..");
                         }
                     } else {
                         if (tokens.back() == "..") {
-                            tokens.push_back("..");
+                            tokens.emplace_back("..");
                         } else {
                             tokens.pop_back();
                         }
@@ -63,7 +64,7 @@ namespace ioutils {
             std::string results = relative_path ? tokens[0] : ("/" + tokens[0]);
             if (tokens.size() > 1) {
                 for (size_t idx = 1; idx < tokens.size(); ++idx) {
-                    results.push_back(SLASH);
+                    results.append(1, SLASH);
                     results.append(tokens[idx]);
                 }
             }

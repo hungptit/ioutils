@@ -8,7 +8,7 @@ namespace ioutils {
     using path = std::filesystem::path;
 
     TestData::TestData(const bool verbose) : temporary_dir() { init(verbose); }
-    const path &TestData::get_path() { return temporary_dir.get_path(); }
+    auto TestData::get_path() -> const path & { return temporary_dir.get_path(); }
 
     void TestData::create_file(const path &aFile, const bool verbose) {
         std::ofstream outfile(aFile.string());
@@ -28,7 +28,7 @@ namespace ioutils {
         }
     }
 
-    path TestData::create_dir(const path &rootFolder, const path &aPath) {
+    auto TestData::create_dir(const path &rootFolder, const path &aPath) -> path {
         auto fullPath = rootFolder / aPath;
         std::filesystem::create_directories(fullPath);
         return fullPath;

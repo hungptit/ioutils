@@ -12,7 +12,7 @@ namespace ioutils {
          * Runtime: O(n)
          * Memory: O(n)
          */
-        std::string simplify_path(const std::string &path);
+        auto simplify_path(const std::string &path) -> std::string;
 
     } // namespace path
 

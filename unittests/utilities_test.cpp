@@ -18,8 +18,12 @@ TEST_CASE("Simplify paths") {
     SUBCASE("Case 7") { CHECK(ioutils::path::simplify_path("//..") == "/"); }
     SUBCASE("Case 8") { CHECK(ioutils::path::simplify_path("//../home") == "/home"); }
     SUBCASE("Case 9") { CHECK(ioutils::path::simplify_path("//home/boo/../goo//..//.//.///..") == "/"); }
-    SUBCASE("Case 10") { CHECK(ioutils::path::simplify_path("/..//home/boo/../goo////.//.///..") == "/home"); }
-    SUBCASE("Case 11") { CHECK(ioutils::path::simplify_path("/..//home/../boo/../goo//..//.//.///..") == "/"); }
+    SUBCASE("Case 10") {
+        CHECK(ioutils::path::simplify_path("/..//home/boo/../goo////.//.///..") == "/home");
+    }
+    SUBCASE("Case 11") {
+        CHECK(ioutils::path::simplify_path("/..//home/../boo/../goo//..//.//.///..") == "/");
+    }
     SUBCASE("Case 11") { CHECK(ioutils::path::simplify_path("/a//b////c/d//././/..") == "/a/b/c"); }
     SUBCASE("Case 12") { CHECK(ioutils::path::simplify_path("/..//a//b////c/d//././/..") == "/a/b/c"); }
     SUBCASE("Case 12") { CHECK(ioutils::path::simplify_path("../src////") == "../src"); }

@@ -6,18 +6,6 @@ FetchContent_Declare(
 set(DOCTEST_WITH_TESTS OFF)
 FetchContent_Populate(doctest)
 
-if(MSVC)
-  add_compile_options(/W4 /WX)
-else()
-  add_cxx_compiler_flag(-Wall)
-  add_cxx_compiler_flag(-Wextra)
-  add_cxx_compiler_flag(-Werror)
-  add_cxx_compiler_flag(-pedantic)
-  add_cxx_compiler_flag(-static)
-endif()
-
-add_cxx_compiler_flag(-DFMT_HEADER_ONLY)
-
 # Add test library
 set(SRC_FILES "test_data.cpp")
 add_library(test_ioutils STATIC ${SRC_FILES})
@@ -39,7 +27,7 @@ set(TEST_EXECUTABLES
 foreach(target ${TEST_EXECUTABLES})
   add_executable(${target} ${target}.cpp)
   target_link_libraries(${target} PRIVATE ioutils test_ioutils ${LIB_HS}
-                                          ${LIB_HS_RUNTIME})
+                                          ${LIB_HS_RUNTIME} fmt::fmt)
   target_code_coverage(${target} AUTO ALL)
   target_include_directories(
     ${target} PRIVATE "${doctest_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}"

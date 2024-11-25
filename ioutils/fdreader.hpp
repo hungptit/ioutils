@@ -1,8 +1,8 @@
 #pragma once
 #include <cstddef>
+#include <cstdio>
 #include <cstring>
 #include <fcntl.h>
-#include <stdio.h>
 #include <string>
 #include <sys/errno.h>
 #include <sys/mman.h>

@@ -15,7 +15,8 @@ namespace ioutils {
         static constexpr int STDERR = STDERR_FILENO;
         static constexpr size_t BUFFER_SIZE = 1 << 17;
 
-        StreamWriter(const int fides = STDOUT_FILENO, const int len = BUFFER_SIZE) : fd(fides), buflen(len) {
+        StreamWriter(const int fides = STDOUT_FILENO, const int len = BUFFER_SIZE)
+            : fd(fides), buflen(len) {
             buffer.reserve(buflen);
         }
 
@@ -51,11 +52,9 @@ namespace ioutils {
             }
         }
 
-        void put(const char ch) { buffer.push_back(ch); }
-
-        void eol() { buffer.push_back(EOL); }
-
-        void sep() { buffer.push_back(SEP); }
+        void put(const char ch) { buffer.append(1, ch); }
+        void eol() { buffer.append(1, EOL); }
+        void sep() { buffer.append(1, SEP); }
 
       private:
         static constexpr char EOL = '\n';

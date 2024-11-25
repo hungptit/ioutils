@@ -28,7 +28,7 @@
 namespace {
     constexpr char EOL('\n');
     // Read file using memory mapped approach.
-    size_t read_memmap(const char *afile) {
+    auto read_memmap(const char *afile) -> size_t {
         boost::iostreams::mapped_file mmap(afile, boost::iostreams::mapped_file::readonly);
         auto begin = mmap.const_data();
         auto end = begin + mmap.size();
@@ -40,7 +40,7 @@ namespace {
     }
 
     // Low level memmap
-    size_t read_mmap(const char *afile) {
+    auto read_mmap(const char *afile) -> size_t {
         size_t counter = 0;
         int fd = open(afile, O_RDONLY);
 
@@ -107,8 +107,8 @@ namespace {
     template <int BUFFER_SIZE = READ_BUFFER_SIZE> struct FileReader {
         char process_buffer[BUFFER_SIZE];
 
-        size_t operator()(const char *datafile) { return read(datafile); }
-        size_t read(const char *datafile) {
+        auto operator()(const char *datafile) -> size_t { return read(datafile); }
+        auto read(const char *datafile) -> size_t {
             char read_buffer[BUFFER_SIZE];
             int fd = ::open(datafile, O_RDONLY | O_NOCTTY);
 
@@ -129,7 +129,8 @@ namespace {
             for (size_t blk = 0; blk < block_count; ++blk) {
                 long nbytes = ::read(fd, read_buffer, BUFFER_SIZE);
                 if (nbytes < 0) {
-                    const std::string msg = std::string("Cannot read from file \"") + std::string(datafile) + "\" ";
+                    const std::string msg =
+                        std::string("Cannot read from file \"") + std::string(datafile) + "\" ";
                     throw(std::runtime_error(msg));
                 };
 
@@ -143,7 +144,7 @@ namespace {
             return counter;
         }
 
-        size_t process(const char *buffer, long nbytes) {
+        auto process(const char *buffer, long nbytes) -> size_t {
             size_t counter = 0;
             const char *end = buffer + nbytes;
             const char *ptr = buffer;
@@ -203,7 +204,7 @@ const std::string fname("3200.txt");
 //     linestats(fname.c_str());
 // }
 
-int main(const int argc, char *argv[]) {
+auto main(const int argc, char *argv[]) -> int {
     if (argc < 3) {
         std::cout << "Need to provide an option and a file name.\n";
     }

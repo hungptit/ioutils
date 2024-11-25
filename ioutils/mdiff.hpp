@@ -9,7 +9,7 @@ namespace ioutils {
         struct Policy {
           public:
             using container_type = std::vector<ioutils::Stats>;
-            const container_type &get_data() const { return data; }
+            [[nodiscard]] auto get_data() const -> const container_type & { return data; }
 
             void print() const {
                 for (auto const &item : data) {
@@ -18,7 +18,7 @@ namespace ioutils {
             }
 
           protected:
-            bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
+            auto is_valid_dir(const char *dname) const -> bool { return filesystem::is_valid_dir(dname); }
             void process_file(const Path &parent, const char *stem) {
                 ioutils::Stats info;
                 info.path = parent.path + "/" + stem;

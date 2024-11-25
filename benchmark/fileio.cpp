@@ -1,11 +1,11 @@
 #include <cassert>
-#include <errno.h>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <fcntl.h>
 #include <fstream>
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/mman.h>
 #include <sys/resource.h>
 #include <sys/time.h>
@@ -19,7 +19,7 @@ using namespace std;
 // write N * 512 integers
 void fillFile(int N, char *name) {
     FILE *fd = ::fopen(name, "wb");
-    if (fd == NULL) {
+    if (fd == nullptr) {
         cerr << "problem" << endl;
         return;
     }
@@ -53,7 +53,7 @@ void fillFile(int N, char *name) {
     ::fclose(fd);
 }
 
-int doSomeComputation(int *numbers, size_t size) {
+auto doSomeComputation(int *numbers, size_t size) -> int {
     int answer = 0;
     // totally arbitrary
     for (size_t k = 0; k < size; k += 2) {
@@ -65,10 +65,10 @@ int doSomeComputation(int *numbers, size_t size) {
     return answer;
 }
 
-int testfread(char *name, int N) {
+auto testfread(char *name, int N) -> int {
     int answer = 0;
     FILE *fd = ::fopen(name, "rb");
-    if (fd == NULL) {
+    if (fd == nullptr) {
         cerr << "problem" << endl;
         return -1;
     }
@@ -90,7 +90,7 @@ int testfread(char *name, int N) {
     return answer;
 }
 
-int testwithCpp(char *name, int N) {
+auto testwithCpp(char *name, int N) -> int {
     int answer = 0;
     ifstream in(name, ios::binary);
     vector<int> numbers(512);
@@ -105,11 +105,11 @@ int testwithCpp(char *name, int N) {
     return answer;
 }
 
-int testfreadwithsetbuffer(char *name, int N) {
+auto testfreadwithsetbuffer(char *name, int N) -> int {
     int answer = 0;
     FILE *fd = ::fopen(name, "rb");
-    setvbuf(fd, NULL, _IOFBF, 1024 * 4); // large buffer
-    if (fd == NULL) {
+    setvbuf(fd, nullptr, _IOFBF, 1024 * 4); // large buffer
+    if (fd == nullptr) {
         cerr << "problem" << endl;
         return -1;
     }
@@ -131,11 +131,11 @@ int testfreadwithsetbuffer(char *name, int N) {
     return answer;
 }
 
-int testfreadwithlargebuffer(char *name, int N) {
+auto testfreadwithlargebuffer(char *name, int N) -> int {
     int answer = 0;
     FILE *fd = ::fopen(name, "rb");
-    setvbuf(fd, NULL, _IOFBF, 1024 * 1024 * 32); // large buffer
-    if (fd == NULL) {
+    setvbuf(fd, nullptr, _IOFBF, 1024 * 1024 * 32); // large buffer
+    if (fd == nullptr) {
         cerr << "problem" << endl;
         return -1;
     }
@@ -157,17 +157,17 @@ int testfreadwithlargebuffer(char *name, int N) {
     return answer;
 }
 
-int testwmmap(char *name, int N, bool advise, bool shared) {
+auto testwmmap(char *name, int N, bool advise, bool shared) -> int {
     int answer = 0;
     int fd = ::open(name, O_RDONLY);
     size_t length = N * (512 + 1) * 4;
     // for Linux:
 #ifdef __linux__
-    int *addr = reinterpret_cast<int *>(
-        mmap(NULL, length, PROT_READ, MAP_FILE | (shared ? MAP_SHARED : MAP_PRIVATE) | MAP_POPULATE, fd, 0));
+    int *addr = reinterpret_cast<int *>(mmap(
+        nullptr, length, PROT_READ, MAP_FILE | (shared ? MAP_SHARED : MAP_PRIVATE) | MAP_POPULATE, fd, 0));
 #else
-    int *addr =
-        reinterpret_cast<int *>(mmap(NULL, length, PROT_READ, MAP_FILE | (shared ? MAP_SHARED : MAP_PRIVATE), fd, 0));
+    int *addr = reinterpret_cast<int *>(
+        mmap(NULL, length, PROT_READ, MAP_FILE | (shared ? MAP_SHARED : MAP_PRIVATE), fd, 0));
 #endif
     int *initaddr = addr;
     if (addr == MAP_FAILED) {
@@ -175,7 +175,8 @@ int testwmmap(char *name, int N, bool advise, bool shared) {
         return -1;
     }
     if (advise)
-        if (madvise(addr, length, MADV_SEQUENTIAL | MADV_WILLNEED) != 0) cerr << " Couldn't set hints" << endl;
+        if (madvise(addr, length, MADV_SEQUENTIAL | MADV_WILLNEED) != 0)
+            cerr << " Couldn't set hints" << endl;
     close(fd);
     for (int t = 0; t < N; ++t) {
         int size = *addr++;
@@ -186,7 +187,7 @@ int testwmmap(char *name, int N, bool advise, bool shared) {
     return answer;
 }
 
-int testread(char *name, int N) {
+auto testread(char *name, int N) -> int {
     int answer = 0;
     int fd = ::open(name, O_RDONLY);
     if (fd < 0) {
@@ -215,16 +216,18 @@ class WallClockTimer {
   public:
     struct timeval t1, t2;
     WallClockTimer() : t1(), t2() {
-        gettimeofday(&t1, 0);
+        gettimeofday(&t1, nullptr);
         t2 = t1;
     }
     void reset() {
-        gettimeofday(&t1, 0);
+        gettimeofday(&t1, nullptr);
         t2 = t1;
     }
-    unsigned long long elapsed() { return ((t2.tv_sec - t1.tv_sec) * 1000ULL * 1000ULL) + ((t2.tv_usec - t1.tv_usec)); }
-    unsigned long long split() {
-        gettimeofday(&t2, 0);
+    auto elapsed() -> unsigned long long {
+        return ((t2.tv_sec - t1.tv_sec) * 1000ULL * 1000ULL) + ((t2.tv_usec - t1.tv_usec));
+    }
+    auto split() -> unsigned long long {
+        gettimeofday(&t2, nullptr);
         return elapsed();
     }
 };
@@ -245,36 +248,36 @@ class CPUTimer {
         t2 = t1;
     }
     // proxy for userelapsed
-    unsigned long long elapsed() {
+    auto elapsed() -> unsigned long long {
         return totalelapsed(); // userelapsed();
     }
 
-    unsigned long long totalelapsed() { return userelapsed() + systemelapsed(); }
+    auto totalelapsed() -> unsigned long long { return userelapsed() + systemelapsed(); }
     // returns the *user* CPU time in micro seconds (mu s)
-    unsigned long long userelapsed() {
+    auto userelapsed() -> unsigned long long {
         return ((t2.ru_utime.tv_sec - t1.ru_utime.tv_sec) * 1000ULL * 1000ULL) +
                ((t2.ru_utime.tv_usec - t1.ru_utime.tv_usec));
     }
 
     // returns the *system* CPU time in micro seconds (mu s)
-    unsigned long long systemelapsed() {
+    auto systemelapsed() -> unsigned long long {
         return ((t2.ru_stime.tv_sec - t1.ru_stime.tv_sec) * 1000ULL * 1000ULL) +
                ((t2.ru_stime.tv_usec - t1.ru_stime.tv_usec));
     }
 
-    unsigned long long split() {
+    auto split() -> unsigned long long {
         getrusage(RUSAGE_SELF, &t2);
         return elapsed();
     }
 };
 
-int main() {
+auto main() -> int {
     const int N = 16384 * 32;
     int tot = 0;
     CPUTimer cput;
     WallClockTimer wct;
     for (int T = 0; T < 30; ++T) {
-        char *name = tmpnam(NULL); // unsafe but for these purposes, ok
+        char *name = tmpnam(nullptr); // unsafe but for these purposes, ok
         fillFile(N, name);
 
         cout << endl;
@@ -291,19 +294,22 @@ int main() {
         cput.reset();
         wct.reset();
         for (int x = 0; x < 10; ++x) tot += testfreadwithsetbuffer(name, N);
-        cout << "fread w sbuffer\t\t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split() << endl;
+        cout << "fread w sbuffer\t\t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split()
+             << endl;
 
         // fread with large buffer
         cput.reset();
         wct.reset();
         for (int x = 0; x < 10; ++x) tot += testfreadwithlargebuffer(name, N);
-        cout << "fread w lbuffer\t\t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split() << endl;
+        cout << "fread w lbuffer\t\t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split()
+             << endl;
 
         // read
         cput.reset();
         wct.reset();
         for (int x = 0; x < 10; ++x) tot += testread(name, N);
-        cout << "read2 \t\t\t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split() << endl;
+        cout << "read2 \t\t\t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split()
+             << endl;
 
         // mmap
         cput.reset();
@@ -315,19 +321,22 @@ int main() {
         cput.reset();
         wct.reset();
         for (int x = 0; x < 10; ++x) tot += testwmmap(name, N, true, false);
-        cout << "fancy mmap \t\t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split() << endl;
+        cout << "fancy mmap \t\t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split()
+             << endl;
 
         // mmap
         cput.reset();
         wct.reset();
         for (int x = 0; x < 10; ++x) tot += testwmmap(name, N, false, true);
-        cout << "mmap (shared) \t\t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split() << endl;
+        cout << "mmap (shared) \t\t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split()
+             << endl;
 
         // fancy mmap
         cput.reset();
         wct.reset();
         for (int x = 0; x < 10; ++x) tot += testwmmap(name, N, true, true);
-        cout << "fancy mmap (shared) \t" << 512 * N * 1.0 / cput.split() << " " << 512 * N * 1.0 / wct.split() << endl;
+        cout << "fancy mmap (shared) \t" << 512 * N * 1.0 / cput.split() << " "
+             << 512 * N * 1.0 / wct.split() << endl;
 
         // C++
         cput.reset();
