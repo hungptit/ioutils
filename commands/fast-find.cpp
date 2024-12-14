@@ -46,7 +46,8 @@ namespace {
         bool ignore_error = false;
 
         bool version = false;
-        std::string begin_time, end_time;
+        std::string begin_time;
+        std::string end_time;
 
         auto cli =
             clara::Help(help) | clara::Opt(verbose)["-v"]["--verbose"]("Display verbose information.") |
@@ -112,7 +113,7 @@ namespace {
         if (paths.empty()) {
             params.paths.emplace_back(".");
         } else {
-            for (auto p : paths) {
+            for (const auto &p : paths) {
                 params.paths.emplace_back(ioutils::path::simplify_path(p));
             }
         }
@@ -130,19 +131,21 @@ namespace {
 
         // Parse the display type
         params.flags =
-            ignore_file * ioutils::FileSearchFlags::IGNORE_FILE |
-            ignore_dir * ioutils::FileSearchFlags::IGNORE_DIR |
-            ignore_symlink * ioutils::FileSearchFlags::IGNORE_SYMLINK |
-            color * ioutils::FileSearchFlags::COLOR | verbose * ioutils::FileSearchFlags::VERBOSE |
-            inverse_match * ioutils::FileSearchFlags::INVERT_MATCH | dfs * ioutils::FileSearchFlags::DFS |
-            ignore_fifo * ioutils::FileSearchFlags::IGNORE_FIFO |
-            ignore_blk * ioutils::FileSearchFlags::IGNORE_BLK |
-            ignore_chr * ioutils::FileSearchFlags::IGNORE_CHR |
-            ignore_socket * ioutils::FileSearchFlags::IGNORE_SOCKET |
-            ignore_whiteout * ioutils::FileSearchFlags::IGNORE_WHITEOUT |
-            ignore_unknown * ioutils::FileSearchFlags::IGNORE_UNKNOWN |
-            donot_ignore_git * ioutils::FileSearchFlags::DONOT_IGNORE_GIT |
-            ignore_error * ioutils::FileSearchFlags::IGNORE_ERROR;
+            static_cast<std::uint32_t>(ignore_file) * ioutils::FileSearchFlags::IGNORE_FILE |
+            static_cast<std::uint32_t>(ignore_dir) * ioutils::FileSearchFlags::IGNORE_DIR |
+            static_cast<std::uint32_t>(ignore_symlink) * ioutils::FileSearchFlags::IGNORE_SYMLINK |
+            static_cast<std::uint32_t>(color) * ioutils::FileSearchFlags::COLOR |
+            static_cast<std::uint32_t>(verbose) * ioutils::FileSearchFlags::VERBOSE |
+            static_cast<std::uint32_t>(inverse_match) * ioutils::FileSearchFlags::INVERT_MATCH |
+            static_cast<std::uint32_t>(dfs) * ioutils::FileSearchFlags::DFS |
+            static_cast<std::uint32_t>(ignore_fifo) * ioutils::FileSearchFlags::IGNORE_FIFO |
+            static_cast<std::uint32_t>(ignore_blk) * ioutils::FileSearchFlags::IGNORE_BLK |
+            static_cast<std::uint32_t>(ignore_chr) * ioutils::FileSearchFlags::IGNORE_CHR |
+            static_cast<std::uint32_t>(ignore_socket) * ioutils::FileSearchFlags::IGNORE_SOCKET |
+            static_cast<std::uint32_t>(ignore_whiteout) * ioutils::FileSearchFlags::IGNORE_WHITEOUT |
+            static_cast<std::uint32_t>(ignore_unknown) * ioutils::FileSearchFlags::IGNORE_UNKNOWN |
+            static_cast<std::uint32_t>(donot_ignore_git) * ioutils::FileSearchFlags::DONOT_IGNORE_GIT |
+            static_cast<std::uint32_t>(ignore_error) * ioutils::FileSearchFlags::IGNORE_ERROR;
 
         // Display input arguments in JSON format if verbose flag is on
         if (params.verbose()) {

@@ -80,12 +80,17 @@ namespace {
         }
 
         // Update flags
-        params.flags = verbose * VERBOSE | mmap * MMAP | byte_count * BYTE_COUNT | word_count * WORD_COUNT |
-                       line_count * LINE_COUNT | max_line_length * MAX_LINE_LENGTH |
-                       min_line_length * MIN_LINE_LENGTH;
+        params.flags = static_cast<int>(verbose) * VERBOSE | static_cast<int>(mmap) * MMAP |
+                       static_cast<int>(byte_count) * BYTE_COUNT |
+                       static_cast<int>(word_count) * WORD_COUNT |
+                       static_cast<int>(line_count) * LINE_COUNT |
+                       static_cast<int>(max_line_length) * MAX_LINE_LENGTH |
+                       static_cast<int>(min_line_length) * MIN_LINE_LENGTH;
 
         // Display input arguments in JSON format if verbose flag is on
-        if (params.verbose()) params.print();
+        if (params.verbose()) {
+            params.print();
+        }
 
         return params;
     }

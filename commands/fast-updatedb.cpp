@@ -63,7 +63,7 @@ namespace {
 
         // Cleanup extra back slash characters.
         std::set<std::string> search_paths;
-        for (auto p : paths) {
+        for (const auto &p : paths) {
             search_paths.emplace(ioutils::path::simplify_path(p));
         }
         params.paths.insert(params.paths.begin(), search_paths.cbegin(), search_paths.cend());
