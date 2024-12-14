@@ -38,7 +38,9 @@ namespace ioutils {
         }
 
         void write(const char *begin, const size_t len) {
-            if ((buffer.size() + len) > BUFFER_SIZE) flush();
+            if ((buffer.size() + len) > BUFFER_SIZE) {
+                flush();
+            }
             buffer.append(begin, len);
         }
 
@@ -63,9 +65,9 @@ namespace ioutils {
         int buflen;
         std::string buffer;
 
-        void handle_error() {
+        static void handle_error() {
             int errcode = errno;
-            if (errcode) {
+            if (errcode != 0) {
                 std::string errmsg(strerror(errcode));
                 long nbytes = ::write(STDERR, errmsg.data(), errmsg.size());
                 ignore(nbytes);

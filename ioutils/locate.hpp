@@ -61,13 +61,15 @@ namespace ioutils {
             const char *end = begin + len;
             const char *ptr = buffer;
 #ifdef USE_AVX2
-            while ((ptr = utils::avx2::memchr(ptr, EOL, end - ptr))) {
+            while ((ptr = utils::avx2::memchr(ptr, EOL, end - ptr)) != nullptr) {
 #else
             while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
 #endif
                 process_line(start, ptr - start + 1);
                 start = ++ptr;
-                if (ptr == end) break;
+                if (ptr == end) {
+                    break;
+                }
             }
 
             if (len < BUFFER_SIZE) {
@@ -104,18 +106,18 @@ namespace ioutils {
 
         // Note: Override this function to make FileReader happy. We do not care about
         // the database name in fast-locate.
-        void set_filename(const char *) {}
+        void set_filename(const char * /*unused*/) {}
     };
 
     struct PrintAllPolicy {
         template <typename Params>
         PrintAllPolicy(Params &&args) : prefix(args.prefix), console(StreamWriter::STDOUT) {}
         void process(const char *begin, const size_t len) { console.write(begin, len); }
-        void set_filename(const char *) {}
+        void set_filename(const char * /*unused*/) {}
 
         static constexpr int BUFFER_SIZE = 1 << 17;
         char read_buffer[BUFFER_SIZE];
-        std::string prefix = "";
+        std::string prefix;
         StreamWriter console;
     };
 

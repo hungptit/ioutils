@@ -25,7 +25,9 @@ namespace ioutils {
                     break;
                 };
                 Policy::process(Policy::read_buffer, nbytes);
-                if (nbytes < Policy::BUFFER_SIZE) break;
+                if (nbytes < Policy::BUFFER_SIZE) {
+                    break;
+                }
             }
         }
 

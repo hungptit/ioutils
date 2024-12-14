@@ -15,8 +15,8 @@ namespace ioutils {
         int flags = 0;
         int regex_mode = get_default_regex_mode();
         int maxdepth = std::numeric_limits<int>::max();
-        std::string path_regex = {};
-        std::vector<std::string> paths = {};
+        std::string path_regex;
+        std::vector<std::string> paths;
 
         [[nodiscard]] auto verbose() const -> bool { return (flags & FileSearchFlags::VERBOSE) > 0; }
         [[nodiscard]] auto invert_match() const -> bool {

@@ -22,18 +22,26 @@ namespace ioutils {
         auto simplify_path(const std::string &path) -> std::string {
             constexpr char SLASH = '/';
             const int N = static_cast<int>(path.size());
-            if (path.empty()) return "";
+            if (path.empty()) {
+                return "";
+            }
             std::vector<std::string> tokens;
             int begin = 0;
             int end = N - 1;
             bool relative_path = path[0] != SLASH;
 
-            while (end >= 0 && path[end] == SLASH) --end;
-            while (begin < end && (path[begin] == SLASH)) ++begin;
+            while (end >= 0 && path[end] == SLASH) {
+                --end;
+            }
+            while (begin < end && (path[begin] == SLASH)) {
+                ++begin;
+            }
 
             auto ptr = begin;
             while (begin <= end) {
-                while (ptr <= end && path[ptr] != SLASH) ++ptr;
+                while (ptr <= end && path[ptr] != SLASH) {
+                    ++ptr;
+                }
                 auto stem = path.substr(begin, ptr - begin);
                 if (stem == ".") {
                     // Ignore the current stem
@@ -91,16 +99,17 @@ namespace ioutils {
         **/
         auto decompose(const char *begin, const char *end) {
             constexpr char FWD_SLASH = '/';
-            std::string current_path, pattern;
+            std::string current_path;
+            std::string pattern;
             const char *ptr = begin;
             const char *pos = begin;
 
             // Search '/' from left to right
             struct stat info;
-            while ((ptr = (const char *)memchr(ptr, FWD_SLASH, end - ptr))) {
+            while ((ptr = (const char *)memchr(ptr, FWD_SLASH, end - ptr)) != nullptr) {
                 current_path.append(pos, ptr - pos);
                 int errcode = stat(current_path.data(), &info);
-                if (errcode) {
+                if (errcode != 0) {
                     current_path.resize(pos - begin);
                     break; // Exit the loop if the current path is invalid.
                 }

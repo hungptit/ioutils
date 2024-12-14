@@ -54,23 +54,23 @@ namespace ioutils {
             }
         }
 
-        void process_fifo(const Path &, const char *) {}
-        void process_fifo(const Path &) {}
+        void process_fifo(const Path & /*unused*/, const char * /*unused*/) {}
+        void process_fifo(const Path & /*unused*/) {}
 
-        void process_chr(const Path &, const char *) {}
-        void process_chr(const Path &) {}
+        void process_chr(const Path & /*unused*/, const char * /*unused*/) {}
+        void process_chr(const Path & /*unused*/) {}
 
-        void process_blk(const Path &, const char *) {}
-        void process_blk(const Path &) {}
+        void process_blk(const Path & /*unused*/, const char * /*unused*/) {}
+        void process_blk(const Path & /*unused*/) {}
 
-        void process_socket(const Path &, const char *) {}
-        void process_socket(const Path &) {}
+        void process_socket(const Path & /*unused*/, const char * /*unused*/) {}
+        void process_socket(const Path & /*unused*/) {}
 
-        void process_whiteout(const Path &, const char *) {}
-        void process_whiteout(const Path &) {}
+        void process_whiteout(const Path & /*unused*/, const char * /*unused*/) {}
+        void process_whiteout(const Path & /*unused*/) {}
 
-        void process_unknown(const Path &, const char *) {}
-        void process_unknown(const Path &) {}
+        void process_unknown(const Path & /*unused*/, const char * /*unused*/) {}
+        void process_unknown(const Path & /*unused*/) {}
 
         container_type paths;
     };

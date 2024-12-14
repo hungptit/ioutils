@@ -32,7 +32,8 @@ namespace ioutils {
             fstat(fd, &buf);
 
             // Read data into a read buffer
-            const size_t block_count = (buf.st_size / BUFFER_SIZE) + (buf.st_size % BUFFER_SIZE != 0);
+            const size_t block_count =
+                (buf.st_size / BUFFER_SIZE) + static_cast<size_t>(buf.st_size % BUFFER_SIZE != 0);
             for (size_t blk = 0; blk < block_count; ++blk) {
                 long nbytes = ::read(fd, read_buffer, BUFFER_SIZE);
                 if (nbytes < 0) {
@@ -86,7 +87,7 @@ namespace ioutils {
             // Create mapped memory
             const int flags = MAP_PRIVATE;
             // const int flags = MAP_PRIVATE | MAP_POPULATE;
-            char *begin = static_cast<char *>(mmap(nullptr, length, PROT_READ, flags, fd, 0u));
+            char *begin = static_cast<char *>(mmap(nullptr, length, PROT_READ, flags, fd, 0U));
 
             if (begin == MAP_FAILED) {
                 fprintf(stderr, "Cannot map '%s'\n", datafile);

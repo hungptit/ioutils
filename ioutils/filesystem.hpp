@@ -20,10 +20,10 @@ namespace ioutils {
         auto is_valid_dir(const char *p) -> bool;
         auto is_valid_dir_slow(const char *dname) -> bool;
 
-        auto is_regular_file(const mode_t st_mode) -> bool;
-        auto is_directory(const mode_t st_mode) -> bool;
-        auto is_symlink(const mode_t st_mode) -> bool;
-        auto get_extension(const char *p, const size_t len) -> const char *;
+        auto is_regular_file(mode_t st_mode) -> bool;
+        auto is_directory(mode_t st_mode) -> bool;
+        auto is_symlink(mode_t st_mode) -> bool;
+        auto get_extension(const char *p, size_t len) -> const char *;
 
         // Check that if a path is exist.
         auto exists(const char *p) -> bool;
