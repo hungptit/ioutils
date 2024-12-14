@@ -21,8 +21,7 @@ namespace ioutils::filesystem {
         template <typename T>
         DefaultSearch(T &&params)
             : Policy(std::forward<T>(params)),
-              current(),
-              next(),
+
               use_dfs(params.dfs()),
               follow_link(params.follow_symlink()),
               donot_ignore_git(params.donot_ignore_git()),
@@ -80,15 +79,17 @@ namespace ioutils::filesystem {
             struct stat props;
             int fd = ::open(dir.path.data(), O_RDONLY);
             if (fd < 0) {
-                if (!ignore_error)
+                if (!ignore_error) {
                     fprintf(stderr, "fast-find: Cannot open '%s': %s.\n", dir.path.data(), strerror(errno));
+                }
                 return;
             }
 
             int retval = fstat(fd, &props);
             if (retval < 0) {
-                if (!ignore_error)
+                if (!ignore_error) {
                     fprintf(stderr, "fast-find: '%s': %s.\n", dir.path.data(), strerror(errno));
+                }
                 ::close(fd);
                 return;
             }

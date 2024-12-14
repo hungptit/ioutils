@@ -18,13 +18,15 @@ namespace ioutils {
             }
 
           protected:
-            auto is_valid_dir(const char *dname) const -> bool { return filesystem::is_valid_dir(dname); }
+            static auto is_valid_dir(const char *dname) -> bool { return filesystem::is_valid_dir(dname); }
             void process_file(const Path &parent, const char *stem) {
                 ioutils::Stats info;
                 info.path = parent.path + "/" + stem;
 
                 // Skip if we cannot get information of a given file
-                if (stat(info.path.data(), &statbuf)) return;
+                if (stat(info.path.data(), &statbuf) != 0) {
+                    return;
+                }
 
                 // Update information
                 info.st_mode = statbuf.st_mode;
@@ -42,7 +44,9 @@ namespace ioutils {
                 info.path = parent.path;
 
                 // Skip if we cannot get information of a given file
-                if (stat(info.path.data(), &statbuf)) return;
+                if (stat(info.path.data(), &statbuf) != 0) {
+                    return;
+                }
 
                 // Update information
                 info.st_mode = statbuf.st_mode;
@@ -57,7 +61,7 @@ namespace ioutils {
 
             void process_symlink(const Path &parent, const char *stem) { process_file(parent, stem); }
 
-            void process_dir(const std::string) const {}
+            void process_dir(const std::string & /*unused*/) const {}
 
             container_type data;
             struct stat statbuf;

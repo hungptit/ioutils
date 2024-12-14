@@ -10,12 +10,12 @@ namespace ioutils {
         return gen(len);
     }
 
-    TemporaryDirectory::TemporaryDirectory() : gen() {
+    TemporaryDirectory::TemporaryDirectory() {
         current_dir = std::filesystem::temp_directory_path() / path(get_unique_string());
         create_directories(current_dir);
     }
 
-    TemporaryDirectory::TemporaryDirectory(const std::string &parentDir) : gen() {
+    TemporaryDirectory::TemporaryDirectory(const std::string &parentDir) {
         current_dir = std::filesystem::path(parentDir) / std::filesystem::path(get_unique_string());
         std::filesystem::create_directories(current_dir);
     }

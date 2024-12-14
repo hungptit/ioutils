@@ -44,11 +44,15 @@ namespace ioutils::find {
         }
 
         void process_file(const Path &parent, const char *stem) {
-            if (ignore_file) return;
+            if (ignore_file) {
+                return;
+            }
             if (color) {
                 writer.write(FILE_COLOR.data(), FILE_COLOR.size());
             }
-            if (parent.path != "/") writer.write(parent.path.data(), parent.path.size());
+            if (parent.path != "/") {
+                writer.write(parent.path.data(), parent.path.size());
+            }
             writer.sep();
             writer.write(stem, strlen(stem));
             writer.eol();
@@ -56,7 +60,9 @@ namespace ioutils::find {
         }
 
         void process_file(const Path &parent) {
-            if (ignore_file) return;
+            if (ignore_file) {
+                return;
+            }
             if (color) {
                 writer.write(FILE_COLOR.data(), FILE_COLOR.size());
             }
@@ -66,11 +72,15 @@ namespace ioutils::find {
         }
 
         void process_symlink(const Path &parent, const char *stem = nullptr) {
-            if (ignore_symlink) return;
+            if (ignore_symlink) {
+                return;
+            }
             if (color) {
                 writer.write(SYMLINK_COLOR.data(), SYMLINK_COLOR.size());
             }
-            if (parent.path != "/") writer.write(parent.path.data(), parent.path.size());
+            if (parent.path != "/") {
+                writer.write(parent.path.data(), parent.path.size());
+            }
             if (stem != nullptr) {
                 writer.sep();
                 writer.write(stem, strlen(stem));
@@ -83,7 +93,9 @@ namespace ioutils::find {
         // Note: The interface of this method is different because we cannot reuse
         // caller's Path object.
         void process_dir(const std::string &parent) {
-            if (ignore_dir) return;
+            if (ignore_dir) {
+                return;
+            }
             if (color) {
                 writer.write(DIR_COLOR.data(), DIR_COLOR.size());
             }
@@ -95,7 +107,9 @@ namespace ioutils::find {
 
         // Process named pipes
         void process_fifo(const Path &parent, const char *stem = nullptr) {
-            if (ignore_fifo) return;
+            if (ignore_fifo) {
+                return;
+            }
             if (color) {
                 writer.write(FIFO_COLOR.data(), FIFO_COLOR.size());
             }
@@ -106,7 +120,9 @@ namespace ioutils::find {
 
         // Process character special
         void process_chr(const Path &parent, const char *stem = nullptr) {
-            if (ignore_chr) return;
+            if (ignore_chr) {
+                return;
+            }
             if (color) {
                 writer.write(CHR_COLOR.data(), CHR_COLOR.size());
             }
@@ -117,7 +133,9 @@ namespace ioutils::find {
 
         // Process block special
         void process_blk(const Path &parent, const char *stem = nullptr) {
-            if (ignore_blk) return;
+            if (ignore_blk) {
+                return;
+            }
             if (color) {
                 writer.write(BLK_COLOR.data(), BLK_COLOR.size());
             }
@@ -128,7 +146,9 @@ namespace ioutils::find {
 
         // Process sockets
         void process_socket(const Path &parent, const char *stem = nullptr) {
-            if (ignore_socket) return;
+            if (ignore_socket) {
+                return;
+            }
             if (color) {
                 writer.write(SOCK_COLOR.data(), SOCK_COLOR.size());
             }
@@ -138,7 +158,9 @@ namespace ioutils::find {
 
         // Process whiteout files
         void process_whiteout(const Path &parent, const char *stem = nullptr) {
-            if (ignore_whiteout) return;
+            if (ignore_whiteout) {
+                return;
+            }
             if (color) {
                 writer.write(WHT_COLOR.data(), WHT_COLOR.size());
             }
@@ -148,7 +170,9 @@ namespace ioutils::find {
 
         // Process whiteout files
         void process_unknown(const Path &parent, const char *stem = nullptr) {
-            if (ignore_whiteout) return;
+            if (ignore_whiteout) {
+                return;
+            }
             if (color) {
                 writer.write(WHT_COLOR.data(), WHT_COLOR.size());
             }
@@ -189,7 +213,9 @@ namespace ioutils::find {
 
         // Print out a given path.
         void process_path(const Path &parent, const char *stem) {
-            if (parent.path != "/") writer.write(parent.path.data(), parent.path.size());
+            if (parent.path != "/") {
+                writer.write(parent.path.data(), parent.path.size());
+            }
             if (stem != nullptr) {
                 writer.sep();
                 writer.write(stem, strlen(stem));
@@ -205,8 +231,7 @@ namespace ioutils::find {
       public:
         template <typename Params>
         RegexPolicy(Params &&params)
-            : buffer(),
-              matcher(params.path_regex, params.regex_mode),
+            : matcher(params.path_regex, params.regex_mode),
               color(params.color()),
               ignore_file(params.ignore_file()),
               ignore_dir(params.ignore_dir()),
@@ -234,9 +259,13 @@ namespace ioutils::find {
         }
 
         void process_file(const Path &parent, const char *stem) {
-            if (ignore_file) return;
+            if (ignore_file) {
+                return;
+            }
             buffer.clear();
-            if (parent.path != "/") buffer.append(parent.path);
+            if (parent.path != "/") {
+                buffer.append(parent.path);
+            }
             buffer.append(1, SEP);
             buffer.append(stem);
             if (matcher.is_matched(buffer.data(), buffer.size())) {
@@ -249,7 +278,9 @@ namespace ioutils::find {
         }
 
         void process_file(const Path &parent) {
-            if (ignore_file) return;
+            if (ignore_file) {
+                return;
+            }
             if (matcher.is_matched(parent.path.data(), parent.path.size())) {
                 if (color) {
                     writer.write(FILE_COLOR.data(), FILE_COLOR.size());
@@ -260,12 +291,18 @@ namespace ioutils::find {
         }
 
         void process_symlink(const Path &parent, const char *stem) {
-            if (ignore_symlink) return;
+            if (ignore_symlink) {
+                return;
+            }
             buffer.clear();
-            if (parent.path != "/") buffer.append(parent.path);
+            if (parent.path != "/") {
+                buffer.append(parent.path);
+            }
             buffer.append(1, SEP);
             buffer.append(stem);
-            if (!matcher.is_matched(buffer.data(), buffer.size())) return;
+            if (!matcher.is_matched(buffer.data(), buffer.size())) {
+                return;
+            }
             if (color) {
                 writer.write(SYMLINK_COLOR.data(), SYMLINK_COLOR.size());
             }
@@ -275,8 +312,12 @@ namespace ioutils::find {
 
         // TODO: Figure out how to fix the duplicated code without doing memory copy.
         void process_symlink(const Path &parent) {
-            if (ignore_symlink) return;
-            if (!matcher.is_matched(parent.path.data(), parent.path.size())) return;
+            if (ignore_symlink) {
+                return;
+            }
+            if (!matcher.is_matched(parent.path.data(), parent.path.size())) {
+                return;
+            }
             if (color) {
                 writer.write(SYMLINK_COLOR.data(), SYMLINK_COLOR.size());
             }
@@ -286,11 +327,15 @@ namespace ioutils::find {
 
         // Process character special
         void process_chr(const Path &parent, const char *stem) {
-            if (ignore_chr) return;
+            if (ignore_chr) {
+                return;
+            }
             buffer = parent.path;
             buffer.append(1, SEP);
             buffer.append(stem);
-            if (!matcher.is_matched(buffer.data(), buffer.size())) return;
+            if (!matcher.is_matched(buffer.data(), buffer.size())) {
+                return;
+            }
             if (color) {
                 writer.write(SYMLINK_COLOR.data(), SYMLINK_COLOR.size());
             }
@@ -299,8 +344,12 @@ namespace ioutils::find {
         }
 
         void process_chr(const Path &parent) {
-            if (ignore_chr) return;
-            if (!matcher.is_matched(parent.path.data(), parent.path.size())) return;
+            if (ignore_chr) {
+                return;
+            }
+            if (!matcher.is_matched(parent.path.data(), parent.path.size())) {
+                return;
+            }
             if (color) {
                 writer.write(SYMLINK_COLOR.data(), SYMLINK_COLOR.size());
             }
@@ -310,11 +359,15 @@ namespace ioutils::find {
 
         // Process block special
         void process_blk(const Path &parent, const char *stem) {
-            if (ignore_blk) return;
+            if (ignore_blk) {
+                return;
+            }
             buffer = parent.path;
             buffer.append(1, SEP);
             buffer.append(stem);
-            if (!matcher.is_matched(buffer.data(), buffer.size())) return;
+            if (!matcher.is_matched(buffer.data(), buffer.size())) {
+                return;
+            }
             if (color) {
                 writer.write(BLK_COLOR.data(), BLK_COLOR.size());
             }
@@ -323,8 +376,12 @@ namespace ioutils::find {
         }
 
         void process_blk(const Path &parent) {
-            if (ignore_blk) return;
-            if (!matcher.is_matched(parent.path.data(), parent.path.size())) return;
+            if (ignore_blk) {
+                return;
+            }
+            if (!matcher.is_matched(parent.path.data(), parent.path.size())) {
+                return;
+            }
             if (color) {
                 writer.write(BLK_COLOR.data(), BLK_COLOR.size());
             }
@@ -334,11 +391,15 @@ namespace ioutils::find {
 
         // Process named pipes.
         void process_fifo(const Path &parent, const char *stem) {
-            if (ignore_fifo) return;
+            if (ignore_fifo) {
+                return;
+            }
             buffer = parent.path;
             buffer.append(1, SEP);
             buffer.append(stem);
-            if (!matcher.is_matched(buffer.data(), buffer.size())) return;
+            if (!matcher.is_matched(buffer.data(), buffer.size())) {
+                return;
+            }
             if (color) {
                 writer.write(FIFO_COLOR.data(), FIFO_COLOR.size());
             }
@@ -347,8 +408,12 @@ namespace ioutils::find {
         }
 
         void process_fifo(const Path &parent) {
-            if (ignore_fifo) return;
-            if (!matcher.is_matched(parent.path.data(), parent.path.size())) return;
+            if (ignore_fifo) {
+                return;
+            }
+            if (!matcher.is_matched(parent.path.data(), parent.path.size())) {
+                return;
+            }
             if (color) {
                 writer.write(FIFO_COLOR.data(), FIFO_COLOR.size());
             }
@@ -358,11 +423,15 @@ namespace ioutils::find {
 
         // Process socket information
         void process_socket(const Path &parent, const char *stem) {
-            if (ignore_socket) return;
+            if (ignore_socket) {
+                return;
+            }
             buffer = parent.path;
             buffer.append(1, SEP);
             buffer.append(stem);
-            if (!matcher.is_matched(buffer.data(), buffer.size())) return;
+            if (!matcher.is_matched(buffer.data(), buffer.size())) {
+                return;
+            }
             if (color) {
                 writer.write(SOCK_COLOR.data(), SOCK_COLOR.size());
             }
@@ -371,8 +440,12 @@ namespace ioutils::find {
         }
 
         void process_socket(const Path &parent) {
-            if (ignore_socket) return;
-            if (!matcher.is_matched(parent.path.data(), parent.path.size())) return;
+            if (ignore_socket) {
+                return;
+            }
+            if (!matcher.is_matched(parent.path.data(), parent.path.size())) {
+                return;
+            }
             if (color) {
                 writer.write(SOCK_COLOR.data(), SOCK_COLOR.size());
             }
@@ -381,11 +454,15 @@ namespace ioutils::find {
         }
 
         void process_whiteout(const Path &parent, const char *stem) {
-            if (ignore_whiteout) return;
+            if (ignore_whiteout) {
+                return;
+            }
             buffer = parent.path;
             buffer.append(1, SEP);
             buffer.append(stem);
-            if (!matcher.is_matched(buffer.data(), buffer.size())) return;
+            if (!matcher.is_matched(buffer.data(), buffer.size())) {
+                return;
+            }
             if (color) {
                 writer.write(WHT_COLOR.data(), WHT_COLOR.size());
             }
@@ -394,8 +471,12 @@ namespace ioutils::find {
         }
 
         void process_whiteout(const Path &parent) {
-            if (ignore_whiteout) return;
-            if (!matcher.is_matched(parent.path.data(), parent.path.size())) return;
+            if (ignore_whiteout) {
+                return;
+            }
+            if (!matcher.is_matched(parent.path.data(), parent.path.size())) {
+                return;
+            }
             if (color) {
                 writer.write(WHT_COLOR.data(), WHT_COLOR.size());
             }
@@ -404,11 +485,15 @@ namespace ioutils::find {
         }
 
         void process_unknown(const Path &parent, const char *stem) {
-            if (ignore_unknown) return;
+            if (ignore_unknown) {
+                return;
+            }
             buffer = parent.path;
             buffer.append(1, SEP);
             buffer.append(stem);
-            if (!matcher.is_matched(buffer.data(), buffer.size())) return;
+            if (!matcher.is_matched(buffer.data(), buffer.size())) {
+                return;
+            }
             if (color) {
                 writer.write(WHT_COLOR.data(), WHT_COLOR.size());
             }
@@ -417,8 +502,12 @@ namespace ioutils::find {
         }
 
         void process_unknown(const Path &parent) {
-            if (ignore_unknown) return;
-            if (!matcher.is_matched(parent.path.data(), parent.path.size())) return;
+            if (ignore_unknown) {
+                return;
+            }
+            if (!matcher.is_matched(parent.path.data(), parent.path.size())) {
+                return;
+            }
             if (color) {
                 writer.write(WHT_COLOR.data(), WHT_COLOR.size());
             }
@@ -427,7 +516,9 @@ namespace ioutils::find {
         }
 
         void process_dir(const std::string &p) {
-            if (!ignore_dir) return;
+            if (!ignore_dir) {
+                return;
+            }
             if (matcher.is_matched(p.data(), p.size())) {
                 if (color) {
                     writer.write(DIR_COLOR.data(), DIR_COLOR.size());

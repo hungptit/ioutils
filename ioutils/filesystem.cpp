@@ -43,7 +43,9 @@ namespace ioutils::filesystem {
     auto get_extension(const char *p, const size_t len) -> const char * {
         const char *pos = p + len - 1;
         while (pos != p) {
-            if (*pos == '.') return pos;
+            if (*pos == '.') {
+                return pos;
+            }
             --pos;
         }
         return nullptr;

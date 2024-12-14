@@ -11,12 +11,12 @@ namespace ioutils {
     // the maximum/minimum length of lines.
     class FileStats {
       public:
-        template <typename Params> FileStats(Params &&) {}
-        void process(const char *begin, const size_t len, const size_t) {
+        template <typename Params> FileStats(Params && /*unused*/) {}
+        void process(const char *begin, const size_t len, const size_t /*unused*/) {
             // Count the number of lines
             const char *ptr = begin;
             const char *end = ptr + len;
-            while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
+            while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr))) != nullptr) {
                 // Update the line counter
                 ++lines;
 
@@ -37,7 +37,7 @@ namespace ioutils {
 
         void finalize() {}
 
-        void set_filename(const char *) {}
+        void set_filename(const char * /*unused*/) {}
 
         void print() const {
             fmt::print("Number of lines: {}\n", lines);

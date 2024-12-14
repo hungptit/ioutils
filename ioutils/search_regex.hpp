@@ -24,7 +24,9 @@ namespace ioutils {
         void dfs(const std::vector<std::string> &p) {
             for (auto item : p) {
                 int fd = ::open(item.data(), O_RDONLY);
-                if (fd > -1) folders.emplace_back(fd, item);
+                if (fd > -1) {
+                    folders.emplace_back(fd, item);
+                }
             }
 
             // Search for files and folders using DFS traversal.
@@ -38,7 +40,9 @@ namespace ioutils {
         void bfs(const std::vector<std::string> &p) {
             for (auto item : p) {
                 int fd = ::open(item.data(), O_RDONLY);
-                if (fd > -1) folders.emplace_back(fd, item);
+                if (fd > -1) {
+                    folders.emplace_back(fd, item);
+                }
             }
 
             // Search for files and folders using DFS traversal.
@@ -55,7 +59,9 @@ namespace ioutils {
             const int fd = dir.fd;
 
             int retval = fstat(fd, &props);
-            if (retval < 0) return;
+            if (retval < 0) {
+                return;
+            }
 
             if (ioutils::filesystem::is_directory(props.st_mode)) {
                 DIR *dirp = fdopendir(fd);

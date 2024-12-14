@@ -38,10 +38,10 @@ namespace ioutils::search {
 
         // Search '/' from left to right
         struct stat info;
-        while ((ptr = (const char *)memchr(ptr, FWD_SLASH, end - ptr))) {
+        while ((ptr = (const char *)memchr(ptr, FWD_SLASH, end - ptr)) != nullptr) {
             current_path.append(pos, ptr - pos);
             int errcode = stat(current_path.data(), &info);
-            if (errcode) {
+            if (errcode != 0) {
                 current_path.resize(pos - begin);
                 break; // Exit the loop if the current path is invalid.
             }

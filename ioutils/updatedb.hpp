@@ -11,7 +11,7 @@ namespace ioutils {
     struct UpdateDBStreamPolicy {
         template <typename Params> UpdateDBStreamPolicy(Params &&params) : writer(params.database.data()) {}
 
-        auto is_valid_dir(const char *dname) const -> bool { return filesystem::is_valid_dir(dname); }
+        static auto is_valid_dir(const char *dname) -> bool { return filesystem::is_valid_dir(dname); }
         void process_file(const Path &parent, const char *stem = nullptr) {
             writer.write(parent.path.data(), parent.path.size());
             if (stem != nullptr) {
@@ -74,10 +74,10 @@ namespace ioutils {
         std::string database;           // The output fast-locate database path
         std::vector<std::string> paths; // Saearch paths
 
-        auto dfs() -> bool { return true; } // Use dfs traversal to explore folders.
-        [[nodiscard]] auto donot_ignore_git() const -> bool { return true; }
-        [[nodiscard]] auto follow_symlink() const -> bool { return false; }
-        [[nodiscard]] auto ignore_error() const -> bool { return false; }
+        static auto dfs() -> bool { return true; } // Use dfs traversal to explore folders.
+        [[nodiscard]] static auto donot_ignore_git() -> bool { return true; }
+        [[nodiscard]] static auto follow_symlink() -> bool { return false; }
+        [[nodiscard]] static auto ignore_error() -> bool { return false; }
 
         void print() const;
     };
