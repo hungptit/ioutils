@@ -15,9 +15,9 @@ namespace ioutils {
       private:
         ioutils::TemporaryDirectory temporary_dir;
 
-        void create_file(const path &aFile, const bool verbose = false);
-        void create_symlink(const path &p, const path &symlink, const bool verbose = false);
-        auto create_dir(const path &rootFolder, const path &aPath) -> path;
+        static void create_file(const path &aFile, const bool verbose = false);
+        static void create_symlink(const path &p, const path &symlink, const bool verbose = false);
+        static auto create_dir(const path &rootFolder, const path &aPath) -> path;
 
         void init(const bool verbose);
     };

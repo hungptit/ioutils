@@ -1,13 +1,12 @@
 #include "test_data.hpp"
 #include "ioutils/temporary_dir.hpp"
-
 #include <fstream>
 #include <iostream>
 
 namespace ioutils {
     using path = std::filesystem::path;
 
-    TestData::TestData(const bool verbose) : temporary_dir() { init(verbose); }
+    TestData::TestData(const bool verbose) { init(verbose); }
     auto TestData::get_path() -> const path & { return temporary_dir.get_path(); }
 
     void TestData::create_file(const path &aFile, const bool verbose) {
@@ -15,16 +14,18 @@ namespace ioutils {
         outfile << "Fake data for testing.\n";
         outfile.close();
         if (std::filesystem::exists(aFile)) {
-            if (verbose) std::cout << aFile.string() << " is created" << std::endl;
+            if (verbose) {
+                std::cout << aFile.string() << " is created" << '\n';
+            }
         } else {
-            std::cerr << "Cannot create " << aFile.string() << std::endl;
+            std::cerr << "Cannot create " << aFile.string() << '\n';
         }
     }
 
     void TestData::create_symlink(const path &p, const path &symlink, const bool verbose) {
         std::filesystem::create_symlink(p, symlink);
         if (verbose) {
-            if (verbose) std::cout << symlink.string() << " is linked" << std::endl;
+            std::cout << symlink.string() << " is linked" << '\n';
         }
     }
 

@@ -1,10 +1,4 @@
-# Add doctest
-FetchContent_Declare(
-  doctest
-  GIT_REPOSITORY https://github.com/onqtam/doctest.git
-  GIT_TAG master)
-set(DOCTEST_WITH_TESTS OFF)
-FetchContent_Populate(doctest)
+include(${PROJECT_SOURCE_DIR}/cmake/catch2.cmake)
 
 # Add test library
 set(SRC_FILES "test_data.cpp")
@@ -26,12 +20,12 @@ set(TEST_EXECUTABLES
 
 foreach(target ${TEST_EXECUTABLES})
   add_executable(${target} ${target}.cpp)
-  target_link_libraries(${target} PRIVATE ioutils test_ioutils ${LIB_HS}
-                                          ${LIB_HS_RUNTIME} fmt::fmt)
+  target_link_libraries(
+    ${target} PRIVATE ioutils test_ioutils ${LIB_HS} ${LIB_HS_RUNTIME} fmt::fmt
+                      Catch2::Catch2WithMain)
   target_code_coverage(${target} AUTO ALL)
-  target_include_directories(
-    ${target} PRIVATE "${doctest_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}"
-                      "${fmt_SOURCE_DIR}/include/" "${utils_SOURCE_DIR}/src/")
+  target_include_directories(${target} PRIVATE ${PROJECT_SOURCE_DIR}
+                                               ${utils_SOURCE_DIR}/src/)
   add_test(ioutils_${target} ./${target})
 endforeach()
 
