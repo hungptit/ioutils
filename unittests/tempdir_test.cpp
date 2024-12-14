@@ -1,11 +1,6 @@
-#include <fstream>
-#include <iostream>
-
-#include "fmt/format.h"
+#include "fmt/base.h"
 #include "ioutils/temporary_dir.hpp"
-
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest/doctest.h"
+#include <catch2/catch_test_macros.hpp>
 
 namespace fs = std::filesystem;
 TEST_CASE("Default constructor") {

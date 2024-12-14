@@ -58,6 +58,7 @@ include(cmake/cmake-scripts.cmake)
 include(cmake/clara.cmake)
 include(cmake/format_files.cmake)
 include(cmake/jemalloc.cmake)
+include(cmake/nanobench.cmake)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/_deps/cmake_scripts-src/;")
 include(c++-standards)

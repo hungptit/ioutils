@@ -4,7 +4,7 @@
 namespace {
     // A simple policy which prints out the input data.
     struct Policy {
-        void process(const char *buffer, const long nbytes) {
+        static void process(const char *buffer, const long nbytes) {
             fmt::print("{}\n", std::string(buffer, buffer + nbytes));
         }
     };

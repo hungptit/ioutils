@@ -1,8 +1,6 @@
 #include "ioutils/locate.hpp"
 #include "ioutils/updatedb.hpp"
-
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest/doctest.h"
+#include <catch2/catch_test_macros.hpp>
 
 namespace {
     const std::string database = "test_database";
@@ -14,11 +12,11 @@ TEST_CASE("updatedb input parameters") {
     params.database = database;
     params.paths = paths;
     params.print();
-    SUBCASE("Create the test database") { ioutils::updatedb(params); }
+    SECTION("Create the test database") { ioutils::updatedb(params); }
 }
 
 TEST_CASE("Locate files") {
-    SUBCASE("List all files") {
+    SECTION("List all files") {
         ioutils::LocateInputArguments params;
         params.databases = {database};
         params.pattern = "";
@@ -26,7 +24,7 @@ TEST_CASE("Locate files") {
         ioutils::locate_files(params);
     }
 
-    SUBCASE("Locate a file") {
+    SECTION("Locate a file") {
         ioutils::LocateInputArguments params;
         params.databases = {database};
         params.pattern = ".*cpp$";
@@ -36,7 +34,7 @@ TEST_CASE("Locate files") {
         ioutils::locate_files(params);
     }
 
-    SUBCASE("Locate a file using an invert match") {
+    SECTION("Locate a file using an invert match") {
         ioutils::LocateInputArguments params;
         params.databases = {database};
         params.pattern = ".*hpp$";

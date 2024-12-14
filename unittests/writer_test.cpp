@@ -1,22 +1,20 @@
 #include "ioutils/console.hpp"
 #include "ioutils/fdwriter.hpp"
-
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest/doctest.h"
+#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Writer class") {
     std::string s1 = "Hello";
     std::string s2 = " world!";
     std::string eol = "\n";
 
-    SUBCASE("Default output") {
+    SECTION("Default output") {
         ioutils::StreamWriter writer(ioutils::StreamWriter::STDOUT);
         writer.write(s1.data(), s1.size());
         writer.write(s2.data(), s2.size());
         writer.write(eol.data(), eol.size());
     }
 
-    SUBCASE("Provide file descriptor") {
+    SECTION("Provide file descriptor") {
         ioutils::StreamWriter writer(ioutils::StreamWriter::STDERR, 4);
         writer.write(s1.data(), s1.size());
         writer.write(s2.data(), s2.size());
