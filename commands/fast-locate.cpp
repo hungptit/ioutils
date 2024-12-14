@@ -71,17 +71,17 @@ namespace {
         }
 
         if (dbs.empty()) {
-            auto default_db = std::getenv("FAST_LOCATE_DB");
+            auto *default_db = std::getenv("FAST_LOCATE_DB");
             if (default_db == nullptr) {
                 params.databases.emplace_back(".database");
             } else {
                 params.databases.emplace_back(default_db);
             }
         } else {
-            for (auto item : dbs) {
+            for (const auto &item : dbs) {
                 lookup.emplace(item);
             }
-            for (auto item : lookup) {
+            for (const auto &item : lookup) {
                 params.databases.push_back(item);
             }
         }
@@ -89,7 +89,7 @@ namespace {
         // If user does not specify prefix then fallback to the
         // FAST_LOCATE_PREFIX environment variable.
         if (params.prefix.empty()) {
-            auto const default_prefix = std::getenv("FAST_LOCATE_PREFIX");
+            auto *const default_prefix = std::getenv("FAST_LOCATE_PREFIX");
             if (default_prefix != nullptr) {
                 params.prefix = std::string(default_prefix);
             }
@@ -97,8 +97,10 @@ namespace {
 
         // Update flags and regex_mode
         exact_match = regex_match ? !regex_match : exact_match;
-        params.flags = verbose * VERBOSE | invert_match * INVERT_MATCH | exact_match * EXACT_MATCH |
-                       ignore_case * IGNORE_CASE;
+        params.flags = static_cast<uint32_t>(verbose) * VERBOSE |
+                       static_cast<uint32_t>(invert_match) * INVERT_MATCH |
+                       static_cast<uint32_t>(exact_match) * EXACT_MATCH |
+                       static_cast<uint32_t>(ignore_case) * IGNORE_CASE;
         params.regex_mode =
             (HS_FLAG_DOTALL | HS_FLAG_SINGLEMATCH) | (params.ignore_case() ? HS_FLAG_CASELESS : 0);
 
