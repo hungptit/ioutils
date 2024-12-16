@@ -1,6 +1,5 @@
 #pragma once
 
-#include "fdwriter.hpp"
 #include "filesystem.hpp"
 #include <cstdlib>
 #include <cstring>
