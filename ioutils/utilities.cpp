@@ -27,8 +27,8 @@ namespace ioutils {
             if (path.empty()) {
                 return "";
             }
-            using string_type = std::string_view;
-            std::vector<string_type> tokens;
+            using token_type = std::string_view;
+            std::vector<token_type> tokens;
             int begin = 0;
             int end = N - 1;
             bool relative_path = path[0] != SLASH;
@@ -45,7 +45,7 @@ namespace ioutils {
                 while (ptr <= end && path[ptr] != SLASH) {
                     ++ptr;
                 }
-                const string_type stem(path.data() + begin, ptr - begin);
+                const token_type stem(path.data() + begin, ptr - begin);
                 if (stem == ".") {
                     // Ignore the current stem
                 } else if (stem == "..") {
