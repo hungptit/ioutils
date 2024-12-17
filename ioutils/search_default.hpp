@@ -1,6 +1,5 @@
 #pragma once
 
-#include "fdwriter.hpp"
 #include "filesystem.hpp"
 #include <cstdlib>
 #include <cstring>
@@ -21,7 +20,6 @@ namespace ioutils::filesystem {
         template <typename T>
         DefaultSearch(T &&params)
             : Policy(std::forward<T>(params)),
-
               use_dfs(params.dfs()),
               follow_link(params.follow_symlink()),
               donot_ignore_git(params.donot_ignore_git()),
@@ -204,13 +202,14 @@ namespace ioutils::filesystem {
             }
         }
 
-        std::vector<Path> current;
-        std::vector<Path> next;
         bool use_dfs;
         bool follow_link;
         bool donot_ignore_git;
         bool ignore_error;
         int maxdepth;
+
+        std::vector<Path> current;
+        std::vector<Path> next;
         std::vector<std::string> unvisited_paths;
         std::string temporary_path;
         static constexpr char SEP = '/';

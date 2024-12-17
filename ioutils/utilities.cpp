@@ -1,7 +1,9 @@
 #include <string>
 
+#include "fmt/base.h"
 #include "fmt/format.h"
 #include "ioutils/utilities.hpp"
+#include <string_view>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <tuple>
@@ -25,7 +27,8 @@ namespace ioutils {
             if (path.empty()) {
                 return "";
             }
-            std::vector<std::string> tokens;
+            using token_type = std::string_view;
+            std::vector<token_type> tokens;
             int begin = 0;
             int end = N - 1;
             bool relative_path = path[0] != SLASH;
@@ -42,7 +45,7 @@ namespace ioutils {
                 while (ptr <= end && path[ptr] != SLASH) {
                     ++ptr;
                 }
-                auto stem = path.substr(begin, ptr - begin);
+                const token_type stem(path.data() + begin, ptr - begin);
                 if (stem == ".") {
                     // Ignore the current stem
                 } else if (stem == "..") {
@@ -69,7 +72,13 @@ namespace ioutils {
             if (tokens.empty()) {
                 return relative_path ? "." : "/";
             }
-            std::string results = relative_path ? tokens[0] : ("/" + tokens[0]);
+
+            std::string results;
+
+            if (!relative_path) {
+                results.append(1, SLASH);
+            }
+            results.append(tokens[0]);
             if (tokens.size() > 1) {
                 for (size_t idx = 1; idx < tokens.size(); ++idx) {
                     results.append(1, SLASH);

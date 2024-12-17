@@ -2,14 +2,12 @@
 
 #include "fdreader.hpp"
 #include "fdwriter.hpp"
-#include "filesystem.hpp"
-#include "search.hpp"
+#include <cstdint>
 #include <fcntl.h>
 #include <string>
 #include <unistd.h>
-
 #include "memchr.hpp"
-#include "regex_matchers.hpp"
+#include <vector>
 
 namespace ioutils {
     namespace locate {
@@ -31,7 +29,7 @@ namespace ioutils {
         std::string pattern;                // A search pattern
         std::vector<std::string> databases; // A file information database
 
-        [[nodiscard]] auto verbose() const -> bool { return (flags & VERBOSE) > 0; }
+        [[nodiscard]] auto verbose() const -> bool { return (flags & locate::VERBOSE) > 0; }
         [[nodiscard]] auto info() const -> bool { return (flags & locate::INFO) > 0; }
         [[nodiscard]] auto invert_match() const -> bool { return (flags & locate::INVERT_MATCH) > 0; }
         [[nodiscard]] auto exact_match() const -> bool { return (flags & locate::EXACT_MATCH) > 0; }

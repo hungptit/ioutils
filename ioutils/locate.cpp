@@ -1,6 +1,7 @@
 #include "ioutils/locate.hpp"
 #include "fmt/base.h"
 #include "fmt/ranges.h"
+#include "regex_matchers.hpp"
 
 namespace ioutils {
     void LocateInputArguments::print() const {

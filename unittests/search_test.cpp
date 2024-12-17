@@ -3,6 +3,7 @@
 #include "ioutils/find.hpp"
 #include "ioutils/regex_store_policies.hpp"
 #include "ioutils/search.hpp"
+#include "ioutils/search_default.hpp"
 #include "ioutils/simple_store_policy.hpp"
 #include "test_data.hpp"
 #include <catch2/catch_test_macros.hpp>
@@ -65,7 +66,7 @@ TEST_CASE("Utility function") {
             ioutils::SearchInputArguments params;
             params.flags |= ioutils::IGNORE_DIR;
             params.flags |= ioutils::IGNORE_FILE;
-            ioutils::filesystem::DefaultSearch<ioutils::StorePolicy> search(params);
+            ioutils::filesystem:: DefaultSearch<ioutils::StorePolicy> search(params);
             search.traverse(std::vector<std::string>{p});
             CHECK(search.get_paths().size() == 1); // Should not see anything.
             for (auto item : search.get_paths()) {

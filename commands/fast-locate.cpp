@@ -1,5 +1,6 @@
 #include "clara.hpp"
 #include "fmt/base.h"
+#include "hs_compile.h"
 #include "ioutils/locate.hpp"
 #include "ioutils/utilities.hpp"
 #include "version.hpp"
