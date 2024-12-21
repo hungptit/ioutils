@@ -11,10 +11,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <vector>
-
-#include "fmt/format.h"
-
 #include "filesystem.hpp"
+#include "fmt/base.h"
 
 namespace ioutils {
     // A class which has DFS and BFS file traversal algorithms.
@@ -100,9 +98,8 @@ namespace ioutils {
     };
 
     // A policy class which filter files and folder using given regular expression.
-    template <typename T> RegexConsolePolicy {
-        explicit RegexPolicy(const std::string &patt) : matcher(patt) {}
-        explicit RegexPolicy(const std::string &patt) : matcher(patt) {}
+    template <typename T> struct RegexConsolePolicy {
+        explicit RegexConsolePolicy(const std::string &patt) : matcher(patt) {}
 
         bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
 

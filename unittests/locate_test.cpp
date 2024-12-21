@@ -1,3 +1,4 @@
+#include "hs_compile.h"
 #include "ioutils/locate.hpp"
 #include "ioutils/updatedb.hpp"
 #include <catch2/catch_test_macros.hpp>
