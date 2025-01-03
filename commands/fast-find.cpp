@@ -2,11 +2,11 @@
 
 #include "fmt/base.h"
 #include "ioutils/enums.hpp"
+#include "ioutils/filesystem.hpp"
 #include "ioutils/find.hpp"
 #include "ioutils/search.hpp"
 #include "ioutils/search_default.hpp"
 #include "ioutils/utilities.hpp"
-#include "ioutils/filesystem.hpp"
 #include "regex_matchers.hpp"
 #include "version.hpp"
 #include <dirent.h>

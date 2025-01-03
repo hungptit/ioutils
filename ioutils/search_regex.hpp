@@ -1,5 +1,7 @@
 #pragma once
 
+#include "filesystem.hpp"
+#include "fmt/base.h"
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
@@ -11,8 +13,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <vector>
-#include "filesystem.hpp"
-#include "fmt/base.h"
 
 namespace ioutils {
     // A class which has DFS and BFS file traversal algorithms.
@@ -103,7 +103,7 @@ namespace ioutils {
 
         bool is_valid_dir(const char *dname) const { return filesystem::is_valid_dir(dname); }
 
-        void process_file(std::string && p) const {
+        void process_file(std::string &&p) const {
             if (matcher(p.data(), p.size())) fmt::print("{}\n", p);
         }
         void process_dir(const Path &p) const {

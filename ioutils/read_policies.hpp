@@ -1,6 +1,6 @@
 #pragma once
-#include <deque>
 #include <string>
+#include <utility>
 namespace ioutils {
     template <typename Container> class AppendPolicy {
       public:
@@ -18,7 +18,8 @@ namespace ioutils {
         void process(const char *buffer, const size_t len, const size_t /*unused*/) {
             data.append(buffer, len);
         }
-        auto get_data() -> const std::string & { return data; }
+        // auto get_data() -> const std::string & { return data; }
+        auto get_data() -> std::string { return std::move(data); }
         void finalize() {}
         void set_filename(const char * /*unused*/) {}
         void clear() { data.clear(); }

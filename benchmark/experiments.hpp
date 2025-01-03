@@ -1,8 +1,9 @@
 #pragma once
 #include <cstdio>
-#include <string>
+#include <cstring>
 
 namespace ioutils::experiments {
+    static constexpr char EOL = '\n';
     struct LineStatsBase {
         LineStatsBase() {}
         void print() const { printf("Number of lines: %lu\n", lines); }
@@ -29,7 +30,7 @@ namespace ioutils::experiments {
         void process(const char *buffer, size_t len, const size_t) {
             const char *end = buffer + len;
             const char *ptr = buffer;
-            while ((ptr = static_cast<const char *>(memchr(ptr, EOL, end - ptr)))) {
+            while ((ptr = static_cast<const char *>(std::memchr(ptr, EOL, end - ptr)))) {
                 ++Policy::lines;
                 ++ptr;
             }

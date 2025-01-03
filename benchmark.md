@@ -1,8 +1,10 @@
-# Test environments #
+Test environments
+=================
 
-## CPU ##
+CPU
+---
 
-``` text
+```text
 Architecture:                    x86_64
 CPU op-mode(s):                  32-bit, 64-bit
 Byte Order:                      Little Endian
@@ -42,17 +44,19 @@ Flags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtr
                                  id decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif umip rdpid overflow_recov succor smca
 ```
 
-## OS ##
+OS
+--
 
-``` text
+```text
 Linux hung-hien 5.10.11-gentoo-ryzen3-opt #1 SMP Fri Jan 29 18:47:37 EST 2021 x86_64 AMD Ryzen 7 3700X 8-Core Processor AuthenticAMD GNU/Linux
 ```
 
-## Versions ##
+Versions
+--------
 
 **GNU find**
 
-``` text
+```text
 find --version
 find (GNU findutils) 4.8.0
 Packaged by Gentoo (4.8.0)
@@ -67,38 +71,41 @@ Features enabled: D_TYPE O_NOFOLLOW(enabled) LEAF_OPTIMISATION FTS(FTS_CWDFD) CB
 
 **fd**
 
-``` text
+```text
 fd --version
 fd 8.2.1
 ```
 
 **fast-find (master)**
 
-``` text
+```text
 fast-find --version
 fast-find  5c076f39224d562c1bc880e81928108344052003
 ```
 
 **Initialize up test data**
 
-``` shell
+```shell
 cd benchmark
 ./setup.sh
 ```
 
-## Notes ##
+Notes
+-----
 
-* All automated performance benchmark results are collected on a SSD drive with a warm up cache.
-* The regular expression is selected using my normal usage pattern so it is definitely biased.
-* Both GNU find and fast-find are single thread so the CPU clock does not jump during the test, however, **fd does push all CPU cores to their limits**.
-* Our benchmark use the latest version of GNU find which is significantly faster than the system find command.
-* We avoid to alter the default options of all tested commands if possible.
+-	All automated performance benchmark results are collected on a SSD drive with a warm up cache.
+-	The regular expression is selected using my normal usage pattern so it is definitely biased.
+-	Both GNU find and fast-find are single thread so the CPU clock does not jump during the test, however, **fd does push all CPU cores to their limits**.
+-	Our benchmark use the latest version of GNU find which is significantly faster than the system find command.
+-	We avoid to alter the default options of all tested commands if possible.
 
-# Finding files and folders #
+Finding files and folders
+=========================
 
-## Automated benchmark results ##
+Automated benchmark results
+---------------------------
 
-``` text
+```text
 Collect results for fast-find command
 Celero
 Timer resolution: 0.001000 us
@@ -167,45 +174,49 @@ Writing JUnit results to: fast_locate.xml
 Completed in 00:00:18.117631
 ```
 
-## Manual test results ##
+Manual test results
+-------------------
 
 **Test environment**
-* OS: Gentoo Linux kernel 5.10.11
-* alacritty 0.7.1
+
+-	OS: Gentoo Linux kernel 5.10.11
+-	alacritty 0.7.1
 
 The manual tests aim at the real worl situations where the found paths are displayed in the terminal.
 
-### GNU find ###
+### GNU find
 
-``` shell
+```shell
 9/usr/bin/time find  /
 ...
 1.43user 4.04system 0:05.52elapsed 99%CPU (0avgtext+0avgdata 9568maxresident)k
 0inputs+0outputs (0major+5232minor)pagefaults 0swaps
 ```
 
-### fd ###
+### fd
 
-``` shell
+```shell
 /usr/bin/time fd -c never . /
 ...
 5.70user 14.02system 0:03.63elapsed 543%CPU (0avgtext+0avgdata 208012maxresident)k
 0inputs+0outputs (0major+51866minor)pagefaults 0swaps
 ```
 
-### fast-find ###
+### fast-find
 
-``` shell
+```shell
 /usr/bin/time ./commands/fast-find /
 ...
 0.15user 2.50system 0:04.31elapsed 61%CPU (0avgtext+0avgdata 2412maxresident)k
 0inputs+0outputs (0major+221minor)pagefaults 0swaps
 ```
 
-# Summary #
+Summary
+=======
 
-The benchmark results show that 
-* fast-find is 50% or more faster than GNU find in all benchmarks.
-* fast-find is only faster than fd in all tests except the regex benchmark for the mid size folder.
-* fd is the fastest command in the benchmarks display results in the terminal (about 17.4% faster than fast-find), however, fd use about 9x more CPU resources. fast-find uses much less CPU resource than both GNU find and fd in our benchmarks. 
-* fast-locate is faster than GNU locate in all benchmarks and the gap can be 2x if there are millions of files.
+The benchmark results show that
+
+-	fast-find is 50% or more faster than GNU find in all benchmarks.
+-	fast-find is only faster than fd in all tests except the regex benchmark for the mid size folder.
+-	fd is the fastest command in the benchmarks display results in the terminal (about 17.4% faster than fast-find), however, fd use about 9x more CPU resources. fast-find uses much less CPU resource than both GNU find and fd in our benchmarks.
+-	fast-locate is faster than GNU locate in all benchmarks and the gap can be 2x if there are millions of files.

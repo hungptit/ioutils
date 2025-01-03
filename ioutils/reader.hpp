@@ -1,6 +1,8 @@
 #pragma once
 
+#include <cerrno>
 #include <cstdio>
+#include <cstring>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -23,7 +25,7 @@ namespace ioutils {
 
             // Check that we can open a given file.
             if (fd < 0) {
-                fprintf(stderr, "Cannot open file: '%s'. Error: %s\n", datafile, strerror(errno));
+                fprintf(stderr, "Cannot open file: '%s'. Error: %s\n", datafile, std::strerror(errno));
                 return;
             }
 
@@ -37,7 +39,8 @@ namespace ioutils {
             for (size_t blk = 0; blk < block_count; ++blk) {
                 long nbytes = ::read(fd, read_buffer, BUFFER_SIZE);
                 if (nbytes < 0) {
-                    fprintf(stderr, "Cannot read from file '%s'. Error: %s\n", datafile, strerror(errno));
+                    fprintf(stderr, "Cannot read from file '%s'. Error: %s\n", datafile,
+                            std::strerror(errno));
                     break;
                 };
 

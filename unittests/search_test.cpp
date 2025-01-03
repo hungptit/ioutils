@@ -66,7 +66,7 @@ TEST_CASE("Utility function") {
             ioutils::SearchInputArguments params;
             params.flags |= ioutils::IGNORE_DIR;
             params.flags |= ioutils::IGNORE_FILE;
-            ioutils::filesystem:: DefaultSearch<ioutils::StorePolicy> search(params);
+            ioutils::filesystem::DefaultSearch<ioutils::StorePolicy> search(params);
             search.traverse(std::vector<std::string>{p});
             CHECK(search.get_paths().size() == 1); // Should not see anything.
             for (auto item : search.get_paths()) {
