@@ -1,5 +1,6 @@
 #include "celero/Celero.h"
 #include <iostream>
+#include <catch2/catch_test_macros.hpp>
 
 constexpr int number_of_samples = 10;
 constexpr int number_of_operations = 1;

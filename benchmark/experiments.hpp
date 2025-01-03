@@ -1,11 +1,16 @@
 #pragma once
+
+#include <cstddef>
 #include <cstdio>
-#include <string>
+#include <cstring>
+#include "memchr.hpp"
 
 namespace ioutils::experiments {
-    struct LineStatsBase {
-        LineStatsBase() {}
+    static constexpr char EOL = '\n';
+    struct LineCoutingAlgorithm {
+        LineCoutingAlgorithm() {}
         void print() const { printf("Number of lines: %lu\n", lines); }
+        size_t get_count() const {return lines;}
 
       protected:
         void finalize() const {}

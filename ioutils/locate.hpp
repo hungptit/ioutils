@@ -2,11 +2,11 @@
 
 #include "fdreader.hpp"
 #include "fdwriter.hpp"
+#include "memchr.hpp"
 #include <cstdint>
 #include <fcntl.h>
 #include <string>
 #include <unistd.h>
-#include "memchr.hpp"
 #include <vector>
 
 namespace ioutils {

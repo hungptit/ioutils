@@ -1,9 +1,9 @@
 #pragma once
 
+#include "ioutils/enums.hpp"
 #include <limits>
 #include <string>
 #include <vector>
-#include "ioutils/enums.hpp"
 
 namespace ioutils {
     auto get_default_regex_mode() -> int;
