@@ -10,6 +10,6 @@ set(SRC_FILES
 add_library(ioutils STATIC ${SRC_FILES})
 target_link_libraries(ioutils PUBLIC hs::hs hs::hs_runtime)
 target_include_directories(
-  ioutils PUBLIC "${PROJECT_SOURCE_DIR}" "${fmt_SOURCE_DIR}/include/"
-                 "${utils_SOURCE_DIR}/src" "${hyperscan_SOURCE_DIR}/src")
+  ioutils PUBLIC ${PROJECT_SOURCE_DIR} ${fmt_SOURCE_DIR}/include/
+                 ${utils_SOURCE_DIR}/src ${hyperscan_SOURCE_DIR}/src)
 target_code_coverage(ioutils AUTO ALL)

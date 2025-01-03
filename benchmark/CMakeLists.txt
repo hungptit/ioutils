@@ -4,21 +4,6 @@ include(${PROJECT_SOURCE_DIR}/cmake/boost.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/benchmark.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/nanobench.cmake)
 
-# This option make sure that we use the local boost version. Note that if the
-# system boost is installed then CMake might use that boost version.
-# set(Boost_USE_STATIC_LIBS ON) set(Boost_USE_MULTITHREADED ON)
-# set(Boost_USE_STATIC_RUNTIME OFF) set(Boost_NO_SYSTEM_PATHS FALSE) if
-# (Boost_NO_SYSTEM_PATHS) set(BOOST_ROOT "/usr/local/Cellar/boost/1.70.0/")
-# set(BOOST_INCLUDE_DIRS "${BOOST_ROOT}/include") set(BOOST_LIBRARY_DIRS
-# "${BOOST_ROOT}/lib") endif (Boost_NO_SYSTEM_PATHS)
-
-# # message(${BOOST_ROOT})
-find_package(Boost REQUIRED system filesystem iostreams)
-
-# # Include folder include_directories ("${EXTERNAL_DIR}/include")
-# include_directories ("${ROOT_DIR}/src") include_directories
-# ("${Boost_INCLUDE_DIRS}")
-
 set(COMMAND_SRC_FILES read_data)
 foreach(src_file ${COMMAND_SRC_FILES})
   add_executable(${src_file} ${src_file}.cpp)
@@ -54,8 +39,3 @@ foreach(BENCHMARK ${COMMAND_BENCHMARK_COMMANDS})
     PRIVATE "${benchmark_SOURCE_DIR}/include/" "${PROJECT_SOURCE_DIR}"
             "${ROOT_DIR}/3p/include" "${utils_SOURCE_DIR}/src/")
 endforeach(BENCHMARK)
-
-# set(COMMAND_BENCHMARK_COMMANDS file_read) foreach (BENCHMARK
-# ${COMMAND_BENCHMARK_COMMANDS}) ADD_EXECUTABLE(${BENCHMARK} ${BENCHMARK}.cpp)
-# TARGET_LINK_LIBRARIES(${BENCHMARK} ${Boost_LIBRARIES} -lpthread ${LIB_CELERO})
-# endforeach (BENCHMARK)

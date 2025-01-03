@@ -1,14 +1,11 @@
 #include "catch2/catch_test_macros.hpp"
-#include "celero/Celero.h"
 #include "ioutils/reader.hpp"
 #include <boost/iostreams/device/mapped_file.hpp>
+#include <cstddef>
 #include <fstream>
 #include <iostream>
 #include <string>
-// #include "memchr.hpp"
-// #include "experiments.hpp"
-// #include "ioutils/fdreader.hpp"
-// #include "ioutils/linestats.hpp"
+#include "experiments.hpp"
 #include "ioutils/read_policies.hpp"
 
 #define ANKERL_NANOBENCH_IMPLEMENT
@@ -56,6 +53,13 @@ namespace test {
 
     template <int chunk_size> decltype(auto) read_file_content_ioutils(const std::string &datafile) {
         using Policy = ioutils::AppendPolicy<std::string>;
+        ioutils::FileReader<Policy, chunk_size> reader;
+        reader(datafile.c_str());
+        return reader;
+    }
+
+    template <int chunk_size> decltype(auto) count_lines_using_ioutils(const std::string &datafile) {
+        using Policy = ioutils::experiments::LineStats<ioutils::experiments::LineCoutingAlgorithm>;
         ioutils::FileReader<Policy, chunk_size> reader;
         reader(datafile.c_str());
         return reader;
@@ -134,83 +138,24 @@ TEST_CASE("Benchmark different line counting algorithms") {
                      .warmup(number_of_warmup_runs)
                      .minEpochIterations(minimum_number_of_operations);
 
-    SECTION("Validate the correctness of all algorithms") {}
+    SECTION("Validate the correctness of all algorithms") {
+        const size_t expected_result = 302278;
+        CHECK(test::count_lines_using_std_iostream(text_data_file) == expected_result);
+        CHECK(test::count_lines_using_boost_iostreams(text_data_file) == expected_result);
+        CHECK(test::count_lines_using_ioutils<1 << 16>(text_data_file).get_count() == expected_result);
+    }
 
     SECTION("Benchmark all line counting algorithms") {
 
-        bench.run("Counting lines using std::iostream",
-                  []() { ankerl::nanobench::doNotOptimizeAway(test::count_lines_using_std_iostream(text_data_file)); });
+        bench.run("Counting lines using std::iostream", []() {
+            ankerl::nanobench::doNotOptimizeAway(test::count_lines_using_std_iostream(text_data_file));
+        });
 
-        bench.run("Counting lines using boost::iostreams",
-                  []() { ankerl::nanobench::doNotOptimizeAway(test::count_lines_using_boost_iostreams(text_data_file)); });
+        bench.run("Counting lines using boost::iostreams", []() {
+            ankerl::nanobench::doNotOptimizeAway(test::count_lines_using_boost_iostreams(text_data_file));
+        });
+
+        bench.run("Counting lines using ioutils",
+                  []() { test::count_lines_using_ioutils<1 << 16>(text_data_file); });
     }
 }
-
-// using LineStatsStd = typename ioutils::experiments::LineStats_std<ioutils::experiments::LineStatsBase>;
-// using LineStats = typename ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>;
-
-// BENCHMARK(linestats, linestats_2_12, number_of_samples, number_of_operations) {
-//     using FastLineStats = ioutils::StreamReader<LineStatsStd, 1 << 12>;
-//     FastLineStats linestats;
-//     linestats(afile.c_str());
-// }
-
-// BENCHMARK(linestats, linestats_2_13, number_of_samples, number_of_operations) {
-//     using FastLineStats = ioutils::StreamReader<LineStats, 1 << 13>;
-//     FastLineStats linestats;
-//     linestats(afile.c_str());
-// }
-
-// BENCHMARK(linestats, linestats_2_14, number_of_samples, number_of_operations) {
-//     using FastLineStats = ioutils::StreamReader<LineStatsStd, 1 << 14>;
-//     FastLineStats linestats;
-//     linestats(afile.c_str());
-// }
-
-// BENCHMARK(linestats, linestats_2_15, number_of_samples, number_of_operations) {
-//     using FastLineStats = ioutils::StreamReader<LineStatsStd, 1 << 15>;
-//     FastLineStats linestats;
-//     linestats(afile.c_str());
-// }
-
-// BENCHMARK(linestats, linestats_2_16, number_of_samples, number_of_operations) {
-//     using FastLineStats = ioutils::StreamReader<LineStatsStd, 1 << 16>;
-//     FastLineStats linestats;
-//     linestats(afile.c_str());
-// }
-
-// BENCHMARK(linestats, linestats_2_17, number_of_samples, number_of_operations) {
-//     using FastLineStats = ioutils::StreamReader<LineStatsStd, 1 << 17>;
-//     FastLineStats linestats;
-//     linestats(afile.c_str());
-// }
-
-// BENCHMARK(linestats, linestats_2_18, number_of_samples, number_of_operations) {
-//     using FastLineStats = ioutils::StreamReader<LineStatsStd, 1 << 18>;
-//     FastLineStats linestats;
-//     linestats(afile.c_str());
-// }
-
-// BENCHMARK(linestats, linestats_2_19, number_of_samples, number_of_operations) {
-//     using FastLineStats = ioutils::StreamReader<LineStatsStd, 1 << 19>;
-//     FastLineStats linestats;
-//     linestats(afile.c_str());
-// }
-
-// BENCHMARK(linestats, linestats_2_20, number_of_samples, number_of_operations) {
-//     using FastLineStats = ioutils::StreamReader<LineStatsStd, 1 << 20>;
-//     FastLineStats linestats;
-//     linestats(afile.c_str());
-// }
-
-// BENCHMARK(linestats, memchr, number_of_samples, number_of_operations) {
-//     using Reader = ioutils::StreamReader<LineStats, 1 << 17>;
-//     Reader linestats;
-//     linestats(afile.c_str());
-// }
-
-// BENCHMARK(linestats, filestats, number_of_samples, number_of_operations) {
-//     using Reader = ioutils::StreamReader<ioutils::FileStats, 1 << 17>;
-//     Reader linestats;
-//     linestats(afile.c_str());
-// }

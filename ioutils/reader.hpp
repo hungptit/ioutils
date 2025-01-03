@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <utility>
 
 namespace ioutils {
     // A reader class which reads data in blocks.
