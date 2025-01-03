@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include <utility>
 namespace ioutils {
@@ -18,8 +19,7 @@ namespace ioutils {
         void process(const char *buffer, const size_t len, const size_t /*unused*/) {
             data.append(buffer, len);
         }
-        // auto get_data() -> const std::string & { return data; }
-        auto get_data() -> std::string { return std::move(data); }
+        auto get_data() -> const std::string & { return data; }
         void finalize() {}
         void set_filename(const char * /*unused*/) {}
         void clear() { data.clear(); }

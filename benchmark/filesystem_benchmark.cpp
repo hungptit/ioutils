@@ -7,11 +7,10 @@
 #include <unistd.h>
 #include "ioutils/filesystem.hpp"
 #include <filesystem>
-
 #include <benchmark/benchmark.h>
 
 const std::string fname("filesystem.cpp");
-struct stat buf;
+static struct stat buf;
 
 // Use stat function
 void use_stat(benchmark::State &state) {

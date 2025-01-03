@@ -1,18 +1,22 @@
-#include <fstream>
-#include <iostream>
-// #include "boost_memmap.hpp"
+#include "catch2/catch_test_macros.hpp"
 #include "celero/Celero.h"
 #include "ioutils/reader.hpp"
+#include <boost/iostreams/device/mapped_file.hpp>
+#include <fstream>
 #include <iostream>
+#include <string>
 // #include "memchr.hpp"
 // #include "experiments.hpp"
 // #include "ioutils/fdreader.hpp"
 // #include "ioutils/linestats.hpp"
 #include "ioutils/read_policies.hpp"
 
+#define ANKERL_NANOBENCH_IMPLEMENT
+#include <nanobench.h>
+
 namespace test {
     constexpr char EOL = '\n';
-    template <typename Container> auto read_iostream(const std::string &afile) -> Container {
+    template <typename Container> auto read_all_data_std_iostream(const std::string &afile) -> Container {
         std::ifstream t(afile);
         Container str;
         t.seekg(0, std::ios::end);
@@ -23,7 +27,13 @@ namespace test {
         return str;
     }
 
-    auto iostream_linestats(const std::string &afile) -> size_t {
+    auto read_all_data_boost_iostreams(const std::string &afile) -> std::string {
+        boost::iostreams::mapped_file mmap(afile, boost::iostreams::mapped_file::readonly);
+        auto begin = mmap.const_data();
+        return std::string(begin, mmap.size());
+    }
+
+    auto count_lines_using_std_iostream(const std::string &afile) -> size_t {
         std::ifstream t(afile);
         size_t lines = 0;
         std::for_each(std::istreambuf_iterator<char>(t), std::istreambuf_iterator<char>(),
@@ -33,96 +43,108 @@ namespace test {
         return lines;
     }
 
-    // auto memmap_linestats(const std::string &afile) -> size_t {
-    //     boost::iostreams::mapped_file mmap(afile, boost::iostreams::mapped_file::readonly);
-    //     auto begin = mmap.const_data();
-    //     auto end = begin + mmap.size();
-    //     size_t lines;
-    //     std::for_each(begin, end, [&lines](auto const item) {
-    //         if (item == EOL) ++lines;
-    //     });
-    //     return lines;
-    // }
-    //
+    auto count_lines_using_boost_iostreams(const std::string &afile) -> size_t {
+        boost::iostreams::mapped_file mmap(afile, boost::iostreams::mapped_file::readonly);
+        auto begin = mmap.const_data();
+        auto end = begin + mmap.size();
+        size_t lines;
+        std::for_each(begin, end, [&lines](auto const item) {
+            if (item == EOL) ++lines;
+        });
+        return lines;
+    }
 
-    //
-
-    template <int chunk_size> auto read_file_content_ioutils(const std::string &datafile) {
+    template <int chunk_size> decltype(auto) read_file_content_ioutils(const std::string &datafile) {
         using Policy = ioutils::AppendPolicy<std::string>;
         ioutils::FileReader<Policy, chunk_size> reader;
         reader(datafile.c_str());
-        return reader.get_data();
+        return reader;
     }
 } // namespace test
 
-const int number_of_samples = 20;
-const int number_of_operations = 2;
-const std::string afile("3200.txt");
+namespace {
+    constexpr int number_of_samples = 20;
+    constexpr int minimum_number_of_operations = 3;
+    constexpr int number_of_warmup_runs = 3;
+    static const std::string text_data_file("3200.txt");
+} // namespace
 
-CELERO_MAIN
+TEST_CASE("Benchmark different whole file content reading algorithms") {
+    SECTION("Validate the correctness of all algorithms") {
+        const auto expected_results = test::read_all_data_std_iostream<std::string>(text_data_file);
+        CHECK(test::read_file_content_ioutils<16>(text_data_file).get_data() == expected_results);
+        CHECK(test::read_all_data_boost_iostreams(text_data_file) == expected_results);
+    }
 
-BASELINE(read, iostream, number_of_samples, number_of_operations) {
-    celero::DoNotOptimizeAway(test::read_iostream<std::string>(afile));
+    auto bench = ankerl::nanobench::Bench()
+                     .warmup(number_of_warmup_runs)
+                     .minEpochIterations(minimum_number_of_operations);
+
+    bench.run("iostream", []() {
+        ankerl::nanobench::doNotOptimizeAway(test::read_all_data_std_iostream<std::string>(text_data_file));
+    });
+
+    bench.run("file_reader_chunksize=2^10", []() {
+        ankerl::nanobench::doNotOptimizeAway(test::read_file_content_ioutils<1 << 10>(text_data_file));
+    });
+
+    bench.run("file_reader_chunksize=2^11", []() {
+        ankerl::nanobench::doNotOptimizeAway(test::read_file_content_ioutils<1 << 11>(text_data_file));
+    });
+
+    bench.run("file_reader_chunksize=2^12", []() {
+        ankerl::nanobench::doNotOptimizeAway(test::read_file_content_ioutils<1 << 12>(text_data_file));
+    });
+
+    bench.run("file_reader_chunksize=2^13", []() {
+        ankerl::nanobench::doNotOptimizeAway(test::read_file_content_ioutils<1 << 13>(text_data_file));
+    });
+
+    bench.run("file_reader_chunksize=2^14", []() {
+        ankerl::nanobench::doNotOptimizeAway(test::read_file_content_ioutils<1 << 14>(text_data_file));
+    });
+
+    bench.run("file_reader_chunksize=2^15", []() {
+        ankerl::nanobench::doNotOptimizeAway(test::read_file_content_ioutils<1 << 15>(text_data_file));
+    });
+
+    bench.run("file_reader_chunksize=2^16", []() {
+        ankerl::nanobench::doNotOptimizeAway(test::read_file_content_ioutils<1 << 16>(text_data_file));
+    });
+
+    bench.run("file_reader_chunksize=2^17", []() {
+        ankerl::nanobench::doNotOptimizeAway(test::read_file_content_ioutils<1 << 17>(text_data_file));
+    });
+
+    bench.run("file_reader_chunksize=2^18", []() {
+        ankerl::nanobench::doNotOptimizeAway(test::read_file_content_ioutils<1 << 18>(text_data_file));
+    });
+
+    bench.run("file_reader_chunksize=2^19", []() {
+        ankerl::nanobench::doNotOptimizeAway(test::read_file_content_ioutils<1 << 19>(text_data_file));
+    });
+
+    bench.run("boost::iostream::mapped_file", []() {
+        ankerl::nanobench::doNotOptimizeAway(test::read_all_data_boost_iostreams(text_data_file));
+    });
 }
 
-// BENCHMARK(read, boost_memmap, number_of_samples, number_of_operations) {
-//     celero::DoNotOptimizeAway(ioutils::read_memmap<std::string>(afile));
-// }
+TEST_CASE("Benchmark different line counting algorithms") {
+    auto bench = ankerl::nanobench::Bench()
+                     .warmup(number_of_warmup_runs)
+                     .minEpochIterations(minimum_number_of_operations);
 
-BENCHMARK(read, read_2_10, number_of_samples, number_of_operations) {
-    celero::DoNotOptimizeAway(test::read_file_content_ioutils<1 << 10>(afile));
+    SECTION("Validate the correctness of all algorithms") {}
+
+    SECTION("Benchmark all line counting algorithms") {
+
+        bench.run("Counting lines using std::iostream",
+                  []() { ankerl::nanobench::doNotOptimizeAway(test::count_lines_using_std_iostream(text_data_file)); });
+
+        bench.run("Counting lines using boost::iostreams",
+                  []() { ankerl::nanobench::doNotOptimizeAway(test::count_lines_using_boost_iostreams(text_data_file)); });
+    }
 }
-
-BENCHMARK(read, read_2_11, number_of_samples, number_of_operations) {
-    celero::DoNotOptimizeAway(test::read_file_content_ioutils<1 << 11>(afile));
-}
-
-BENCHMARK(read, read_2_12, number_of_samples, number_of_operations) {
-    celero::DoNotOptimizeAway(test::read_file_content_ioutils<1 << 12>(afile));
-}
-
-BENCHMARK(read, read_2_13, number_of_samples, number_of_operations) {
-    celero::DoNotOptimizeAway(test::read_file_content_ioutils<1 << 13>(afile));
-}
-
-BENCHMARK(read, read_2_14, number_of_samples, number_of_operations) {
-    celero::DoNotOptimizeAway(test::read_file_content_ioutils<1 << 14>(afile));
-}
-
-BENCHMARK(read, read_2_15, number_of_samples, number_of_operations) {
-    celero::DoNotOptimizeAway(test::read_file_content_ioutils<1 << 15>(afile));
-}
-
-BENCHMARK(read, read_2_16, number_of_samples, number_of_operations) {
-    celero::DoNotOptimizeAway(test::read_file_content_ioutils<1 << 16>(afile));
-}
-
-BENCHMARK(read, read_2_17, number_of_samples, number_of_operations) {
-    celero::DoNotOptimizeAway(test::read_file_content_ioutils<1 << 17>(afile));
-}
-
-BENCHMARK(read, read_2_18, number_of_samples, number_of_operations) {
-    celero::DoNotOptimizeAway(test::read_file_content_ioutils<1 << 18>(afile));
-}
-
-BENCHMARK(read, read_2_19, number_of_samples, number_of_operations) {
-    celero::DoNotOptimizeAway(test::read_file_content_ioutils<1 << 19>(afile));
-}
-
-BENCHMARK(read, read_2_20, number_of_samples, number_of_operations) {
-    celero::DoNotOptimizeAway(test::read_file_content_ioutils<1 << 20>(afile));
-}
-
-// Read and process data benchmark
-BASELINE(linestats, iostream_linestats, number_of_samples, number_of_operations) {
-    celero::DoNotOptimizeAway(test::iostream_linestats(afile));
-    // std::cout << test::iostream_linestats(afile) << "\n";
-}
-
-// BENCHMARK(linestats, memmap_linestats, number_of_samples, number_of_operations) {
-//     celero::DoNotOptimizeAway(test::memmap_linestats(afile));
-//     // std::cout << test::memmap_linestats(afile) << "\n";
-// }
 
 // using LineStatsStd = typename ioutils::experiments::LineStats_std<ioutils::experiments::LineStatsBase>;
 // using LineStats = typename ioutils::experiments::LineStats<ioutils::experiments::LineStatsBase>;

@@ -1,23 +1,8 @@
 include(${PROJECT_SOURCE_DIR}/cmake/catch2.cmake)
-
-# Add benchmark TODO: Do not install benchmark because users do not need it.
-FetchContent_Declare(
-  benchmark
-  GIT_REPOSITORY https://github.com/google/benchmark.git
-  GIT_TAG main)
-set(BENCHMARK_ENABLE_TESTING OFF)
-set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
-set(BENCHMARK_ENABLE_ASSEMBLY_TEST OFF)
-FetchContent_MakeAvailable(benchmark)
-
-# celero TODO: Do not install celero because users do not need it.
-FetchContent_Declare(
-  celero
-  GIT_REPOSITORY git@github.com:hungptit/Celero.git
-  GIT_TAG hd-fix-warnings)
-set(CELERO_COMPILE_DYNAMIC_LIBRARIES OFF)
-set(CELERO_ENABLE_EXPERIMENTS OFF)
-FetchContent_MakeAvailable(celero)
+include(${PROJECT_SOURCE_DIR}/cmake/celero.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake/boost.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake/benchmark.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake/nanobench.cmake)
 
 # This option make sure that we use the local boost version. Note that if the
 # system boost is installed then CMake might use that boost version.
@@ -37,11 +22,17 @@ find_package(Boost REQUIRED system filesystem iostreams)
 set(COMMAND_SRC_FILES read_data)
 foreach(src_file ${COMMAND_SRC_FILES})
   add_executable(${src_file} ${src_file}.cpp)
-  target_link_libraries(${src_file} ioutils celero ${Boost_LIBRARIES})
+  target_link_libraries(
+    ${src_file}
+    ioutils
+    celero
+    Boost::system
+    Boost::filesystem
+    Boost::iostreams
+    nanobench
+    Catch2::Catch2WithMain)
   target_include_directories(${src_file} PRIVATE ${utils_SOURCE_DIR}/src)
 endforeach(src_file)
-
-message("----> ${utils_SOURCE_DIR}/src")
 
 set(COMMAND_BENCHMARK_COMMANDS find_benchmark locate_benchmark)
 foreach(BENCHMARK ${COMMAND_BENCHMARK_COMMANDS})
