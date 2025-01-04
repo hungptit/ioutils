@@ -1,7 +1,6 @@
 #include "celero/Celero.h"
 #include "nanobench.h"
 #include <catch2/catch_test_macros.hpp>
-#include <iostream>
 
 namespace {
     constexpr int number_of_samples = 10;
