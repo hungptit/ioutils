@@ -2,11 +2,11 @@ include(${PROJECT_SOURCE_DIR}/cmake/fmt.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/catch2.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/celero.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/boost.cmake)
-include(${PROJECT_SOURCE_DIR}/cmake/benchmark.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/nanobench.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/llfio.cmake)
 
-set(COMMAND_SRC_FILES read_data find_benchmark locate_benchmark)
+set(COMMAND_SRC_FILES read_data find_benchmark locate_benchmark
+                      filesystem_benchmark)
 foreach(src_file ${COMMAND_SRC_FILES})
   add_executable(${src_file} ${src_file}.cpp)
   target_link_libraries(
@@ -22,15 +22,3 @@ foreach(src_file ${COMMAND_SRC_FILES})
     Catch2::Catch2WithMain)
   target_include_directories(${src_file} PRIVATE ${utils_SOURCE_DIR}/src)
 endforeach(src_file)
-
-set(COMMAND_BENCHMARK_COMMANDS filesystem_benchmark)
-foreach(BENCHMARK ${COMMAND_BENCHMARK_COMMANDS})
-  add_executable(${BENCHMARK} ${BENCHMARK}.cpp)
-  target_link_libraries(
-    ${BENCHMARK} PRIVATE ioutils benchmark::benchmark benchmark::benchmark_main
-                         Catch2::Catch2WithMain)
-  target_include_directories(
-    ${BENCHMARK}
-    PRIVATE "${benchmark_SOURCE_DIR}/include/" "${PROJECT_SOURCE_DIR}"
-            "${ROOT_DIR}/3p/include" "${utils_SOURCE_DIR}/src/")
-endforeach(BENCHMARK)

@@ -96,7 +96,7 @@ namespace {
         namespace llfio = LLFIO_V2_NAMESPACE;
         auto result = llfio::mapped_file({}, file_path, llfio::file_handle::mode::read,
                                          llfio::file_handle::creation::open_existing,
-                                         llfio::file_handle::caching::all, llfio::file_handle::flag::none);
+                                         llfio::file_handle::caching::reads_and_metadata, llfio::file_handle::flag::none);
         if (result.has_error()) {
             fmt::print(stderr, "Cannot open: {}\n", file_path);
             return EXIT_FAILURE;
@@ -128,8 +128,7 @@ namespace {
 } // namespace
 
 namespace {
-    constexpr int number_of_samples = 20;
-    constexpr int minimum_number_of_operations = 3;
+    constexpr int minimum_number_of_operations = 10;
     constexpr int number_of_warmup_runs = 3;
     static const std::string text_data_file("3200.txt");
 } // namespace
