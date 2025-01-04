@@ -1,66 +1,55 @@
+#include "catch2/catch_test_macros.hpp"
+#include "ioutils/filesystem.hpp"
 #include <cstdlib>
 #include <cstring>
 #include <dirent.h>
 #include <fcntl.h>
+#include <filesystem>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include "ioutils/filesystem.hpp"
-#include <filesystem>
-#include <benchmark/benchmark.h>
 
-const std::string fname("filesystem.cpp");
-static struct stat buf;
+#define ANKERL_NANOBENCH_IMPLEMENT
+#include <nanobench.h>
 
-// Use stat function
-void use_stat(benchmark::State &state) {
-    for (auto _ : state) {
-        struct stat buf;
-        benchmark::DoNotOptimize(stat(fname.data(), &buf));
-    }
-}
-BENCHMARK(use_stat);
+namespace {
+    constexpr int warmup_times = 3;
+    constexpr int minimum_iterations = 10;
 
-// Use open function
-void use_open(benchmark::State &state) {
-    for (auto _ : state) {
+    const std::string fname("filesystem.cpp");
+    static struct stat buf;
+
+    bool exist_stat(const std::string &p) {
+        stat(p.data(), &buf);
+        return true;
+    };
+
+    bool exist_open(const std::string &p) {
         int fd = open(fname.data(), O_RDONLY);
-        if (fd > -1) close(fd);
+        bool result = fd > -1;
+        close(fd);
+        return result;
     }
-}
-BENCHMARK(use_open);
 
-// Use access function
-void use_access(benchmark::State &state) {
-    for (auto _ : state) {
-        benchmark::DoNotOptimize(access(fname.data(), R_OK));
+    bool exist_access(const std::string &p) {
+        return access(p.data(), R_OK) == 0;
     }
+} // namespace
+
+TEST_CASE("Check file exist algorithms") {
+    auto bench = ankerl::nanobench::Bench().warmup(warmup_times).minEpochIterations(minimum_iterations);
+
+    bench.run("Use stat", []() { exist_stat(fname); });
+    bench.run("Use open", []() { exist_open(fname); });
+    bench.run("Use access", []() { exist_access(fname); });
+    bench.run("std::filesystem::exist", []() {
+        return std::filesystem::exists(fname);
+    });
 }
-BENCHMARK(use_access);
 
-void use_std(benchmark::State &state) {
-    for (auto _ : state) {
-        std::filesystem::path p(fname);
-        benchmark::DoNotOptimize(std::filesystem::exists(p));
-    }
+TEST_CASE("Find stems") {
+    const std::string stem("This");
+    auto bench = ankerl::nanobench::Bench().warmup(warmup_times).minEpochIterations(minimum_iterations);
+    bench.run("is_valid_dir", [&stem]() { ioutils::filesystem::is_valid_dir(stem.data()); });
+    bench.run("is_valid_dir_slow", [&stem]() { ioutils::filesystem::is_valid_dir_slow(stem.data()); });
 }
-BENCHMARK(use_std);
-
-const std::string stem("This");
-
-// Simple if
-void use_simple_if(benchmark::State &state) {
-    for (auto _ : state) {
-        benchmark::DoNotOptimize(ioutils::filesystem::is_valid_dir_slow(stem.data()));
-    }
-}
-BENCHMARK(use_simple_if);
-
-void use_recursive(benchmark::State &state) {
-    for (auto _ : state) {
-        benchmark::DoNotOptimize(ioutils::filesystem::is_valid_dir(stem.data()));
-    }
-}
-BENCHMARK(use_recursive);
-
-BENCHMARK_MAIN();
