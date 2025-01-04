@@ -1,43 +1,55 @@
 #include "celero/Celero.h"
-#include <iostream>
+#include "nanobench.h"
 #include <catch2/catch_test_macros.hpp>
+#include <iostream>
 
-constexpr int number_of_samples = 10;
-constexpr int number_of_operations = 1;
+namespace {
+    constexpr int number_of_samples = 10;
+    constexpr int number_of_operations = 1;
 
 #ifdef __APPLE__
-const std::string find_cmd = "gfind ";
+    const std::string find_cmd = "gfind ";
 #else
-const std::string find_cmd = "find ";
+    const std::string find_cmd = "find ";
 #endif
 
-const std::string fast_find("../commands/fast-find ");
-const std::string tmp_file = "/tmp/output.log";
-const std::string test_path(std::getenv("TEST_DIR"));
+    const std::string fast_find("../commands/fast-find ");
+    const std::string tmp_file = "/tmp/output.log";
+    const std::string test_path(std::getenv("TEST_DIR"));
 
-auto test(const std::string &command, const std::string &path) -> int {
-    std::string buffer = command + path + " &> " + tmp_file;
-    return system(buffer.data());
+    auto test(const std::string &command, const std::string &path) -> int {
+        std::string buffer = command + path + " &> " + tmp_file;
+        return system(buffer.data());
+    }
+
+    auto test_find_regex(const std::string &command, const std::string &regex, const std::string &path)
+        -> int {
+        std::string buffer = command + " " + path + " |& grep -E " + regex + " > " + tmp_file;
+        return system(buffer.data());
+    }
+
+    auto test_fast_find_regex(const std::string &command, const std::string &regex, const std::string &path)
+        -> int {
+        std::string buffer = command + " -e " + regex + " " + path + " &> " + tmp_file;
+        return system(buffer.data());
+    }
+
+    auto test_fd_regex(const std::string &command, const std::string &regex, const std::string &path)
+        -> int {
+        std::string buffer = command + " " + regex + " " + path + " &> " + tmp_file;
+        return system(buffer.data());
+    }
+
+    // const std::string pattern1{"\'/\\w+options.c(p)*$\'"};
+    const std::string pattern1{" zstd/.*doc/README[.]md$ "};
+
+} // namespace
+
+TEST_CASE("Basic benchmarks") {
+    auto bench = ankerl::nanobench::Bench().minEpochIterations(10);
+
+    bench.run("GNU find", [](){test(find_cmd, test_path);});
 }
-
-auto test_find_regex(const std::string &command, const std::string &regex, const std::string &path) -> int {
-    std::string buffer = command + " " + path + " |& grep -E " + regex + " > " + tmp_file;
-    return system(buffer.data());
-}
-
-auto test_fast_find_regex(const std::string &command, const std::string &regex, const std::string &path)
-    -> int {
-    std::string buffer = command + " -e " + regex + " " + path + " &> " + tmp_file;
-    return system(buffer.data());
-}
-
-auto test_fd_regex(const std::string &command, const std::string &regex, const std::string &path) -> int {
-    std::string buffer = command + " " + regex + " " + path + " &> " + tmp_file;
-    return system(buffer.data());
-}
-
-// const std::string pattern1{"\'/\\w+options.c(p)*$\'"};
-const std::string pattern1{" zstd/.*doc/README[.]md$ "};
 
 CELERO_MAIN
 
