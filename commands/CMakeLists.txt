@@ -1,4 +1,5 @@
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+
 set(COMMANDS fast-updatedb fast-locate fast-find fast-wc)
 foreach(COMMAND ${COMMANDS})
   add_executable(${COMMAND} ${COMMAND}.cpp)

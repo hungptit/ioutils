@@ -144,7 +144,6 @@ TEST_CASE("Benchmark different whole file content reading algorithms") {
     auto bench = ankerl::nanobench::Bench()
                      .warmup(number_of_warmup_runs)
                      .minEpochIterations(minimum_number_of_operations);
-
     bench.run("iostream", []() {
         ankerl::nanobench::doNotOptimizeAway(read_all_data_std_iostream<std::string>(text_data_file));
     });
