@@ -1,14 +1,15 @@
-* TODO Add a benchmark for std::filesystem and boost::filesystem
-* TODO Allow users to save results in different formats
-  + JSON
-  + XML
-* TODO Submit a proposal to CppCon?
-* TODO Search by attributes 
+* TODO Search by attributes
   + Old than
   + Newer than
-  + Between a given time lot
+  + Between a given time range
   + Readonly files
   + Write only files
   + Executable files
   + File size is larger/smaller than a given threshold.
 * TODO Allow users to execute a command on matched files.
+* TODO Use arparse to parse the input arguments
+* TODO Use re2 to support arm64.
+* TODO Use glaze to print configuration parameters.
+* TODO Only expose the public API.
+* TODO Use memmap to read file content.
+* TODO Try llfio
