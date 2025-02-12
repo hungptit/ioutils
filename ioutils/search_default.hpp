@@ -31,10 +31,10 @@ namespace ioutils::filesystem {
 
         void traverse(const std::vector<std::string> &paths) {
             for (auto p : paths) {
-                if (!use_dfs) {
-                    bfs(p);
-                } else {
+                if (use_dfs) {
                     dfs(p);
+                } else {
+                    bfs(p);
                 }
             }
         }
@@ -95,12 +95,12 @@ namespace ioutils::filesystem {
             auto const mode = props.st_mode & S_IFMT;
             if (mode == S_IFDIR) { // A directory
                 DIR *dirp = fdopendir(fd);
-                if (dirp != nullptr) {
-                    struct dirent *info;
-                    while ((info = readdir(dirp)) != nullptr) {
+                if (dirp) {
+                    struct dirent *info = nullptr;
+                    while ((info = readdir(dirp))) {
                         switch (info->d_type) {
                         case DT_DIR: {
-                            // We have to exclude .. and .. folder from our search results.
+                            // We will exclude .. and . folder from our search results.
                             const bool is_valid_dir = filesystem::is_valid_dir(info->d_name) &&
                                                       Policy::is_valid_dir(info->d_name);
                             if (is_valid_dir) {
