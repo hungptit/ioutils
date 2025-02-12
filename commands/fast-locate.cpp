@@ -1,9 +1,11 @@
+#include "3p/llfio/include/quickcpplib/optional/optional.hpp"
 #include "clara.hpp"
 #include "fmt/base.h"
 #include "hs_compile.h"
 #include "ioutils/locate.hpp"
 #include "ioutils/utilities.hpp"
 #include "version.hpp"
+#include <filesystem>
 #include <string>
 
 namespace {
@@ -73,10 +75,18 @@ namespace {
 
         if (dbs.empty()) {
             auto *default_db = std::getenv("FAST_LOCATE_DB");
-            if (default_db == nullptr) {
-                params.databases.emplace_back(".database");
+
+            // Try the environment variable if exist.
+            if (default_db) {
+                if (std::filesystem::exists(default_db)) {
+                    params.databases.emplace_back(default_db);
+                }
             } else {
-                params.databases.emplace_back(default_db);
+                const auto current_dir = std::filesystem::current_path();
+                auto local_db = current_dir / ".database";
+                if (std::filesystem::exists(local_db)) {
+                    params.databases.emplace_back(std::move(local_db));
+                }
             }
         } else {
             for (const auto &item : dbs) {
@@ -84,6 +94,15 @@ namespace {
             }
             for (const auto &item : lookup) {
                 params.databases.push_back(item);
+            }
+        }
+
+        // Try the home folder if the database list is empty
+        if (params.databases.empty()) {
+            auto *home_dir = std::getenv("HOME");
+            auto db = std::filesystem::path(home_dir) / ".database";
+            if (std::filesystem::exists(db)) {
+                params.databases.emplace_back(std::move(db));
             }
         }
 
