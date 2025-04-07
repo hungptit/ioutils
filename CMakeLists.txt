@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.25)
+
 cmake_policy(SET CMP0048 NEW)
 project(
   ioutils
@@ -5,7 +7,6 @@ project(
   DESCRIPTION "A blazing fast replacement tools for find and locate commands."
   LANGUAGES CXX)
 
-cmake_minimum_required(VERSION 3.15)
 
 # Use ccache by default
 find_program(CCACHE_PROGRAM ccache)
