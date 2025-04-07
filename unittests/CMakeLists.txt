@@ -13,6 +13,7 @@ set(TEST_EXECUTABLES
     read_stdin_test
     locate_test
     read_data_test
+    reflex_test
     stream_reader_test
     tempdir_test
     utilities_test
@@ -21,12 +22,19 @@ set(TEST_EXECUTABLES
 foreach(target ${TEST_EXECUTABLES})
   add_executable(${target} ${target}.cpp)
   target_link_libraries(
-    ${target} PRIVATE ioutils test_ioutils ${LIB_HS} ${LIB_HS_RUNTIME} fmt::fmt
+    ${target} PRIVATE ioutils test_ioutils ${LIB_HS} ${LIB_HS_RUNTIME} fmt::fmt Reflex::ReflexLibStatic
                       Catch2::Catch2WithMain)
   target_code_coverage(${target} AUTO ALL)
   target_include_directories(${target} PRIVATE ${PROJECT_SOURCE_DIR}
                                                ${utils_SOURCE_DIR}/src/)
   add_test(ioutils_${target} ./${target})
+endforeach()
+
+# Test ugrep
+set(TEST_EXECUTABLES ugrep_test)
+foreach(target ${TEST_EXECUTABLES})
+  add_executable(${target} ${target}.cpp)
+  target_link_libraries(${target} PRIVATE Reflex::ReflexLibStatic)
 endforeach()
 
 enable_testing()
