@@ -51,6 +51,7 @@ endif()
 
 # Get required libraries
 include(FetchContent)
+include(cmake/lto.cmake)
 include(cmake/hyperscan.cmake)
 include(cmake/fmt.cmake)
 include(cmake/utils.cmake)
@@ -59,6 +60,7 @@ include(cmake/clara.cmake)
 include(cmake/format_files.cmake)
 include(cmake/jemalloc.cmake)
 include(cmake/nanobench.cmake)
+include(cmake/reflex.cmake)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/_deps/cmake_scripts-src/;")
 include(c++-standards)
