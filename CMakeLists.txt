@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.25)
+
 cmake_policy(SET CMP0048 NEW)
 project(
   ioutils
@@ -5,7 +7,6 @@ project(
   DESCRIPTION "A blazing fast replacement tools for find and locate commands."
   LANGUAGES CXX)
 
-cmake_minimum_required(VERSION 3.15)
 
 # Use ccache by default
 find_program(CCACHE_PROGRAM ccache)
@@ -51,6 +52,7 @@ endif()
 
 # Get required libraries
 include(FetchContent)
+include(cmake/lto.cmake)
 include(cmake/hyperscan.cmake)
 include(cmake/fmt.cmake)
 include(cmake/utils.cmake)
@@ -59,6 +61,7 @@ include(cmake/clara.cmake)
 include(cmake/format_files.cmake)
 include(cmake/jemalloc.cmake)
 include(cmake/nanobench.cmake)
+include(cmake/reflex.cmake)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/_deps/cmake_scripts-src/;")
 include(c++-standards)
