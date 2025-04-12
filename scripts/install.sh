@@ -3,7 +3,7 @@ set -euo pipefail
 dst_dir=$1
 
 # Use clang++ to compile code on non-Windows platforms.
-cmake ./ -DCMAKE_INSTALL_PREFIX="$dst_dir" -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Release
+cmake ./ -DCMAKE_INSTALL_PREFIX="$dst_dir" -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=20 -DCMAKE_LINKER_TYPE=LLD -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=TRUE
 make -j9
 
 # Copy commands to the destination

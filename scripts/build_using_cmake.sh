@@ -32,7 +32,7 @@ rm -rf "$build_dir"
 mkdir -p "$build_dir"
 
 pushd "$build_dir"
-cmake "$src_dir" -DCMAKE_INSTALL_PREFIX="$prefix_dir" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=20 "${@:2}"
+cmake "$src_dir" -DCMAKE_INSTALL_PREFIX="$prefix_dir" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_STANDARD=20 -DCMAKE_LINKER_TYPE=LLD -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=TRUE "${@:2}"
 make "-j$number_of_cpus"
 make install
 
