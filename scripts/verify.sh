@@ -11,5 +11,6 @@ echo "Find all files using GNU find"
 # Verify the fast-find output
 printf "Find all files using fast-find\n"
 /usr/bin/time -v fast-find "$src" --donot-ignore-git | sort -s >$data2
+
 printf "==== Verify the output of fast-find ====\n"
 diff "$data1" "$data2"
