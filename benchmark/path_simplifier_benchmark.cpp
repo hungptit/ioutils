@@ -11,7 +11,10 @@ namespace {
     constexpr int MIN_ITERATIONS = 100000;
 
     static const std::vector<std::string> test_paths = {
-        "_deps/boost-src/libs/outcome/include/boost/outcome/detail/coroutine_support.ipp"};
+        "_deps/boost-src/libs/outcome/include/boost/outcome/detail/coroutine_support.ipp",
+        "/home/hungptit/working/ioutils/_deps/boost-src/libs/outcome/include/boost/outcome/detail/coroutine_support.ipp",
+        "_deps/boost-src/libs/../../outcome/include/boost/../outcome/detail/coroutine_support.ipp",
+    };
 
     void run_tests(const std::vector<std::string> &test_paths) {}
 } // namespace

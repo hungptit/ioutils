@@ -17,8 +17,7 @@ namespace ioutils {
 
 namespace ioutils::path {
     /**
-     * This function will simplify the given path string so that the displayed path
-     * makes sense to users.
+     * Create a compact representation of a given path.
      *
      * Runtime: O(n)
      * Memory: O(n)
@@ -27,6 +26,7 @@ namespace ioutils::path {
         constexpr char DOT_DOT[] = "..";
         constexpr char DOT[] = ".";
         constexpr char SLASH = '/';
+        constexpr size_t MAX_PATH_COMPONENTS = 32;
 
         const int N = static_cast<int>(path.size());
         if (path.empty()) {
@@ -37,28 +37,29 @@ namespace ioutils::path {
         std::string results;
         results.reserve(N);
 
-        int begin = 0;
-        int end = N - 1;
-        bool relative_path = path[0] != SLASH;
-
         // Skip trailing slashes
+        int end = N - 1;
         while (end >= 0 && path[end] == SLASH) {
             --end;
         }
-        // Skip leading slashes
+
+        // Skip leading slashes and determine if path is relative
+        int begin = 0;
+        bool relative_path = path[0] != SLASH;
         while (begin < end && path[begin] == SLASH) {
             ++begin;
         }
 
         // Handle root path case
         if (begin > end) {
-            return relative_path ? "." : "/";
+            return relative_path ? DOT : "/";
         }
 
         // Pre-allocate tokens vector with a reasonable size
         std::vector<std::string_view> tokens;
-        tokens.reserve(32); // Most paths won't have more than 32 components
+        tokens.reserve(MAX_PATH_COMPONENTS);
 
+        // Process path components
         auto ptr = begin;
         while (begin <= end) {
             // Find next slash
@@ -69,7 +70,9 @@ namespace ioutils::path {
             // Extract token
             const std::string_view stem(path.data() + begin, ptr - begin);
 
-            if (stem == DOT) {
+            if (stem.empty()) {
+                // Skip empty components
+            } else if (stem == DOT) {
                 // Ignore current directory
             } else if (stem == DOT_DOT) {
                 if (tokens.empty()) {
@@ -77,7 +80,7 @@ namespace ioutils::path {
                         tokens.push_back(DOT_DOT);
                     }
                 } else {
-                    if (tokens.back() == "..") {
+                    if (tokens.back() == DOT_DOT) {
                         tokens.push_back(DOT_DOT);
                     } else {
                         tokens.pop_back();
@@ -96,8 +99,18 @@ namespace ioutils::path {
 
         // Handle empty tokens case
         if (tokens.empty()) {
-            return relative_path ? "." : "/";
+            return relative_path ? DOT : "/";
         }
+
+        // Calculate final string size to avoid reallocations
+        size_t final_size = tokens.size() - 1; // For slashes
+        for (const auto &token : tokens) {
+            final_size += token.size();
+        }
+        if (!relative_path) {
+            final_size += 1; // For leading slash
+        }
+        results.reserve(final_size);
 
         // Build result string efficiently
         if (!relative_path) {
