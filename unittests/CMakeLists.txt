@@ -22,8 +22,14 @@ set(TEST_EXECUTABLES
 foreach(target ${TEST_EXECUTABLES})
   add_executable(${target} ${target}.cpp)
   target_link_libraries(
-    ${target} PRIVATE ioutils test_ioutils ${LIB_HS} ${LIB_HS_RUNTIME} fmt::fmt Reflex::ReflexLibStatic
-                      Catch2::Catch2WithMain)
+    ${target}
+    PRIVATE ioutils
+            test_ioutils
+            ${LIB_HS}
+            ${LIB_HS_RUNTIME}
+            fmt::fmt
+            Reflex::ReflexLibStatic
+            Catch2::Catch2WithMain)
   target_code_coverage(${target} AUTO ALL)
   target_include_directories(${target} PRIVATE ${PROJECT_SOURCE_DIR}
                                                ${utils_SOURCE_DIR}/src/)

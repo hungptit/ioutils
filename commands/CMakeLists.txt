@@ -1,6 +1,8 @@
 set(COMMANDS fast-updatedb fast-locate fast-find fast-wc)
 foreach(COMMAND ${COMMANDS})
   add_executable(${COMMAND} ${COMMAND}.cpp)
+  # target_compile_options(${COMMAND} PRIVATE -stdlib=libc++)
+  # target_link_options(${COMMAND} PRIVATE -stdlib=libc++)
   target_link_libraries(${COMMAND} ioutils ${LIB_HS} ${LIB_HS_RUNTIME} fmt::fmt
                         -static)
   target_include_directories(${COMMAND} PRIVATE "${clara_SOURCE_DIR}/include/")

@@ -13,12 +13,18 @@ foreach(src_file ${COMMAND_SRC_FILES})
     ${src_file}
     fmt::fmt
     ioutils
-    celero
     llfio::hl
     Boost::system
     Boost::filesystem
     Boost::iostreams
     nanobench
     Catch2::Catch2WithMain)
+  target_include_directories(${src_file} PRIVATE ${utils_SOURCE_DIR}/src)
+endforeach(src_file)
+
+set(COMMAND_SRC_FILES path_simplifier_benchmark)
+foreach(src_file ${COMMAND_SRC_FILES})
+  add_executable(${src_file} ${src_file}.cpp)
+  target_link_libraries(${src_file} ioutils nanobench Catch2::Catch2WithMain)
   target_include_directories(${src_file} PRIVATE ${utils_SOURCE_DIR}/src)
 endforeach(src_file)

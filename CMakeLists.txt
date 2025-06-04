@@ -7,7 +7,6 @@ project(
   DESCRIPTION "A blazing fast replacement tools for find and locate commands."
   LANGUAGES CXX)
 
-
 # Use ccache by default
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
