@@ -77,7 +77,6 @@ namespace ioutils {
                 if (leftover_bytes > 0) {
                     memcpy(buffer, start, leftover_bytes);
                     read_buffer = buffer + leftover_bytes;
-                    ;
                 }
             }
         }

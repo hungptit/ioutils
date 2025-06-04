@@ -30,22 +30,22 @@ TEST_CASE("Find all files") {
     auto bench = ankerl::nanobench::Bench().minEpochIterations(10);
     SECTION("GNU find") {
         const std::string cmd = find_cmd;
-        bench.run(cmd, [&cmd](){test(cmd, test_path);});
+        bench.run(cmd, [&cmd]() { test(cmd, test_path); });
     }
 
     SECTION("fd") {
         const std::string cmd = "fd -H --no-ignore .";
-        bench.run(cmd, [&cmd](){test(cmd, test_path);});
+        bench.run(cmd, [&cmd]() { test(cmd, test_path); });
     }
 
     SECTION("fast-find (default)") {
         const std::string cmd = fast_find + " --donot-ignore-git";
-        bench.run(cmd, [&cmd](){test(cmd, test_path);});
+        bench.run(cmd, [&cmd]() { test(cmd, test_path); });
     }
 
     SECTION("fast-find (bfs)") {
         const std::string cmd = fast_find + " --donot-ignore-git --bfs";
-        bench.run(cmd, [&cmd](){test(cmd, test_path);});
+        bench.run(cmd, [&cmd]() { test(cmd, test_path); });
     }
 }
 
@@ -54,22 +54,22 @@ TEST_CASE("Ignore the .git folder") {
 
     SECTION("GNU find") {
         const std::string cmd = find_cmd;
-        bench.run(cmd, [&cmd](){test(cmd, test_path);});
+        bench.run(cmd, [&cmd]() { test(cmd, test_path); });
     }
 
     SECTION("fd") {
         const std::string cmd = "fd .";
-        bench.run(cmd, [&cmd](){test(cmd, test_path);});
+        bench.run(cmd, [&cmd]() { test(cmd, test_path); });
     }
 
     SECTION("fast-find (default)") {
         const std::string cmd = fast_find;
-        bench.run(cmd, [&cmd](){test(cmd, test_path);});
+        bench.run(cmd, [&cmd]() { test(cmd, test_path); });
     }
 
     SECTION("fast-find (bfs)") {
         const std::string cmd = fast_find + " --bfs";
-        bench.run(cmd, [&cmd](){test(cmd, test_path);});
+        bench.run(cmd, [&cmd]() { test(cmd, test_path); });
     }
 }
 
@@ -77,16 +77,16 @@ TEST_CASE("Find with regex") {
     auto bench = ankerl::nanobench::Bench().minEpochIterations(10);
     SECTION("GNU find") {
         const std::string cmd = find_cmd + " -e " + pattern1;
-        bench.run(cmd, [&cmd](){test(cmd, test_path);});
+        bench.run(cmd, [&cmd]() { test(cmd, test_path); });
     }
 
     SECTION("fd") {
         const std::string cmd = "fd " + pattern1;
-        bench.run(cmd, [&cmd](){test(cmd, test_path);});
+        bench.run(cmd, [&cmd]() { test(cmd, test_path); });
     }
 
     SECTION("fast-find (default)") {
         const std::string cmd = fast_find + " -e " + pattern1;
-    bench.run(cmd, [&cmd](){test(cmd, test_path);});
+        bench.run(cmd, [&cmd]() { test(cmd, test_path); });
     }
 }

@@ -2,13 +2,16 @@
 
 #include "search_params.hpp"
 
+#include <cstring>
+#include <string>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <vector>
 
 namespace ioutils::search {
     struct PathExpansion {
-        void opperator(const std::string &pattern) {
+        void opperator(const std::string &) {
             // Find the root path
 
             // Search for all files using found root path and patterns

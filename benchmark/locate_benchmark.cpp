@@ -1,49 +1,37 @@
-#include "celero/Celero.h"
+#include "catch2/catch_test_macros.hpp"
+#include <cstdlib>
+#include <string>
 
-constexpr int number_of_samples = 10;
-constexpr int number_of_operations = 5;
+#define ANKERL_NANOBENCH_IMPLEMENT
+#include <nanobench.h>
 
-auto test(const std::string &command, const std::string &regex) -> int {
-    std::string buffer = command + regex + " > /tmp/output.log";
-    return system(buffer.data());
-}
+namespace {
+    constexpr int number_of_samples = 10;
+    constexpr int number_of_operations = 5;
 
-auto test_gnu_locate_regex(const std::string &command, const std::string &regex) -> int {
-    const std::string dbfile = "locate.db";
-    std::string buffer = command + " -d " + dbfile + " --regex " + regex + " > /tmp/locate.log";
-    return system(buffer.data());
-}
+    auto test(const std::string &command, const std::string &regex) -> int {
+        std::string buffer = command + regex + " > /tmp/output.log";
+        return system(buffer.data());
+    }
 
-auto test_locate_regex(const std::string &command, const std::string &regex) -> int {
-    const std::string dbfile = ".database";
-    std::string buffer = command + " -d " + dbfile + " " + regex + " > /tmp/fast-locate.log";
-    return system(buffer.data());
-}
+    auto test_gnu_locate_regex(const std::string &command, const std::string &regex) -> int {
+        const std::string dbfile = "locate.db";
+        std::string buffer = command + " -d " + dbfile + " --regex " + regex + " > /tmp/locate.log";
+        return system(buffer.data());
+    }
 
-const std::string pattern1{"zstd/.*doc/README[.]md$"};
+    auto test_locate_regex(const std::string &command, const std::string &regex) -> int {
+        const std::string dbfile = ".database";
+        std::string buffer = command + " -d " + dbfile + " " + regex + " > /tmp/fast-locate.log";
+        return system(buffer.data());
+    }
+    constexpr char pattern1[] = "zstd/.*doc/README[.]md$";
+} // namespace
 
-CELERO_MAIN
+TEST_CASE("Basic benchmark") {
 
-#ifdef __APPLE__
-std::string locate_command = "glocate";
-#else
-std::string locate_command = "locate";
-#endif
-
-// Find all files in the boost source code
-BASELINE(mid, gnu_locate, number_of_samples, number_of_operations) {
-    test(locate_command + " -d locate_db_mid --regex ", pattern1);
-}
-
-BENCHMARK(mid, fast_locate, number_of_samples, number_of_operations) {
-    test("../commands/fast-locate -d .database_mid ", pattern1);
-}
-
-// Find all files in the boost source code
-BASELINE(big, gnu_locate, number_of_samples, number_of_operations) {
-    test(locate_command + " -d locate_db_big --regex ", pattern1);
-}
-
-BENCHMARK(big, fast_locate, number_of_samples, number_of_operations) {
-    test("../commands/fast-locate -d .database_big ", pattern1);
+    auto bm = ankerl::nanobench::Bench().warmup(3).minEpochIterations(10);
+    bm.run("locate - mid", []() { test(std::string("locate") + " -d locate_db --regex ", pattern1); });
+    bm.run("locate - mid",
+           []() { test(std::string("../commands/fast-locate") + " -d .database", pattern1); });
 }

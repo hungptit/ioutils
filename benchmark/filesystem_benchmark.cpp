@@ -31,9 +31,7 @@ namespace {
         return result;
     }
 
-    bool exist_access(const std::string &p) {
-        return access(p.data(), R_OK) == 0;
-    }
+    bool exist_access(const std::string &p) { return access(p.data(), R_OK) == 0; }
 } // namespace
 
 TEST_CASE("Check file exist algorithms") {
@@ -42,9 +40,7 @@ TEST_CASE("Check file exist algorithms") {
     bench.run("Use stat", []() { exist_stat(fname); });
     bench.run("Use open", []() { exist_open(fname); });
     bench.run("Use access", []() { exist_access(fname); });
-    bench.run("std::filesystem::exist", []() {
-        return std::filesystem::exists(fname);
-    });
+    bench.run("std::filesystem::exist", []() { return std::filesystem::exists(fname); });
 }
 
 TEST_CASE("Find stems") {

@@ -94,9 +94,9 @@ namespace {
 
     auto count_lines_llfio(const std::string &file_path) -> size_t {
         namespace llfio = LLFIO_V2_NAMESPACE;
-        auto result = llfio::mapped_file({}, file_path, llfio::file_handle::mode::read,
-                                         llfio::file_handle::creation::open_existing,
-                                         llfio::file_handle::caching::reads_and_metadata, llfio::file_handle::flag::none);
+        auto result = llfio::mapped_file(
+            {}, file_path, llfio::file_handle::mode::read, llfio::file_handle::creation::open_existing,
+            llfio::file_handle::caching::reads_and_metadata, llfio::file_handle::flag::none);
         if (result.has_error()) {
             fmt::print(stderr, "Cannot open: {}\n", file_path);
             return EXIT_FAILURE;
@@ -192,9 +192,8 @@ TEST_CASE("Benchmark different whole file content reading algorithms") {
         ankerl::nanobench::doNotOptimizeAway(read_all_data_boost_iostreams(text_data_file));
     });
 
-    bench.run("llfio::mapped_file", []() {
-        ankerl::nanobench::doNotOptimizeAway(read_all_data_llfio(text_data_file));
-    });
+    bench.run("llfio::mapped_file",
+              []() { ankerl::nanobench::doNotOptimizeAway(read_all_data_llfio(text_data_file)); });
 }
 
 TEST_CASE("Benchmark different line counting algorithms") {
