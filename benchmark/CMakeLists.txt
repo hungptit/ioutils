@@ -1,6 +1,5 @@
 include(${PROJECT_SOURCE_DIR}/cmake/fmt.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/catch2.cmake)
-include(${PROJECT_SOURCE_DIR}/cmake/celero.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/boost.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/nanobench.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/llfio.cmake)
