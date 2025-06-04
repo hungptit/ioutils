@@ -3,30 +3,100 @@
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Simplify paths") {
-    SECTION("Case 1") { CHECK(ioutils::path::simplify_path("") == ""); }
-    SECTION("Case 2") { CHECK(ioutils::path::simplify_path("/") == "/"); }
-    SECTION("Case 3") { CHECK(ioutils::path::simplify_path("////////.") == "/"); }
-    SECTION("Case 4") { CHECK(ioutils::path::simplify_path("////////") == "/"); }
-    SECTION("Case 5") { CHECK(ioutils::path::simplify_path("//home/.//.///.") == "/home"); }
-    SECTION("Case 6") { CHECK(ioutils::path::simplify_path("//home/.//.///..") == "/"); }
-    SECTION("Case 7") { CHECK(ioutils::path::simplify_path("//..") == "/"); }
-    SECTION("Case 8") { CHECK(ioutils::path::simplify_path("//../home") == "/home"); }
-    SECTION("Case 9") { CHECK(ioutils::path::simplify_path("//home/boo/../goo//..//.//.///..") == "/"); }
-    SECTION("Case 10") {
-        CHECK(ioutils::path::simplify_path("/..//home/boo/../goo////.//.///..") == "/home");
+    SECTION("Empty and root paths") {
+        CHECK(ioutils::path::simplify_path("") == "");
+        CHECK(ioutils::path::simplify_path("/") == "/");
+        CHECK(ioutils::path::simplify_path("////////") == "/");
+        CHECK(ioutils::path::simplify_path("////////.") == "/");
     }
-    SECTION("Case 11") {
-        CHECK(ioutils::path::simplify_path("/..//home/../boo/../goo//..//.//.///..") == "/");
+
+    SECTION("Current directory") {
+        CHECK(ioutils::path::simplify_path(".") == ".");
+        CHECK(ioutils::path::simplify_path("./") == ".");
+        CHECK(ioutils::path::simplify_path("./.") == ".");
+        CHECK(ioutils::path::simplify_path("././") == ".");
+        CHECK(ioutils::path::simplify_path(".//.") == ".");
+        CHECK(ioutils::path::simplify_path(".///.") == ".");
     }
-    SECTION("Case 11") { CHECK(ioutils::path::simplify_path("/a//b////c/d//././/..") == "/a/b/c"); }
-    SECTION("Case 12") { CHECK(ioutils::path::simplify_path("/..//a//b////c/d//././/..") == "/a/b/c"); }
-    SECTION("Case 12") { CHECK(ioutils::path::simplify_path("../src////") == "../src"); }
-    SECTION("Case 12") { CHECK(ioutils::path::simplify_path("../../../foo/../src////") == "../../../src"); }
-    SECTION("Case 13") { CHECK(ioutils::path::simplify_path(".") == "."); }
-    SECTION("Case 14") { CHECK(ioutils::path::simplify_path("..") == ".."); }
-    SECTION("Case 15") { CHECK(ioutils::path::simplify_path("../") == ".."); }
-    SECTION("Case 16") { CHECK(ioutils::path::simplify_path("././") == "."); }
-    SECTION("Case 16") { CHECK(ioutils::path::simplify_path("////////") == "/"); }
+
+    SECTION("Parent directory") {
+        CHECK(ioutils::path::simplify_path("..") == "..");
+        CHECK(ioutils::path::simplify_path("../") == "..");
+        CHECK(ioutils::path::simplify_path("../../") == "../..");
+        CHECK(ioutils::path::simplify_path("../../../") == "../../..");
+    }
+
+    SECTION("Simple absolute paths") {
+        CHECK(ioutils::path::simplify_path("/home") == "/home");
+        CHECK(ioutils::path::simplify_path("/home/") == "/home");
+        CHECK(ioutils::path::simplify_path("/home/user") == "/home/user");
+        CHECK(ioutils::path::simplify_path("/home/user/") == "/home/user");
+    }
+
+    SECTION("Simple relative paths") {
+        CHECK(ioutils::path::simplify_path("home") == "home");
+        CHECK(ioutils::path::simplify_path("home/") == "home");
+        CHECK(ioutils::path::simplify_path("home/user") == "home/user");
+        CHECK(ioutils::path::simplify_path("home/user/") == "home/user");
+    }
+
+    SECTION("Paths with current directory references") {
+        CHECK(ioutils::path::simplify_path("/home/./user") == "/home/user");
+        CHECK(ioutils::path::simplify_path("/home/././user") == "/home/user");
+        CHECK(ioutils::path::simplify_path("/home/./user/.") == "/home/user");
+        CHECK(ioutils::path::simplify_path("/home/./user/./") == "/home/user");
+        CHECK(ioutils::path::simplify_path("./home/./user") == "home/user");
+    }
+
+    SECTION("Paths with parent directory references") {
+        CHECK(ioutils::path::simplify_path("/home/../user") == "/user");
+        CHECK(ioutils::path::simplify_path("/home/user/../doc") == "/home/doc");
+        CHECK(ioutils::path::simplify_path("/home/../user/../doc") == "/doc");
+        CHECK(ioutils::path::simplify_path("../home/../user") == "../user");
+        CHECK(ioutils::path::simplify_path("home/../user") == "user");
+    }
+
+    SECTION("Complex path combinations") {
+        CHECK(ioutils::path::simplify_path("/home/./user/../doc/./file") == "/home/doc/file");
+        CHECK(ioutils::path::simplify_path("/home/../user/./doc/../file") == "/user/file");
+        CHECK(ioutils::path::simplify_path("home/./user/../doc/./file") == "home/doc/file");
+        CHECK(ioutils::path::simplify_path("home/../user/./doc/../file") == "user/file");
+    }
+
+    SECTION("Edge cases with multiple slashes") {
+        CHECK(ioutils::path::simplify_path("//home//user//") == "/home/user");
+        CHECK(ioutils::path::simplify_path("home//user//") == "home/user");
+        CHECK(ioutils::path::simplify_path("//home//user//doc//") == "/home/user/doc");
+        CHECK(ioutils::path::simplify_path("home//user//doc//") == "home/user/doc");
+    }
+
+    SECTION("Complex parent directory navigation") {
+        CHECK(ioutils::path::simplify_path("/home/boo/../goo/..") == "/home");
+        CHECK(ioutils::path::simplify_path("/home/boo/../goo/../doc") == "/home/doc");
+        CHECK(ioutils::path::simplify_path("home/boo/../goo/..") == "home");
+        CHECK(ioutils::path::simplify_path("home/boo/../goo/../doc") == "home/doc");
+    }
+
+    SECTION("Root directory edge cases") {
+        CHECK(ioutils::path::simplify_path("/..") == "/");
+        CHECK(ioutils::path::simplify_path("/../") == "/");
+        CHECK(ioutils::path::simplify_path("/../..") == "/");
+        CHECK(ioutils::path::simplify_path("/../../") == "/");
+    }
+
+    SECTION("Mixed relative and absolute paths") {
+        CHECK(ioutils::path::simplify_path("/home/../user/./doc/../../file") == "/file");
+        CHECK(ioutils::path::simplify_path("home/../user/./doc/../../file") == "file");
+        CHECK(ioutils::path::simplify_path("/home/../user/./doc/../../../file") == "/file");
+        CHECK(ioutils::path::simplify_path("home/../user/./doc/../../../file") == "../file");
+    }
+
+    SECTION("Special cases") {
+        CHECK(ioutils::path::simplify_path("...") == "...");
+        CHECK(ioutils::path::simplify_path("....") == "....");
+        CHECK(ioutils::path::simplify_path("/...") == "/...");
+        CHECK(ioutils::path::simplify_path("/....") == "/....");
+    }
 }
 
 TEST_CASE("Console") {

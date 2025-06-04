@@ -12,7 +12,8 @@ namespace {
 
     static const std::vector<std::string> test_paths = {
         "_deps/boost-src/libs/outcome/include/boost/outcome/detail/coroutine_support.ipp",
-        "/home/hungptit/working/ioutils/_deps/boost-src/libs/outcome/include/boost/outcome/detail/coroutine_support.ipp",
+        "/home/hungptit/working/ioutils/_deps/boost-src/libs/outcome/include/boost/outcome/detail/"
+        "coroutine_support.ipp",
         "_deps/boost-src/libs/../../outcome/include/boost/../outcome/detail/coroutine_support.ipp",
     };
 
