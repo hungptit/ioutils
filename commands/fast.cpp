@@ -13,34 +13,6 @@
 #include <vector>
 
 namespace {
-    auto get_default_locate_database() -> std::string {
-        constexpr char LOCATE_DB[] = "LOCATE_DB";
-        auto *default_db = std::getenv(LOCATE_DB);
-
-        // Try the environment variable if exist.
-        if (default_db != nullptr) {
-            if (std::filesystem::exists(default_db)) {
-                return {default_db};
-            }
-        }
-
-        // Use the database in the HOME folder.
-        auto *home_dir = std::getenv("HOME");
-        auto db = std::filesystem::path(home_dir) / ".database";
-        if (std::filesystem::exists(db)) {
-            return db.string();
-        }
-
-        // Use the database in the current folder if exist.
-        const auto current_dir = std::filesystem::current_path();
-        auto local_db = current_dir / ".database";
-        if (std::filesystem::exists(local_db)) {
-            return local_db.string();
-        }
-
-        return "";
-    }
-
     auto execute_command(int argc, char *argv[]) {
         using namespace ioutils::locate;
 
@@ -126,7 +98,7 @@ namespace {
         // Process the specified command
         if (program.is_subcommand_used(LOCATE_COMMAND)) {
             if (args.database.empty()) {
-                args.database = get_default_locate_database();
+                args.database = ioutils::get_default_locate_database();
             }
             ioutils::locate_files(args);
         } else if (program.is_subcommand_used(UPDATE_COMMAND)) {

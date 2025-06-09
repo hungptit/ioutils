@@ -129,4 +129,5 @@ namespace ioutils {
 
     void locate_files(const ioutils::LocateInputArguments &params);
     void locate_files(const ioutils::Parameters &args);
+    auto get_default_locate_database() -> std::string;
 } // namespace ioutils

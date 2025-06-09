@@ -86,4 +86,33 @@ namespace ioutils {
 
         args.regex.empty() ? locate_files_all(args) : locate_files_regex(args);
     }
+
+    auto get_default_locate_database() -> std::string {
+        constexpr char LOCATE_DB[] = "LOCATE_DB";
+        auto *default_db = std::getenv(LOCATE_DB);
+
+        // Try the environment variable if exist.
+        if (default_db != nullptr) {
+            if (std::filesystem::exists(default_db)) {
+                return {default_db};
+            }
+        }
+
+        // Use the database in the HOME folder.
+        auto *home_dir = std::getenv("HOME");
+        auto db = std::filesystem::path(home_dir) / ".database";
+        if (std::filesystem::exists(db)) {
+            return db.string();
+        }
+
+        // Use the database in the current folder if exist.
+        const auto current_dir = std::filesystem::current_path();
+        auto local_db = current_dir / ".database";
+        if (std::filesystem::exists(local_db)) {
+            return local_db.string();
+        }
+
+        return "";
+    }
+
 } // namespace ioutils
