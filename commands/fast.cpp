@@ -13,12 +13,12 @@
 #include <vector>
 
 namespace {
-    std::string get_default_locate_database() {
+    auto get_default_locate_database() -> std::string {
         constexpr char LOCATE_DB[] = "LOCATE_DB";
         auto *default_db = std::getenv(LOCATE_DB);
 
         // Try the environment variable if exist.
-        if (default_db) {
+        if (default_db != nullptr) {
             if (std::filesystem::exists(default_db)) {
                 return {default_db};
             }

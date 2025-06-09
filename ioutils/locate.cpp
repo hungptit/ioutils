@@ -48,11 +48,11 @@ namespace ioutils {
         }
         StreamWriter console;
         boost::iostreams::mapped_file mmap(args.database);
-        auto begin = mmap.const_data();
-        auto ptr = begin;
-        const auto end = begin + mmap.size();
+        const auto *begin = mmap.const_data();
+        const auto *ptr = begin;
+        const auto *const end = begin + mmap.size();
         constexpr char EOL = '\n';
-        while ((ptr = static_cast<const char *>(memchr(begin, EOL, end - begin)))) {
+        while ((ptr = static_cast<const char *>(memchr(begin, EOL, end - begin))) != nullptr) {
             console.write(begin, ptr - begin + 1);
             begin = ptr + 1;
         }
@@ -65,11 +65,11 @@ namespace ioutils {
         }
         StreamWriter console;
         boost::iostreams::mapped_file mmap(args.database);
-        auto begin = mmap.const_data();
-        auto ptr = begin;
-        const auto end = begin + mmap.size();
+        const auto *begin = mmap.const_data();
+        const auto *ptr = begin;
+        const auto *const end = begin + mmap.size();
         constexpr char EOL = '\n';
-        while ((ptr = static_cast<const char *>(memchr(begin, EOL, end - begin)))) {
+        while ((ptr = static_cast<const char *>(memchr(begin, EOL, end - begin))) != nullptr) {
             std::string_view line(begin, ptr - begin + 1);
             if (line.contains(args.regex)) {
                 console.write(begin, ptr - begin + 1);
