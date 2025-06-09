@@ -2,7 +2,7 @@ include(${PROJECT_SOURCE_DIR}/cmake/clara.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/argparse.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/glaze.cmake)
 
-set(COMMANDS fast-updatedb fast-find fast-wc fast-locate)
+set(COMMANDS fast-updatedb fast-find fast-wc)
 foreach(COMMAND ${COMMANDS})
   add_executable(${COMMAND} ${COMMAND}.cpp)
   target_link_libraries(${COMMAND} ioutils ${LIB_HS} ${LIB_HS_RUNTIME} fmt::fmt
@@ -12,7 +12,7 @@ foreach(COMMAND ${COMMANDS})
   target_include_directories(${COMMAND} PRIVATE "${PROJECT_SOURCE_DIR}")
 endforeach(COMMAND)
 
-set(COMMANDS fast)
+set(COMMANDS fast fast-locate)
 foreach(COMMAND ${COMMANDS})
   add_executable(${COMMAND} ${COMMAND}.cpp)
   target_link_libraries(

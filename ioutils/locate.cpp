@@ -1,7 +1,14 @@
 #include "ioutils/locate.hpp"
+#include "boost/iostreams/device/mapped_file.hpp"
 #include "fmt/base.h"
 #include "fmt/ranges.h"
+#include "ioutils/fdwriter.hpp"
 #include "regex_matchers.hpp"
+#include <filesystem>
+#include <format>
+#include <stdexcept>
+#include <string>
+#include <string_view>
 
 namespace ioutils {
     void LocateInputArguments::print() const {
@@ -32,5 +39,51 @@ namespace ioutils {
                 find_matched_files<Matcher>(params);
             }
         }
+    }
+
+    void locate_files_all(const ioutils::Parameters &args) {
+        if (!std::filesystem::exists(args.database)) {
+            throw std::runtime_error(
+                std::format("Cannot open the locate database file: {}", args.database));
+        }
+        StreamWriter console;
+        boost::iostreams::mapped_file mmap(args.database);
+        auto begin = mmap.const_data();
+        auto ptr = begin;
+        const auto end = begin + mmap.size();
+        constexpr char EOL = '\n';
+        while ((ptr = static_cast<const char *>(memchr(begin, EOL, end - begin)))) {
+            console.write(begin, ptr - begin + 1);
+            begin = ptr + 1;
+        }
+    }
+
+    void locate_files_regex(const ioutils::Parameters &args) {
+        if (!std::filesystem::exists(args.database)) {
+            throw std::runtime_error(
+                std::format("Cannot open the locate database file: {}", args.database));
+        }
+        StreamWriter console;
+        boost::iostreams::mapped_file mmap(args.database);
+        auto begin = mmap.const_data();
+        auto ptr = begin;
+        const auto end = begin + mmap.size();
+        constexpr char EOL = '\n';
+        while ((ptr = static_cast<const char *>(memchr(begin, EOL, end - begin)))) {
+            std::string_view line(begin, ptr - begin + 1);
+            if (line.contains(args.regex)) {
+                console.write(begin, ptr - begin + 1);
+            }
+            begin = ptr + 1;
+        }
+    }
+
+    void locate_files(const ioutils::Parameters &args) {
+        if (!std::filesystem::exists(args.database)) {
+            throw std::runtime_error(
+                std::format("Cannot open the locate database file: {}", args.database));
+        }
+
+        args.regex.empty() ? locate_files_all(args) : locate_files_regex(args);
     }
 } // namespace ioutils

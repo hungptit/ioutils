@@ -2,6 +2,7 @@
 
 #include "fdreader.hpp"
 #include "fdwriter.hpp"
+#include "ioutils/search_params.hpp"
 #include "memchr.hpp"
 #include <cstdint>
 #include <fcntl.h>
@@ -127,4 +128,5 @@ namespace ioutils {
     }
 
     void locate_files(const ioutils::LocateInputArguments &params);
+    void locate_files(const ioutils::Parameters &args);
 } // namespace ioutils

@@ -8,7 +8,12 @@ namespace ioutils {
         bool verbose = false;
         bool invert_match = false;
         bool ignore_case = false;
-        std::vector<std::string> paths;
+
+        int regex_mode = 0;
+        int flags = 0;
+
+        std::string regex;
         std::string database;
+        std::vector<std::string> paths;
     };
-}
+} // namespace ioutils
